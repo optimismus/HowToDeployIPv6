@@ -1,0 +1,49 @@
+= About this document
+
+This document has been written within the scope of the ARCEP IPv6 task force, its main author Jean-Charles BISECCO would like to thank all its members for their contributions and corrections.
+
+=== HELP US TO MAKE THIS DOCUMENT GROW
+
+This document is intended to be updated over time, your feedback is precious.
+
+You can send us your ideas to improve the guide as well as your feedback:
+
+* Join https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html[IPv6 task-force]
+* Contact the author at IPv6@arcep.fr/ mailto:IPv6@jclb.net?subject=IPv6%20Guide%20V1.2[IPv6@jclb.net]
+
+_The latest version can be found at the following address:_
+
+https://en.arcep.fr/publications/task-force-ipv6.html
+
+=== LICENSE
+
+This document is released under the following license:
+
+____
+IPv6 Transition Guide © 2022 by Jean-Charles BISECCO is licensed under image:extracted-media/media/image79.svg[extracted-media/media/image79,width=104,height=24]
+
+image:extracted-media/media/image81.svg[extracted-media/media/image81,width=25,height=25]image:extracted-media/media/image83.svg[extracted-media/media/image83,width=25,height=25]image:extracted-media/media/image85.svg[extracted-media/media/image85,width=25,height=25] https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1[CC BY-SA 4.0] link:Attribution-ShareAlike%204.0%20International)%20[Attribution-ShareAlike 4.0 International] +
+https://creativecommons.org/licenses/by-sa/4.0/
+____
+
+Schema icons sourced from https://github.com/ecceman/affinity
+
+Chapter images come from https://unsplash.com/[unplash.com]
+
+____
+Valentin Betancur / Alex Padurariu / Andre Taissin / Erol Ahmed / Possessed Photography / Austris Augusts
+____
+
+=== TRANSLATIONS
+
+This document is initially published in French and English. We are open to translations in other languages to facilitate the deployment of IPv6 in as many places as possible.
+
+Translations may be added to the official list.
+
+Access to deltas between this release and future versions will be provided to translators.
+
+image:extracted-media/media/image12.png[extracted-media/media/image12,width=320,height=316]
+
+https://en.arcep.fr/publications/task-force-ipv6.html[IPv6 Task -force]
+
+//#### End of chapter ####
