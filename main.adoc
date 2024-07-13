@@ -1,0 +1,54 @@
+= ENTERPRISES: HOW TO DEPLOY IPv6?
+:author: Jean-Charles BISECCO
+:email: ipv6@arcep.fr
+:revnumber: v1.3
+:revdate: 06.07.2022
+:description: This document will help you to DEFINE YOUR IPv6 NEEDS, to PLAN its deployment and to ROLL IT OUT inside your organization.
+:toc: preamble
+:toclevels: 4
+:source-highlighter: rouge
+:numbered:
+:doctype: book
+//:sectnums:
+:sectnumlevels: 0
+:partnums:
+:docinfodir: styles
+:docinfo1:
+//:title-logo-image: images/image00_01_cover.png
+// Set the cover image
+//:front-cover-image: image:images/image00_01_cover.png[fit=cover]
+// Don't display a title page, since we have a cover image.
+//:notitle:
+
+// Table of content - MUST be localized
+:toc-title: Table of contents
+:chapter-label: Chapter
+
+// Cover
+image:images/image00_01_cover.png[images/image00_01_cover,width=952,height=241]
+July 6th 2022 // *V1.3*
+image:images/image00_02_checkbox.svg[images/image00_02_checkbox,width=152,height=134]
+This document will help you to DEFINE YOUR IPv6 NEEDS, to PLAN its deployment and to ROLL IT OUT inside your organization.
+
+It covers any type of Information System.
+
+*FROM PLANNING TO DEPLOYMENT*
+// Example of how to include a chapter with automatic level offset
+// -- Book content includes --
+
+// Include the non-numbered sections (preface, introduction, etc).
+include::chapters/foreword.adoc[]
+include::chapters/preamble.adoc[]
+
+// Enable chapter numbering.
+:sectnums:
+
+// Include the numbered chapters.
+include::chapters/chapter-01.adoc[]
+//include::chapters/chapter-02.adoc[]
+//include::chapters/chapter-03.adoc[]
+//include::guide_v02.adoc[leveloffset=+1]
+//include::guide_v02.adoc[]
+
+
+//#### End of chapter ####

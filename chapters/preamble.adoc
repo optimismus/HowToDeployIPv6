@@ -1,0 +1,40 @@
+
+== Preamble
+
+IPv6 deployment is progressing in every part of the world, and its use is no longer merely anecdotal, as it often was in the early part of the 2010s. This guide is designed to help businesses define the scale of their IPv6 implementation, explain how to implement the protocol, and provide a set of best practices.
+
+If there is no shortage of documentation on IPv6 and its deployment, most of it tends to focus on the network layer and pertains to a horizontal view of transport, which typically applies to a carrier, a transit provider or an internet exchange point.
+
+Providing digital services within an enterprise typically involves a more vertical model, however, with sometimes unique configurations in the upper layers, once we move towards the many production applications.
+
+This guide aims to provide IT departments involved in corporate IPv6 transition information to ease it operationally.
+
+If this document does refer to technical aspects, its purpose is not to teach IPv6 and will confine itself to the details required to cover the points being addressed. 
+It will be up to you to delve deeper into the technology via existing content, purely educational material, manufacturers’ documentation, blog posts, MOOC, training courses, etc.
+
+== How to read
+
+This document is primarily intended for information systems experts in charge of the transition to IPv6.
+
+However, it contains sections and paragraphs that are aimed at different audiences.
+
+If it is recommended that anyone who is closely involved in the project read the entire guide, the same does not apply to other readers. 
+The logos in the margins of each section make it easy to identify the intended audience for that content.
+
+[width="100%",cols="27%,22%,3%,25%,23%",,grid="none"]
+|===
+|image:images/image00_06_router.svg[Router outline,width=96,height=96] |*Network* | |image:images/image00_07_connection.svg[Connections outline,width=96,height=96] |*Project management*
+|image:images/image00_08_notebook.svg[Ordinateur portable contour,width=96,height=96] |*System* | |image:images/image00_09_handset.svg[Handset outline,width=96,height=96] |*Telephony*
+|image:images/image00_10_lock.svg[Lock contour,width=96,height=96] |*Security* | |image:images/image00_11_server.svg[Server contour,width=96,height=96] |*Hosting*
+|image:images/image00_12_foots.svg[Footprints contour,width=96,height=96] |*Traceability* | |image:images/image00_13_house.svg[Home with wifi contour,width=96,height=96] |*Home use*
+|image:images/image00_14_smartphone.svg[Smartphone contour,width=96,height=96] |*Mobile* | |image:images/image00_15_app.svg[Conception web contour,width=96,height=96] a|
+*App*
+
+*Development*
+
+|===
+
+Some paragraphs indicate choices that will be different for larger and small structures. If it is impossible to draw a clear separation between the two, naturally the more complex and extensive a structure’s information system (IS) is, the more it will fall under into the category of a large structure, even if the entity does not classify itself as such, based on the size of its staff or its geographical footprint.
+
+
+//#### End of chapter ####
