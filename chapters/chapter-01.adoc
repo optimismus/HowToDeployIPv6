@@ -1,34 +1,13 @@
-////
- delete this block?
-[#_Toc90246604 .anchor]
-####Grasp +
-of the subject
-1
-link:#analytical-method[1. Analytical method link:#analytical-method[12]]
-link:#similar-projects[◗ SIMILAR PROJECTS link:#similar-projects[12]]
-link:#untangling-the-yarn[◗ UNTANGLING THE YARN link:#untangling-the-yarn[12]]
-link:#connexions-contourhuman-factors[2. Human factors link:#connexions-contourhuman-factors[13]]
-link:#training[◗ TRAINING link:#training[14]]
-link:#mutual-support[◗ MUTUAL SUPPORT link:#mutual-support[14]]
-link:#needs[3. Needs link:#needs[15]]
-link:#exposure-on-the-internet[◗ EXPOSURE ON THE INTERNET link:#exposure-on-the-internet[15]]
-link:#access-to-external-ressources[◗ ACCESS TO EXTERNAL RESSOURCES link:#access-to-external-ressources[18]]
-link:#_Toc85149211[QUIC’s arrival link:#_Toc85149211[19]]
-link:#internal-network[◗ INTERNAL NETWORK link:#internal-network[20]]
-////
-
 image:images/image01_01_suspensionbridge.jpeg[Woods with bridge,width=609,height=910]
 
-= Grasp of the subject
-
-== Analytical method
+=== Analytical method
 
 While technology is an important part of this subject, it would be a serious mistake to reduce IPv6 to just that, even if the breadth of the subject can make for difficult project management methodology and engineering choices, which may also vary depending on the perimeters set within the organisation.
 
 The current chapter aims to enlighten the reader on a number of methodological choices that can have a direct impact on the success of the project.
 
 // save sign: ◗
-=== SIMILAR PROJECTS
+==== SIMILAR PROJECTS
 
 The subject may well be vast, but it is far from being the first of its kind. Depending on how old your company is, you may have tackled other projects that carried heavy restrictions which were similar in scope. Drawing on the lessons learned from planning and executing those projects could save you from repeating the same mistakes.
 
@@ -42,7 +21,7 @@ The final example, which may be more or less common depending on a company’s s
 
 Other large-scale projects are also common, such as deploying an ERP system, but are more business-specific and so driven by the organisation’s core activity.
 
-=== UNTANGLING THE YARN
+==== UNTANGLING THE YARN
 
 The Internet Protocol (IP) is the underlying element in the infrastructure that requires end-to-end compatibility between an information system’s various constituent parts. No single analytical or reasoning method provides an efficient way to cover every impact of the change, so a combination of several will be needed.
 
@@ -59,7 +38,7 @@ Like a good thriller writer, you need to reveal details about your characters at
 Speaking of changes in the affected areas, each one is an opportunity to deploy IPv6, so check in regularly with your different departments, to keep up with any new projects, and so not miss out on these opportunities.
 
 //image:images/image00_07_connection.svg[Connections contour,width=75,height=75]
-== Human factors
+=== Human factors
 
 You are bound to come up against some resistance to change, so you will need to find support in each of the teams involved to be able to move forward. The steady involvement of members of the different teams needs to begin at just the right time. Too early and people’s enthusiasm will wane, and the project will lose momentum; too late and it will affect the project’s turnaround time. Ideally, proper planning will create the ability to increase the number of participants in a team once it needs to tackle the matter concretely.
 
@@ -75,7 +54,7 @@ Lastly, hold individual discussions with the teams involved when they are in the
 
 For instance, there is no need to solicit the team in charge of middleware on a regular basis, to ask them to get ready when the network has not yet planned a pilot trial bearing qualification servers.
 
-=== TRAINING
+==== TRAINING
 
 You will need to plan on training staff to prepare them for the introduction of IPv6.
 
@@ -91,7 +70,7 @@ At the very least, you can expect to divide the people requiring training into s
 
 Ideally, the project team should test out all the modules with one or two representatives of each target audience.
 
-=== MUTUAL SUPPORT
+==== MUTUAL SUPPORT
 
 Never hesitate to contact similar size companies and organizations that are planning or carrying out an IPv6 transition, to share best practices.
 
@@ -99,7 +78,7 @@ IPv6 taskforce (jointly led by Arcep and Internet Society France) provides an op
 
 We are counting on you to help us enhance this guide and document examples of products being widely used in enterprises. See the section on feedback at the end of the guide.
 
-== Needs
+=== Needs
 
 Earlier on, we cited examples of projects such as TLS and switching operating systems. These projects are typically driven by a need to solve a security issue or protect a technical device. Other projects are driven by legal compliance imperatives, such as ensuring the traceability of users’ actions or transposing GDPR requirements onto systems. Naturally, cost effectiveness is an impetus for other projects, spurred by either business considerations or to improve the level of service, such as with orchestration projects.
 
@@ -110,7 +89,7 @@ This section will therefore look at IPv6 use cases and lay out their degree of r
 .Where do you need IPv6?
 image::images/image01_02_schema.svg[Schema need of IPv6:,width=566,height=318]
 
-=== EXPOSURE ON THE INTERNET
+==== EXPOSURE ON THE INTERNET
 
 Making the public face of one’s network accessible in IPv6 is probably the biggest priority to be implemented.
 
@@ -155,7 +134,7 @@ image::images/image01_05_ripe-waitinglist.png[Chart of the RIPE IPv4-Waitinglist
 
 Grabing IPv4 space is getting harder every day.
 
-=== ACCESS TO EXTERNAL RESSOURCES
+==== ACCESS TO EXTERNAL RESSOURCES
 
 Regardless of size, from a protocol standpoint your company is a client of third-party resources. 
 Here too, the number of sites and services that are IPv6-capable is rising steadily. 
@@ -178,7 +157,7 @@ By Summer 2024, the average global IPv6 availability is likely to exceed 50%. Wi
 
 //delete? [#_Toc85149211 .anchor]####QUIC’s arrival
 
-==== QUIC's arrival
+===== QUIC's arrival
 
 Let's take the opportunity to address a crucial point in internet resources access and talk about the reign of the connected mode. By connected mode we are not talking about hyperconnectivity addiction, but simply about TCP.
 
@@ -215,7 +194,7 @@ This protocol has just been ratified in RFC 8999, 9000, 9001 and 9002.
 
 NOTE: This transport protocol is expected to have a faster deployment curve than IPv6, the efforts made to support it on its proxy chain or on its web front-ends in the other direction are an opportunity to work on rolling out v6 in parallel.
 
-=== INTERNAL NETWORK
+==== INTERNAL NETWORK
 
 Beyond the edge of the infrastructure in contact with the Internet, what are the motivations for deployment on the internal network?
 

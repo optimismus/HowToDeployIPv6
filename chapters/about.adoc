@@ -1,5 +1,3 @@
-= About this document
-
 This document has been written within the scope of the ARCEP IPv6 task force, its main author Jean-Charles BISECCO would like to thank all its members for their contributions and corrections.
 
 === HELP US TO MAKE THIS DOCUMENT GROW

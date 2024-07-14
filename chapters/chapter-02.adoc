@@ -1,40 +1,4 @@
-////
-[upperroman, start=2]
-. [#_Toc90246616 .anchor]####
-=Transition +
-Technologies
-2
-link:#dual-stack[1. Dual-Stack link:#dual-stack[26]]
-link:#transport-mechanisms[2. Transport mechanisms link:#transport-mechanisms[27]]
-link:#integration-on-an-existing-ipv4-underlay[◗ INTEGRATION ON AN EXISTING IPV4 UNDERLAY link:#integration-on-an-existing-ipv4-underlay[27]]
-link:#_Toc88922626[MPLS link:#_Toc88922626[27]]
-link:#_Toc88922627[VXLAN link:#_Toc88922627[28]]
-link:#_Toc88922628[SD-WAN link:#_Toc88922628[28]]
-link:#specific-encapsulation[◗ SPECIFIC ENCAPSULATION link:#specific-encapsulation[29]]
-link:#and-in-the-opposite-way[◗AND IN THE OPPOSITE WAY? link:#and-in-the-opposite-way[29]]
-link:#translation-mechanisms[3. Translation mechanisms link:#translation-mechanisms[30]]
-link:#nat64-dns64[◗ NAT64 + DNS64 link:#nat64-dns64[30]]
-link:#_Toc88922633[Addressing link:#_Toc88922633[31]]
-link:#_Toc88922634[Topology link:#_Toc88922634[31]]
-link:#_Toc108476610[MTU matters link:#_Toc108476610[32]]
-link:#_Toc108476611[Note about filtering link:#_Toc108476611[32]]
-link:#which-scope-and-therefore-which-technology[4. Which scope and therefore which technology? link:#which-scope-and-therefore-which-technology[33]]
-link:#campus[◗ CAMPUS link:#campus[33]]
-link:#_Toc88922638[NAT64 + DNS64 link:#_Toc88922638[33]]
-link:#datacenter[◗ DATACENTER link:#datacenter[34]]
-link:#_Toc88922640[Dual-stack servers and applications link:#_Toc88922640[34]]
-link:#_Toc108476617[6/4 translation link:#_Toc108476617[35]]
-link:#_Toc108476618[Native IPv6 Deployment link:#_Toc108476618[36]]
-link:#_Toc88922643[Double mono-stack link:#_Toc88922643[36]]
-link:#_Toc108476620[Cloud providers link:#_Toc108476620[36]]
-link:#_Toc108476621[External translation link:#_Toc108476621[37]]
-link:#wan[◗ WAN link:#wan[37]]
-link:#_Toc108476623[Regional NAT platform link:#_Toc108476623[37]]
-////
-
 image::images/image02_01_black-white.jpeg[Black and White,width=876,height=609]
-
-= Transition Technologies
 
 IETF is working with vendors and software editors to deliver mechanisms for handling IPv6 transition. 
 These mechanisms are intended for carriers and/or enterprises.
@@ -46,7 +10,7 @@ First, we must divide the mechanisms into 2 usage groups:
 
 Both are complementary in most usecase.
 
-== Dual-Stack
+==== Dual-Stack
 
 Dual-stack is simply the simultaneous use of IPv4 and IPv6, therefore it constitutes a simple cohabitation.
 
@@ -56,7 +20,7 @@ Dual-stack is therefore rarely viable in the long term in a large organization o
 
 During the transition phase, it enables not affecting the IPv4 legacy and therefore not causing any disruption or regression on services.
 
-== Transport mechanisms
+==== Transport mechanisms
 
 In the early days, mechanisms were designed to reach IPv6 islands from other islands, or simply from a workstation.
 
@@ -73,7 +37,7 @@ Most of these methods bring security risks to the organization and are carrier-o
 Transport networks often exploit a layering of technologies on top of each other, as is the case with MPLS or VxLAN. Deploying dual-stack across all transport layers is rarely relevant. However, it is important to implement it in the highest transport layer, the one visible to the network users, the overlay.
 
 //save sign: ◗
-=== INTEGRATION ON AN EXISTING IPV4 UNDERLAY
+==== INTEGRATION ON AN EXISTING IPV4 UNDERLAY
 
 The existing transport solution often allows isolation of end-to-end customer contexts within the organization, both on the backbone and in the datacenter.
 
@@ -121,7 +85,7 @@ The fact remains that IPv6 is rarely required by customers since these solutions
 
 Finally, the Local Breakout aspect of these solutions is another element also gradually integrating IPv6. Often with a whole layer of local security services commonly referred to as "SASE".
 
-=== SPECIFIC ENCAPSULATION
+==== SPECIFIC ENCAPSULATION
 
 It is not always possible to transit IPv6 on a transport perimeter, and as seen previously, few technical solutions are exploitable on both sides on enterprise hardware series.
 
@@ -133,7 +97,7 @@ We do not recommend looking at 6to4 (non-configurable endpoint), 6over4 (IPv4 mu
 
 The availability of a given method on your devices, in conjunction with the integration with your routing, will determine your choice.
 
-=== AND IN THE OPPOSITE WAY?
+==== AND IN THE OPPOSITE WAY?
 
 As discussed at the beginning of this chapter, there are also transition technologies that enable you to dispense of IPv4 on your backbone. It is then limited to user networks, IPv4aaS
 
@@ -162,7 +126,7 @@ the absence of fragmentation on routers.
 
 NOTE: You can often easily transport IPv6 on an IPv4 underlay and might want to wait for a large backbone project, renewal,… to swap your underlay. If you’re working on a greenfield deployment, consider an IPv6 underlay. Moreover, care about designing your topology and addressing plan to be ready for an SRv6 deployment. It will save you time later, if you don’t directly start with it.
 
-== Translation mechanisms
+==== Translation mechanisms
 
 The purpose of translation is to allow exchanges between clients and servers using different versions of IP.
 
@@ -172,7 +136,7 @@ NAT64 and DNS64 provide a joint solution that is already widely deployed and all
 
 Obviously, since the IPv6 header is longer, it is technically simpler to keep the header information when sending IPv4 clients to an IPv6 server than the opposite. But the direction of deployment is a matter of need, strategy, scheduling and consistency.
 
-=== NAT64 + DNS64
+==== NAT64 + DNS64
 
 NAT64 (RFC 6146) coupled with DNS64 (RFC 6147) uses the principle of "lying" DNS in concert with a translator to allow IPv6 terminals to access IPv4 resources. IETF publishes a deployment guide (RFC 7269).
 
@@ -235,7 +199,7 @@ Once NAT64 is crossed, how to filter the flows? If NAT64 is done close to the us
 
 The solution lies in segmenting IPv4 NAT pools, create matching rules so that machines behind an IPv6 prefix X emerge with a dedicated IPv4 NAT pool Y, and so on. Again, the more segmentation there is, the more complex it will be to enforce on sites.
 
-== Which scope and therefore which technology?
+==== Which scope and therefore which technology?
 
 Now that you know which technology allows a client to interact with a server that does not speak the same language and how to deal with transport, let's see the relevance of each solution.
 
@@ -243,7 +207,7 @@ An ideal approach is to ask yourself what is the easiest to migrate.
 
 What types of endpoints are present on the network?
 
-=== CAMPUS
+==== CAMPUS
 
 On the user side, we generally find homogeneous workstations, with an identical ecosystem reproduced per site/geographic zone and other more centralized bricks. This ecosystem includes file storage, authentication directory, messaging and other collaborative tools such as telephony, printing, proxy, workstation management agent, protection agent, and of course business applications. The latter are now almost systematically web applications and therefore often rely on the browser on the client side.
 
@@ -277,7 +241,7 @@ Don't forget that some services may have to initiate an IPv6 session to a workst
 
 This constraint linked to SIP and RTP traffic forces a global response before IPv4 is cleared.
 
-=== DATACENTER
+==== DATACENTER
 
 Datacenter resources, whether on premises or Cloud-based, can be very diverse or relatively homogeneous. It all depends on your business and your history.
 
@@ -357,7 +321,7 @@ For example, most load balancing services are not yet compatible, and when they 
 
 For internet facing services, you may also rely on CDN and other intermediates services which have the ability to expose in dual-stack while the backend is only in one of the IP protocol versions.
 
-=== WAN
+==== WAN
 
 WAN itself doesn’t directly offer services to users, it’s there to carry traffic across sites. You may come back to transport mechanisms section to see how to transport IPv6 traffic.
 

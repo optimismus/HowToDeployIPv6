@@ -1,75 +1,8 @@
-
-
-[upperroman, start=6]
-. [#_Toc90246733 .anchor]####Appendix +
-*and other information*
-
-6
-
-link:#_Toc108476730[◗ URL AND LINK-LOCAL IP link:#_Toc108476730[108]]
-
-link:#multi-prefixes[◗ MULTI-PREFIXES link:#multi-prefixes[110]]
-
-link:#containers[◗ CONTAINERS link:#containers[110]]
-
-link:#_Toc88922583[Docker link:#_Toc88922583[110]]
-
-link:#_Toc88922584[Kubernetes link:#_Toc88922584[111]]
-
-link:#scada[◗ SCADA link:#scada[112]]
-
-link:#smartphone-contour-nat64-on-mobile-carriers-networks[◗ NAT64 ON MOBILE CARRIERS NETWORKS link:#smartphone-contour-nat64-on-mobile-carriers-networks[112]]
-
-link:#_Toc88922587[Service discovery link:#_Toc88922587[112]]
-
-link:#_Toc108476738[Operation on mobile OSes link:#_Toc108476738[113]]
-
-link:#_Toc88922589[Connection sharing link:#_Toc88922589[113]]
-
-link:#empreintes-contour-ipv4-port-sharing[◗ IPV4 PORT SHARING link:#empreintes-contour-ipv4-port-sharing[113]]
-
-link:#rfc-drafts-to-save-ipv4[◗ RFC DRAFTS TO SAVE IPV4 link:#rfc-drafts-to-save-ipv4[114]]
-
-link:#examples-of-ipv6-implementation-problems[◗ EXAMPLES OF IPV6 IMPLEMENTATION PROBLEMS link:#examples-of-ipv6-implementation-problems[114]]
-
-link:#_Toc85149062[Non-decommissioning of routes link:#_Toc85149062[114]]
-
-link:#_Toc85149063[Unexpected use of IPv4 prefix representation link:#_Toc85149063[115]]
-
-link:#_Toc85149064[Incompatible input fields link:#_Toc85149064[115]]
-
-link:#waste-of-addressing-space[◗ WASTE OF ADDRESSING SPACE link:#waste-of-addressing-space[116]]
-
-link:#use-of-address-unicity-for-other-purposes[◗ USE OF ADDRESS UNICITY FOR OTHER PURPOSES link:#use-of-address-unicity-for-other-purposes[116]]
-
-link:#srv6[◗ SRv6 link:#srv6[117]]
-
-link:#thread[◗ THREAD link:#thread[117]]
-
-link:#self-hosting-and-residential-use[◗ SELF-HOSTING AND RESIDENTIAL USE link:#self-hosting-and-residential-use[118]]
-
-link:#_Toc85149302[Addressing and DNS publication link:#_Toc85149302[118]]
-
-link:#_Toc108476752[Flow opening link:#_Toc108476752[119]]
-
-link:#_Toc85149304[Reachability test link:#_Toc85149304[120]]
-
-link:#host-initiated-auto-opening[◗ HOST-INITIATED AUTO OPENING link:#host-initiated-auto-opening[121]]
-
-link:#conception-web-contour-evolution-of-online-gaming[◗ EVOLUTION OF ONLINE GAMING link:#conception-web-contour-evolution-of-online-gaming[122]]
-
-link:#what-to-expect-from-consumer-carriers[◗WHAT TO EXPECT FROM CONSUMER CARRIERS? link:#what-to-expect-from-consumer-carriers[122]]
-
-image:extracted-media/media/image67.jpeg[extracted-media/media/image67,width=609,height=729]
-
-==== Appendix
-
-[upperroman, start=6]
-. APPENDIX
+image::images/image06_01_tartan.jpeg[Tartan,width=609,height=729,align="center"]
 
 The appendix contains technical supplements and specific information related to domestic use.
 
-=== ◗ URL AND LINK-LOCAL IP
+=== URL AND LINK-LOCAL IP
 
 The link-local address, in the FE80::/10 range, has the particularity of incorporating an interface identifier. This identifier uses the name or number of the interface depending on the system.
 

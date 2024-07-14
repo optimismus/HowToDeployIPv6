@@ -1,6 +1,4 @@
-== Foreword
-
-image::images/image00_03_target.svg[target,54,69]
+image::images/image00_03_target.svg[target,54,69,align="center"]
 [font-size="2em"]
 *Thanks*
 
@@ -11,15 +9,12 @@ This document is part of the work carried out by the IPv6 task force jointly led
 Arcep and Internet Society France have initiated a task force dedicated to IPv6 and open to all players in the Internet ecosystem (internet service providers, hosting services, enterprises, public sector, etc.). 
 It aims to accelerate the transition to IPv6 by allowing participants to address specific issues and share best practices.
 
+[cols="1,1",frame=none]
 |===
-
-//ERROR: chapters/foreword.adoc: line 16: table missing leading separator; recovering automatically
-This guide, produced by the IPv6 Task Force, aims to provide best practices for the successful implementation of the transition to IPv6.
+|This guide, produced by the IPv6 Task Force, aims to provide best practices for the successful implementation of the transition to IPv6.
 It is not intended to supersede the expertise of corporate IT teams and the IPv6 Task Force cannot be held responsible for any difficulties encountered by a company that follows the guidelines provided.
-
+|image:images/image00_04_QR.svg[QR-Code,width=168,height=168,link=https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html]
 |===
-
-image:images/image00_04_QR.svg[QR-Code,width=168,height=168]
 
 Join our https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html[IPv6 taskforce] (French form but we accept English speakers)
 

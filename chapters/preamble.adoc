@@ -1,7 +1,5 @@
-
-== Preamble
-
-IPv6 deployment is progressing in every part of the world, and its use is no longer merely anecdotal, as it often was in the early part of the 2010s. This guide is designed to help businesses define the scale of their IPv6 implementation, explain how to implement the protocol, and provide a set of best practices.
+IPv6 deployment is progressing in every part of the world, and its use is no longer merely anecdotal, as it often was in the early part of the 2010s. 
+This guide is designed to help businesses define the scale of their IPv6 implementation, explain how to implement the protocol, and provide a set of best practices.
 
 If there is no shortage of documentation on IPv6 and its deployment, most of it tends to focus on the network layer and pertains to a horizontal view of transport, which typically applies to a carrier, a transit provider or an internet exchange point.
 
@@ -12,7 +10,7 @@ This guide aims to provide IT departments involved in corporate IPv6 transition 
 If this document does refer to technical aspects, its purpose is not to teach IPv6 and will confine itself to the details required to cover the points being addressed. 
 It will be up to you to delve deeper into the technology via existing content, purely educational material, manufacturers’ documentation, blog posts, MOOC, training courses, etc.
 
-== How to read
+=== How to read
 
 This document is primarily intended for information systems experts in charge of the transition to IPv6.
 
@@ -34,7 +32,8 @@ The logos in the margins of each section make it easy to identify the intended a
 
 |===
 
-Some paragraphs indicate choices that will be different for larger and small structures. If it is impossible to draw a clear separation between the two, naturally the more complex and extensive a structure’s information system (IS) is, the more it will fall under into the category of a large structure, even if the entity does not classify itself as such, based on the size of its staff or its geographical footprint.
+Some paragraphs indicate choices that will be different for larger and small structures. 
+If it is impossible to draw a clear separation between the two, naturally the more complex and extensive a structure’s information system (IS) is, the more it will fall under into the category of a large structure, even if the entity does not classify itself as such, based on the size of its staff or its geographical footprint.
 
 
 //#### End of chapter ####
