@@ -17,12 +17,15 @@ https://en.arcep.fr/publications/task-force-ipv6.html
 
 This document is released under the following license:
 
-____
-IPv6 Transition Guide © 2022 by Jean-Charles BISECCO is licensed under image:extracted-media/media/image79.svg[extracted-media/media/image79,width=104,height=24]
+IPv6 Transition Guide © 2022 by Jean-Charles BISECCO is licensed under 
 
-image:extracted-media/media/image81.svg[extracted-media/media/image81,width=25,height=25]image:extracted-media/media/image83.svg[extracted-media/media/image83,width=25,height=25]image:extracted-media/media/image85.svg[extracted-media/media/image85,width=25,height=25] https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1[CC BY-SA 4.0] link:Attribution-ShareAlike%204.0%20International)%20[Attribution-ShareAlike 4.0 International] +
+image::images/image_CC-license.svg[Creative Commens Logo,width=104,height=24]
+
+image:images/image_cc.svg[cc,width=25,height=25]image:images/image_by.svg[by,width=25,height=25]image:images/image_sa.svg[extracted-media/media/image85,width=25,height=25] 
+
+https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1[CC BY-SA 4.0] link:Attribution-ShareAlike%204.0%20International)%20[Attribution-ShareAlike 4.0 International] +
 https://creativecommons.org/licenses/by-sa/4.0/
-____
+
 
 Schema icons sourced from https://github.com/ecceman/affinity
 
@@ -40,7 +43,7 @@ Translations may be added to the official list.
 
 Access to deltas between this release and future versions will be provided to translators.
 
-image:extracted-media/media/image12.png[extracted-media/media/image12,width=320,height=316]
+image::images/image_arcep.png[ARCEP Heart,width=320,height=316]
 
 https://en.arcep.fr/publications/task-force-ipv6.html[IPv6 Task -force]
 
