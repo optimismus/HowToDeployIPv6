@@ -29,12 +29,22 @@ To have an consitant document, which can be maintained in a good way, we all sho
   * The headings are from level two to four (or five?)
   * Level three has a special sign for better reading "=== • Item" and are in capital letters.
   * Every part has an image, after that there is a pagebreak "<<<" (in an own block)
+  * After the pagebreak the first line repeats the part title with "[big]#Title#"
+  * Every source file SHOULD end with "End of chapter" comment
 * Admonitions
   * Only NOTE and IMPORTANT are used
   * If you use IMPORTANT, the text MUST be bold by "\*bold\*".
-* Text-Style
+* Text
+  * Every sentence in its own line.
   * Commands MUST be set monospace by "\`command\`"
   * File pathes etc SHOULD set italic by "\_path\_"
+* v4 v6
+  * you MUST use "IPv4" or "IPv6", not v4 or v6
+  * same with DHCP: You should use DHCPv4 or DHCPv6 to clarify what you mean.
+* IPv6 examples MUST use the documentation prefix 2001:db8::
+* German
+  * Numbering from "eins" to "zwölf" MUST be written
+
 
 ## What is different to the original?
 There are a lot of style differences to the orignal document of ARCEP. This is based on my humble abilities in ASCIIDOC, you are welcome to help me with that.
@@ -45,3 +55,13 @@ These are some points I didn't yet find an solution for:
 * Tables: Colors for the heading, whith white text-color and dark blue background-color etc
 * Chapter table-of-content: There seems to be no function in ASCIIDOC for that.
 * More style consistancy: I tried to hold some aspects more consistant e.g. chapter-levels, image captions etc.
+
+## How to build a PDF?
+* Install ruby
+* Install asciidoctor
+* Install asciidoctor-pdf ("gem install asiidoctor-pdf")
+* Build HTML5 with embedded images (base64): asciidoctor --backend html5 -a data-uri main.adoc
+* Bild PDF: asciidoctor-pdf -a optimize HowToDeployIPv6.adoc
+  
+## How to convert the original docx to ASCIIDOC?
+pandoc guide-entreprises-how-to-deploy-IPv6-july-2022.docx -f docx -t asciidoc --wrap=none --markdown-headings=atx --extract-media=extracted-media -o guide_v01.adoc
