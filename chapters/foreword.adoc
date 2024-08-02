@@ -1,27 +1,28 @@
-image::images/image00_03_target.svg[target,54,69,align="center"]
-[font-size="2em"]
-*Thanks*
+[cols="10%,90%",frame="none", grid="none",font-size="2em"]
+|===
+|image:images/image00_03_target.svg[target,54,69,align="center"]    a|[big]#*Thanks* +
+ +
+This guide has been originally written by Jean-Charles BISECCO, with the help of IPv6 taskforce members. It has been transfered to ASCIIDOC by Axel Schemberg.#
+|===
 
-This guide has been written by Jean-Charles BISECCO, with the help of IPv6 taskforce members.
-
-[font-size=1em]
 This document is part of the work carried out by the IPv6 task force jointly led by Arcep and Internet Society France. 
 Arcep and Internet Society France have initiated a task force dedicated to IPv6 and open to all players in the Internet ecosystem (internet service providers, hosting services, enterprises, public sector, etc.). 
 It aims to accelerate the transition to IPv6 by allowing participants to address specific issues and share best practices.
 
-[cols="1,1",frame=none]
-|===
-|This guide, produced by the IPv6 Task Force, aims to provide best practices for the successful implementation of the transition to IPv6.
-It is not intended to supersede the expertise of corporate IT teams and the IPv6 Task Force cannot be held responsible for any difficulties encountered by a company that follows the guidelines provided.
-|image:images/image00_04_QR.svg[QR-Code,width=168,height=168,link=https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html]
-|===
+This guide, produced by the IPv6 Task Force, aims to provide best practices for the successful implementation of the transition to IPv6.
+It is not intended to supersede the expertise of corporate IT teams and the authors cannot be held responsible for any difficulties encountered by a company that follows the guidelines provided.
 
-Join our https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html[IPv6 taskforce] (French form but we accept English speakers)
-
+[cols="20%,80%",frame="none", grid="none"]
+|===
+| image:images/image00_04_QR.svg[QR-Code,width=168,height=168,link=https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html]
+|Join our https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html[IPv6 taskforce] (French form but we accept English speakers) +
+ +
 This document does not reflect Arcep's position, but the work of the task force contributors.
+|===
 
-image:images/image00_05_TF-logo.png[Task Force Logo,width=140,height=139]
-
-image:images/image00_03_target.svg[target,54,69] *Find the latest revision of this guide here:*
-https://en.arcep.fr/publications/task-force-ipv6.html[https://en.arcep.fr/publications/task-force-ipv6.html]
-
+[cols="10%,60%,30%",frame="none", grid="none"]
+|===
+|image:images/image00_03_target.svg[target,54,69]   | *Find the latest revision of this guide here:* +  
+https://en.arcep.fr/publications/task-force-ipv6.html[https://en.arcep.fr/publications/task-force-ipv6.html]    |image:images/image00_05_TF-logo.png[Task Force Logo,width=140,height=139]
+|===
+//End of chapter

@@ -1,0 +1,40 @@
+
+
+Die Einführung von IPv6 schreitet in allen Teilen der Welt voran, und seine Nutzung ist nicht mehr nur anekdotisch, wie es zu Beginn der 2010er Jahre oft der Fall war.
+Dieser Leitfaden soll Unternehmen dabei helfen, den Umfang ihrer IPv6-Implementierung zu bestimmen, die Implementierung des Protokolls zu erläutern und eine Reihe von Best Practices bereitzustellen.
+
+Auch wenn es an Dokumentationen über IPv6 und seine Einführung nicht mangelt, konzentrieren sich die meisten davon auf die Netzebene und beziehen sich auf eine horizontale Betrachtung des Datentransports, die in der Regel für einen Betreiber, einen Transitanbieter oder einen Internet-Austauschpunkt gilt.
+
+Die Bereitstellung digitaler Dienste innerhalb eines Unternehmens erfordert jedoch in der Regel ein eher vertikales Modell mit manchmal einzigartigen Konfigurationen in den oberen Schichten, sobald wir uns den vielen Produktionsanwendungen nähern.
+
+Dieser Leitfaden soll IT-Abteilungen, die an der Umstellung auf IPv6 in Unternehmen beteiligt sind, Informationen zur Verfügung stellen, um die Umstellung zu erleichtern.
+
+Auch wenn in diesem Dokument auf technische Aspekte eingegangen wird, ist es nicht der Zweck dieses Dokuments, ein IPv6-Lehrbuch zu sein, und es beschränkt sich auf die Details, die für die Behandlung der angesprochenen Punkte erforderlich sind.
+Es bleibt Ihnen überlassen, IPv6 anhand bestehender Inhalte, reiner Lehrmaterialien, Herstellerdokumentationen, Blogbeiträge, MOOC, Schulungen usw. zu vertiefen.
+
+//Seitenumbruch
+<<<
+
+=== Leserschaft und Textauszeichnungen
+
+Dieses Dokument richtet sich in erster Linie an Experten für Informationssysteme, die für den Übergang zu IPv6 zuständig sind.
+
+Er enthält jedoch Abschnitte und Paragraphen, die sich an unterschiedliche Zielgruppen richten.
+
+Auch wenn allen, die eng in Ihr Projekt eingebunden sind, empfohlen wird, das gesamte Dokument zu lesen, gilt dies nicht zwingend für alle anderen.
+Anhand der Logos am Rand jedes Abschnitts können Sie leicht erkennen, für welche Zielgruppe der jeweilige Inhalt bestimmt ist.
+
+[width="100%",cols="25%,25%,25%,25%",grid="none",frame="none"]
+|===
+|image:images/image00_06_router.svg[Internetrouter,width=96,height=96]  |*Netzwerk*     |image:images/image00_07_connection.svg[Verbindungen,width=96,height=96]    |*Projektverwaltung*
+|image:images/image00_08_notebook.svg[Notebook,width=96,height=96]      |*System*       |image:images/image00_09_handset.svg[Telefonhörer,width=96,height=96]       | *Telefonie*
+|image:images/image00_10_lock.svg[Schlosssymbol,width=96,height=96]     |*Sicherheit*   |image:images/image00_11_server.svg[Server,width=96,height=96]              |*Hosting*
+|image:images/image00_12_foots.svg[Fußabdrücke,width=96,height=96]      |*Governance*   |image:images/image00_13_house.svg[Heim-WLAN,width=96,height=96]            |*Heimanwender*
+|image:images/image00_14_smartphone.svg[Smartphone,width=96,height=96]  |*Mobile*       |image:images/image00_15_app.svg[Konzeption Web,width=96,height=96]         |*Entwicklung*
+|===
+
+In einigen Abschnitten wird darauf hingewiesen, dass die Auswahlmöglichkeiten für große und kleine Unternehmen unterschiedlich sind.
+Wenn es nicht möglich ist, eine klare Trennung zwischen den beiden zu ziehen, wird eine Organisation umso mehr in die Kategorie der großen Unternehmen fallen, je komplexer und umfangreicher ihr Informationssystem (IS) ist, auch wenn die Organisation sich selbst nicht als solche klassifiziert, basierend auf ihrer Größe ihres Personals oder ihrer geografischen Ausdehnung.
+
+
+//#### Ende des Kapitels ####

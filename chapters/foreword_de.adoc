@@ -1,0 +1,28 @@
+[cols="10%,90%",frame="none", grid="none",font-size="2em"]
+|===
+|image:images/image00_03_target.svg[target,54,69,align="center"]    a|[big]#*Danke* +
+ +
+Dieses Dokument wurde ursprünglich von Jean-Charles BISECCO mit der Unterstützung von Mitgliedern der IPv6-Taskforce verfasst. Es wurde von Axel Schemberg in ASCIIDOC überführt, auf Github veröffentlicht und ins Deutsche übersetzt.#
+|===
+
+Dieses Dokument basiert auf der Arbeit der IPv6-Taskforce, die gemeinsam von Arcep und Internet Society France geleitet wird.
+Arcep und Internet Society France haben eine Task Force ins Leben gerufen, die sich mit IPv6 befasst und allen Akteuren des Internet-Ökosystems offensteht (Internet Service Provider, Hoster, Unternehmen, öffentlicher Sektor usw.).
+Sie soll den Übergang zu IPv6 beschleunigen, indem sie den Teilnehmern die Möglichkeit gibt, sich mit spezifischen Fragen zu befassen und best practises auszutauschen.
+
+Dieser von der IPv6 Task Force erstellte Leitfaden soll Bewährtes für die erfolgreiche Umsetzung des Übergangs zu IPv6 vermitteln.
+Er soll nicht das Fachwissen der IT-Teams Ihres Unternehmen ersetzen, und die Autoren können nicht für Probleme verantwortlich gemacht werden, die aus diesem Leitfaden resultieren.
+
+[cols="20%,80%",frame="none", grid="none"]
+|===
+| image:images/image00_04_QR.svg[QR-Code,width=168,height=168,link=https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html]
+|Treten Sie unserer https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html[IPv6 taskforce] bei (französisches Formular, aber wir akzeptieren auch Englischsprachige) +
+ +
+Dieses Dokument gibt nicht den Standpunkt von Arcep wieder, sondern den der Mitarbeiter der Task Force.
+|===
+
+[cols="10%,60%,30%",frame="none", grid="none"]
+|===
+|image:images/image00_03_target.svg[target,54,69]   | *Die neueste Version dieses Leitfadens finden Sie hier:* +  
+https://en.arcep.fr/publications/task-force-ipv6.html[https://en.arcep.fr/publications/task-force-ipv6.html]    |image:images/image00_05_TF-logo.png[Task Force Logo,width=140,height=139]
+|===
+//End of chapter

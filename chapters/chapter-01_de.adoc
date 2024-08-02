@@ -1,0 +1,331 @@
+image:images/image01_01_suspensionbridge.jpeg[Wald mit Brücke,width=609,height=910]
+
+<<<
+
+[big]#*Einleitung*#
+
+Auch wenn die Technologie ein wichtiger Teil dieses Themas ist, ist es ein schwerer Fehler, IPv6 nur darauf zu reduzieren. 
+Die thematische Breite von IPv6 kann aufwändiges Projektmanagement und komplexe technische Entscheidungen erfordern.
+Die Zuständigkeit für Letztere kann je nach Organisation variieren.
+
+Dieses Kapitel soll Ihnen eine Reihe von Aspekten erläutern, die sich unmittelbar auf den Erfolg des Projekts auswirken können.
+
+// Zeichen speichern: ◗
+=== • VERGLEICHBARE PROJEKTE
+
+Das Thema IPv6 mag sehr umfangreich sein, aber es ist bei weitem nicht das erste seiner Art. 
+Je nachdem, wie alt Ihr Unternehmen ist, haben Sie vielleicht schon andere Projekte in Angriff genommen, die mit erheblichen Einschränkungen verbunden waren und einen ähnlichen Umfang hatten. 
+Die Erfahrungen aus der Planung und Durchführung jener Projekte könnten Sie davor bewahren, die Fehler zu wiederholen.
+
+Das älteste Beispiel ist die Umstellung auf das Jahr 2000, das in einigen Fällen tiefgreifende Änderungen erforderte, insbesondere bei Datenbanken (Database Management System, DBMS), sowie umfangreiche Tests für Jahreszahlen, die zweistellig kodiert waren.
+
+In jüngerer Zeit erforderte die Einführung von TLS-Zertifikaten - auch für rein interne Anwendungen, die nicht dem Internet ausgesetzt sind - Änderungen an Servern und Proxies/Loadbalancern usw. 
+Von der Konfiguration der Middleware, der Erstellung oder Erweiterung der PKI, der Hinzufügung der Verschlüsselung zu den Audit- und Monitoringsystemen für den Datenverkehr bis hin zur Überwachung der ordnungsgemäßen Einrichtung der gesamten Zertifizierungskette auf den verschiedenen Geräten waren zahlreiche Systeme betroffen.
+
+Auch TLS befindet sich in ständiger Entwicklung und muss regelmäßig geändert werden, wenn Algorithmen veralten, neue Mechanismen hinzukommen usw.
+
+Das letzte Beispiel, das je nach Unternehmensstrategie mehr oder weniger häufig vorkommt, ist die Einführung einer neuen Version eines Betriebssystems und der Migrationszeitraum für Kundenarbeitsplätze mit seinen Anwendungsbewertungen und dem Änderungsmanagement.
+
+Andere Großprojekte sind ebenfalls üblich, wie z. B. die Einführung eines ERP-Systems, aber sie sind eher geschäftsspezifisch und daher von der Kerntätigkeit des Unternehmens abhängig.
+
+=== • ENTWIRRUNG
+
+Das Internet-Protokoll (IP) ist das zugrunde liegende Element der Kommunikationsinfrastruktur, das eine durchgehende Kompatibilität zwischen den verschiedenen Systemen erfordert. 
+Es gibt nicht die eine Analysemethode, um alle Auswirkungen zuverlässig zu erfassen, so dass eine Kombination mehrerer Methoden erforderlich ist.
+
+Der theoretische Ansatz ist nützlich, wenn Elemente einzeln untersucht werden - z. B.: 
+Hat mein Firewall-Anbieter in Bezug auf IPv6 eine Sicherheitsfunktion ordnungsgemäß implementiert? 
+Wird sich meine Middleware mit einem IPv4- und einem IPv6-Socket gleich verhalten?
+
+Auf der anderen Seite ist eine systemische Analysemethode gut geeignet, um einen Gesamtüberblick über das komplexe Geflecht von miteinander verbundenen Geräten zu erhalten, von denen jedes später sein eigenes System und seine eigene Anwendung hat. 
+Diese Methode muss verwendet werden, um einen verdichteten Gesamtüberblick über die Bausteine des IS in den verschiedenen Schichten zu erhalten.
+
+Da es nicht möglich ist, jedes Element des Informationssystems im Detail zu erforschen, ist es manchmal notwendig, sich auf das Wesentliche zu beschränken, vor allem auf die peripheren Elemente des Ökosystems - wie die Überwachung und die Erfassung von Datenprotokollen -, so dass man sich in der Pilotphase effizienter mit ihnen befassen kann und die gleiche Arbeit nicht zweimal machen muss.
+
+Der Versuch, alles auf einmal zu untersuchen, alles zu inventarisieren, führt nur zu Stagnation und ist nicht die richtige Methode.
+
+Wie ein guter Krimi-Autor müssen Sie genau im richtigen Moment Details über Ihre Figuren preisgeben. 
+Es handelt sich um ein langfristiges Projekt, und es ist zwecklos, tief in das gesamte Ökosystem einzutauchen, da es sich wahrscheinlich geändert haben wird, wenn die Pilotumstellungen und Produktionseinsatzu stattfinden.
+
+Apropos Änderungen in den betroffenen Bereichen: 
+Jede dieser Änderungen ist eine Gelegenheit, IPv6 einzuführen. 
+Informieren Sie sich also regelmäßig bei Ihren verschiedenen Abteilungen, um über neue Projekte auf dem Laufenden zu bleiben und diese Gelegenheiten nicht zu verpassen.
+
+//image:images/image00_07_connection.svg[Connections contour,width=75,height=75]
+== Der menschliche Faktor
+
+Sie werden zwangsläufig auf einige Widerstände stoßen, so dass Sie in jedem der beteiligten Teams Unterstützung finden müssen, um voranzukommen. 
+Die kontinuierliche Einbindung der Mitglieder der verschiedenen Teams muss genau zum richtigen Zeitpunkt beginnen. 
+Wenn Sie zu früh damit beginnen, wird die Begeisterung der Mitarbeiter nachlassen und das Projekt an Schwung verlieren; wenn Sie zu spät damit beginnen, wird sich dies auf die Durchlaufzeit des Projekts auswirken. 
+Im Idealfall schafft eine gute Projektplanung die Möglichkeit, die Anzahl der Teilnehmer im Projektteam zu erhöhen, sobald es die Umsetzungsphase beginnt.
+
+Große, abteilungsübergreifende Sitzungen sollten nur der Information dienen, nicht aber dem Brainstorming oder der Diskussion. 
+Andere Vorbesprechungen mit einem oder zwei Vertretern pro Team sind dafür besser geeignet. 
+Spezifische Details, die ein bestimmtes Team betreffen, sollten nur mit diesem Team und möglicherweise mit seinen fachlichen Nachbarn besprochen werden.
+
+All diese Elemente mögen selbstverständlich, wenn nicht gar selbstverständlich erscheinen, aber da an dieser Art von Projekten sehr viele Akteure beteiligt sind, muss eine Hierarchie für den Dialog innerhalb einer großen Struktur geschaffen werden.
+
+Zusammenfassend lässt sich sagen: 
+Bestimmen Sie einen oder zwei Vertreter pro Team und halten Sie sich über künftige Projekte auf dem Laufenden, die Einsatzmöglichkeiten bieten könnten.
+
+Informieren Sie alle Teams in regelmäßigen Abständen auf hohem technischen Niveau über das Projekt, und informieren Sie ein breiteres Publikum auf Informationssitzungen oder in den von Ihnen verschickten Kommunikationsmaterialien über weniger technische Aspekte.
+
+Führen Sie schließlich Einzelgespräche mit den beteiligten Teams, wenn sie sich in der Umsetzungsphase befinden, diesmal in einem größeren Rahmen und entsprechend dem Projektverlauf.
+
+So ist es beispielsweise nicht notwendig, das für die Middleware zuständige Team regelmäßig aufzufordern, sich vorzubereiten, wenn das Netz noch keinen Pilotversuch mit Testservern geplant hat.
+
+=== • FORTBILDUNGEN
+
+Sie müssen Schulungen für Ihre Mitarbeiter einplanen, um sie auf die Einführung von IPv6 vorzubereiten.
+
+Um den Übergang zu begleiten, müssen Sie auf verschiedenen Rollen, Berufe und Fachkenntnisse, die für einen erfolgreiche IPv6-Einführen erforderlich sind, zugeschnittene Schulungen erstellen.
+
+Vor der Ausarbeitung eines Schulungsprogramms wäre es ratsam, die Mitarbeiter zu befragen, welche Schulungen sie benötigen, um ihre Aufgaben mit IPv6 ordnungsgemäß ausführen zu können. 
+Und in manchen Fällen sogar Module zu erstellen, die auf die besonderen Aspekte und Bedürfnisse des Unternehmens zugeschnitten sind.
+
+Zumindest können Sie davon ausgehen, dass Sie die auszubildenden Personen in mehrere Gruppen einteilen müssen:
+
+* Netzwerk
+* Sicherheit
+* App-Entwicklung
+
+Idealerweise sollte das Projektteam alle Module mit einem oder zwei Vertretern jeder Zielgruppe testen.
+
+=== • GEGENSEITIGE HILFE
+
+Zögern Sie nicht, mit Unternehmen und Organisationen ähnlicher Größe, die eine IPv6-Umstellung planen oder durchführen, Kontakt aufzunehmen, um Erfahrungen auszutauschen.
+
+Die IPv6-Taskforce (die gemeinsam von Arcep und der Internet Society France geleitet wird) bietet die Möglichkeit, das Thema mit Gleichgesinnten zu erörtern, was sich auf jeden Fall lohnt. 
+Sie können auch Ihrem lokalen IPv6-Forum beitreten.
+
+Wir zählen darauf, dass Sie uns helfen, diesen Leitfaden zu verbessern und Beispiele für Produkte zu dokumentieren, die in Unternehmen weit verbreitet sind. 
+Siehe den Abschnitt über Feedback am Ende des Leitfadens.
+
+== Notwendigkeit
+
+Wir haben bereits Beispiele für Projekte wie TLS und die Umstellung von Betriebssystemen angeführt. 
+Diese Projekte werden in der Regel durch die Notwendigkeit angetrieben, ein Sicherheitsproblem zu lösen oder ein technisches Gerät zu schützen. 
+Andere Projekte werden durch die Einhaltung gesetzlicher Vorschriften angetrieben, wie z. B. die Sicherstellung der Rückverfolgbarkeit von Benutzeraktionen oder die Umsetzung von DSGVO-Anforderungen in Systemen. 
+Natürlich ist die Kosteneffizienz ein Antrieb für andere Projekte, die entweder durch geschäftliche Erwägungen oder durch die Verbesserung des Dienstleistungsniveaus angetrieben werden, wie z. B. bei Orchestrierungsprojekten.
+
+Es ist schwierig, ein IPv6-Projekt unter eine dieser Motivationen einzuordnen, und noch schwieriger, IPv4 als potenzielle, kurzfristige "technische Schuld" zu bezeichnen, wie es bei einer veralteten Programmiersprache der Fall sein könnte, für die es keine Entwickler mehr gibt.
+
+In diesem Abschnitt werden daher IPv6-Nutzungsfälle untersucht und ihre Relevanz in Abhängigkeit von der jeweiligen Situation dargelegt.
+
+image::images/image01_02_schema.svg[Schema Bedarf an IPv6:,width=566,height=318,title="Wo brauchen Sie IPv6?"]
+
+=== • EXPOSITION IM INTERNET
+
+Den öffentlichen Internetauftritt mit IPv6 zugänglich zu machen, ist wahrscheinlich die größte Priorität, die umgesetzt werden muss.
+
+Dazu gehören Webserver, aber auch DNS, VPN-Gateways...
+
+Die Internetprovider aktivieren nach und nach IPv6 in ihren verschiedenen öffentlichen Netzen. 
+Es begann mit Privatanschlüssen, dann mit Mobilfunkanschlüssen und schließlich mit der gemeinsamen Nutzung von Telefonanschlüssen. D
+ie meisten Smartphones funktionieren jetzt in Mobilfunknetzen nur noch über IPv6, wobei NAT64 die Abwärtskompatibilität zu IPv4 gewährleistet.
+
+Sowohl die Kunden als auch die Mitarbeiter verbinden sich also über IPv6-Verbindungen mit den Infrastrukturen des Unternehmens. 
+Wenn die Internetprovider ihre Einführungsprognosen einhalten, wird wahrscheinlich mehr als die Hälfte der Bevölkerung bis Ende 2023 über eine native IPv6-Verbindung zu Hause und über ihr Mobiltelefon verfügen. 
+In einigen Ländern wird IPv6 bereits für weit mehr als die Hälfte der Kunden angeboten.
+
+Auch wenn IPv4 in absehbarer Zeit nicht verschwinden wird, so ist es doch eine so knappe Ressource geworden, dass sie in immer mehr Fällen von mehreren Teilnehmern unter Verwendung verschiedener Mechanismen geteilt wird. 
+Wenn Sie eine Internetverbindung vertraglich zugesichertem SLA nutzen, ist es wahrscheinlich, dass ein Providergerät die IPv4-Kommunikation die qualitativ beeinträchtigt. 
+Hinzu kommt, dass die Unkenntnis mancher IT-Teams über diese IPv4-Mechanismen die Lösung von Konnektivitäts- und Dienstqualitätsproblemen erschweren kann, während eine IPv6-Verbindung von Ende-zu-Ende ohne Protokolltricks wie NAT44+PAT hergestellt wird.
+
+Wichtig ist zu wissen, dass die Internetprovider dazu übergehen, IPv6 zum Standard auf ihrem öffentlichen Backbone zu machen und IPv4 nur als Dienst bereitzustellen, der mehr und mehr in gekapselter Form übertragen wird.
+
+Wenn Ihr Unternehmen Dienste in Ländern anbietet, die über einen geringeren Bestand an IPv4-Adressen verfügen oder in denen die Gesetzgebung einfach fortschrittlicher ist, kann es notwendig werden, IPv6-fähig zu sein, um mit expandierenden Märkten Schritt zu halten oder um möglicherweise eine künftige gesetzliche Vorschrift zu erfüllen. 
+Einige Länder wie Indien und Frankreich ermutigen ISP, ihren Kunden IPv6 zur Verfügung zu stellen, andere konzentrieren sich auf ihre eigene interne Verwaltung wie die USA und Belgien, China oder Deutschland diese drängen auf eine vollständige Umstellung bis 2025... 
+Seit dem 1. Januar 2021 müssen Betreiber in Frankreich, die 5G-Frequenzen erworben haben, IPv6-Konnektivität anbieten, zumindest als Option.
+
+Neben diesen Aspekten ist ein wichtiger Punkt, dass der IPv6-Transit jetzt realisierbar ist und sich qualitativ der IPv4-Qualität annähert.
+
+Pionieranwender mussten vor Jahren festgestellen, dass IPv6 ein Handicap war. 
+Vor einem Jahrzehnt gab es viel weniger Transitstrecken, daher weniger Redundanz und das war suboptimal. 
+Wie viele der frühen Anleitungen empfahlen zu Recht, IPv6 auszuschalten, um den Zugang zu einer bestimmten Website oder einem öffentlichen Streaming-Dienst zu lösen? 
+Dies galt umso mehr, als es das Happy-Eyeballs-Protokoll noch nicht gab und die Browser IPv6-Fehler nicht innerhalb von Millisekunden retten konnten, wie es heute der Fall ist.
+
+IPv6 ist heute kein "Handicap" mehr, das es einmal war: Ganz im Gegenteil, es ist ein Vorteil dank einer echten Ende-zu-Ende-Verbindung.
+
+Außerdem ist die von Google in Frankreich, Kanada und mehreren anderen Ländern gemessene Latenzzeit heute über IPv6 besser als über IPv4, während 2018 noch das Gegenteil der Fall war. 
+Während IPv6-Peering so gut wie IPv4 wird, läuft IPv4 jetzt oft über Carrier-Grade-NAT (CG-NAT), und zwar fast immer in Mobilfunknetzen.
+Ein kleiner Einflussfaktor für die Verbesserung der Latenzzeit ist die Abschaffung der bei IPv4 erforderlichen Prüfsummenprüfung an jedem Router entlang des IPv6-Pfads sowie die fehlende Fragmentierung durch Router.
+
+[IMPORTANT] 
+====
+*Es ist daher wichtig, daran zu denken, dass IPv4 mehr und mehr in einer nicht nativen Weise über CG-NAT weitergegeben wird, insbesondere im Mobilfunk. 
+Damit kommt ein Single-Point-of-Failure (SPOF) und damit ein weiteres Element hinzu, das die Nutzererfahrung beeinträchtigen kann.
+Die Bereitstellung Ihrer Dienste über IPv6 bedeutet, dass Ihre Kunden nicht mehr von den Übersetzungsinfrastrukturen der Internetprovider abhängig sind.*
+====
+
+image::images/image01_04_google-stats.png[world map stats google,width=493,height=319,title="Statistiken für den Zugang zu Google-Diensten über IPv6 in Frankreich | Oktober 2021"]
+
+[.blue]#Immer mehr Kunden erhalten Zugang zu IPv6-Netzen. 
+In Frankreich und Deutschland wird deutlich mehr als die Hälfte der Anfragen auf Google-Dienste über IPv6 gesendet.#
+
+image::images/image01_05_ripe-waitinglist.png[Grafik der RIPE IPv4-Warteliste,width=412,height=354,title="RIPE-NCC IPv4-Warteliste Januar 2022"]
+
+//==== image:extracted-media/media/image40.svg[extracted-media/media/image40,width=68,height=49]
+
+[.blue]#Die Beschaffung von IPv4-Netzen wird immer schwieriger.#
+
+=== • ZUGRIFF AUF EXTERNE DIENSTE
+
+Unabhängig von der Größe ist Ihr Unternehmen immer auch ein Kunde von Diensten Dritter.
+Hier nimmt die Zahl der IPv6-fähigen Websites und Dienste stetig zu.
+Der Benutzerverkehr wird in Unternehmen in der Regel über einen User-Proxy weitergeleitet, auch um den Datenverkehr zu filtern, zu schützen und Nachverfolgbarkeit sicherzustellen.
+Dieser unternehmensinterne Proxy-Dienst läuft in der Regel nur über IPv4, sowohl intern als auch ins Internet.
+Und das merkt man an der Google-Zugriffsstatistik.
+
+.Prozentualer Anteil des weltweiten Datenverkehrs, der über IPv6 auf Google-Dienste zugreift
+image::images/image01_06_google-v6-services.png[Grafik der Google IPv6-Dienste,width=474,height=240]
+
+Das Verkehrsaufkommen während der weltweiten COVID-Maßnahmen im März/April 2021 war ähnlich wie in der Woche zwischen Weihnachten und Neujahr. 
+Die prozentuale Veränderung liegt weiterhin im oberen Bereich. 
+Und warum? 
+Ganz einfach: Weil Menschen zu Hause häufiger einen Internetzugang mit IPv6 haben.
+
+.Prozentualer Anteil des weltweiten Datenverkehrs, der auf Google-Dienste über IPv6 zugreift, im Detail
+image::images/image01_07_google-detail.png[Detailliertes Diagramm,width=465,height=235]
+
+Dieses Phänomen kann im Laufe einer Woche beobachtet werden: 
+Hier von Ende April bis Anfang Mai 2019. Spitzenwerte treten immer an Wochenenden auf. 
+Am 1. und 8. Mai, die in vielen Ländern arbeitsfreie Tage sind, kann man in den letzten beiden Wochen Hügel beobachten.
+
+Bis zum Sommer 2024 wird die durchschnittliche weltweite IPv6-Verfügbarkeit voraussichtlich über 50 % liegen. 
+Wird Ihr Unternehmen bis dahin Teil dieser Mehrheit sein?
+
+//löschen? [#_Toc85149211 .anchor]####QUIC's arrival
+
+==== QUIC ist angekommen
+
+Lassen Sie uns die Gelegenheit nutzen, um einen entscheidenden Punkt beim Zugang zu Internet-Ressourcen anzusprechen und über die Herrschaft des "Connected Mode" zu sprechen. 
+Mit "connected mode" meinen wir nicht die Sucht nach Hyperkonnektivität, sondern einfach Transport-Control-Protocol (TCP).
+
+TCP hat sich dank seiner Kontrollmechanismen lange Zeit durchgesetzt, während UDP im Allgemeinen auf Echtzeitanwendungen beschränkt ist, bei denen eine erneute Übertragung nutzlos ist, wie z. B. bei Sprachübertragungen oder Online-Spielen. 
+Aber, Verbindungen sind immer zuverlässiger, und die Integritätsprüfungen werden in den höheren Schichten für eine zunehmende Anzahl von Datenprotokollen durchgeführt.
+
+Wenn wir also in den Schichten des OSI-Modells nach oben gehen, finden wir den wahrscheinlich größten Kunden von TCP, HTTP. 
+Während HTTP/1.1 seit 1997 in Stein gemeißelt ist, brachte HTTP/2 20 Jahre später Priorisierung, Parallelisierung, Komprimierung und vorausschauendes Caching. 
+HTTP/3 (RFC 9114) bringt eine Abspaltung mit sich, indem es sich von TCP trennt und sich auf ein neues Transportprotokoll, QUIC, stützt.
+
+QUIC ist ein vollwertiges Transportprotokoll, das zwar in UDP verpackt ist, um den Einsatz zu erleichtern, aber das Beste aus beiden Welten vereinen will, indem es Mechanismen anbietet, die die Anzahl der Client/Server-Aushandlungen erheblich reduzieren, und darüber hinaus eine Symbiose mit TLS bildet, das jetzt direkt eingebettet ist. 
+Es zielt daher darauf ab, sichere, parallelisierbare Verbindungen anzubieten und gleichzeitig die Anzahl der Datenpakte und damit der Latenz zu reduzieren.
+
+Einige Anbieter drängen bereits auf UDP in Unternehmen, insbesondere für Kommunikationslösungen. 
+Diese Anbieter fordern ihre Kunden manchmal sogar auf, die Internet-IPv4-Netze der Konferenzdienste im internen Unternehmensnetz zu routen, um den Inhalt der SIP-Nachricht in den oberen Schichten nicht verändern zu müssen, damit UDP-Unterstützung anzubieten und auf jegliche Zwischenverarbeitung zu verzichten. 
+Wie viele Leute haben während des Lockdowns bemerkt, dass diese Lösungen zu Hause auf ihrem eigenen Schreibtisch oder auf ihrem Geschäftsarbeitsplatz besser funktionieren, wenn sie Split-Tunneling VPN anbieten?
+
+Was ist, wenn diese Cloud-Diensteanbieter morgen QUIC und damit UDP für andere Dienste einsetzen? 
+Was müssen Sie tun?
+
+Und nicht nur HTTP/3 bewegt sich in Richtung QUIC, auch das weit verbreitete Netzwerkfreigabeprotokoll SMB macht diesen Sprung, wobei Microsoft an der Implementierung in Azure Files und Windows Server arbeitet.
+
+Werfen Sie einen Blick auf Ihr Netflow-Monitoring, um zu sehen, wie hoch der kumulative Anteil von HTTP(s) und SMB in Ihrem Netzwerk ist. 
+Ein Hinweis: Er ist höchstwahrscheinlich hoch...
+
+Derzeit empfehlen die Firewall-Anbieter, QUIC zu deaktivieren, bis die Unterstützung ordnungsgemäß implementiert ist. 
+Auch die Geräte, die den Datenverkehr entschlüsseln, müssen angepasst werden, da sie bisher auf das TCP+TLS-Paar abgestimmt sind.
+
+Die Neugestaltung Ihrer Egress-Pfade zum Internet bietet die Möglichkeit, IPv6 einzusetzen, was jegliche Paketverarbeitungsschritte auf Proxys beschränken würde.
+
+NAT+PAT vieler QUIC-Streams ist eine Herausforderung. 
+Wenn der Gerätehersteller Application Layer Gateways einführt, um eine spezifische Verarbeitung auf QUIC-Sitzungen anzuwenden, riskiert er, einen Teil seiner Sicherheit zu gefährden. 
+Der RFC-Entwurf draft-duke-quic-natsupp-01 empfiehlt, dass bei NAT keine Optimierung versucht werden sollte.
+
+Auch diese Probleme werden durch eine IPv6-Sitzung beseitigt. 
+Ist das trivial? 
+Denken Sie an die Probleme, die Sie persönlich in Ihrem Heimnetzwerk mit NAT und UDP für dynamische Anforderungen wie Multiplayer-Spiele, P2P oder VoIP in den ersten Tagen erlebt haben. 
+Eine Lösung ist die Beibehaltung von HTTP/2 über TCP, aber für wie lange? 
+Eine Übergangslösung könnte darin bestehen, QUIC ohne Deep Packet Inspection zunächst nur für vertrauenswürdige SaaS-Angebote zuzulassen. 
+Vergessen wir nicht, dass QUIC noch viele andere Dinge als HTTP übertragen kann.
+
+Beachten Sie, dass diese Elemente auch für den Zugriff auf Ihre Ressourcen durch andere Personen oder durch Ihre externen Mitarbeiter gelten. 
+Daher führt der Weg der so genannten "Zero-Trust"-Lösungen zur Abschaffung von VPNs und einer direkteren Offenlegung von Ressourcen, die sich auch auf QUIC verlagern wird.
+
+Dieses Protokoll wurde gerade in RFC 8999, 9000, 9001 und 9002 ratifiziert.
+
+*Hinweis zum Proxy*: Um von seinen Beiträgen profitieren zu können, muss die Proxyfizierungsschicht sowohl auf der Browser- als auch auf der Proxyseite aufgerüstet werden. 
+Es gibt zwei Modi: einen Tunnelmodus, der effizienteste und der einzige, der den anfänglichen Austausch einer QUIC-Sitzung (mit langem Header) unterstützen kann und einen Vorwärtsmodus, bei dem der Proxy die Rolle des Protokollunterbrechers beibehält, aber erst, wenn die Sitzung aufgebaut ist.
+
+NOTE: Es wird erwartet, dass das QUIC Transportprotokoll eine schnellere Einführungskurve hat als IPv6. 
+Die Anstrengungen, die unternommen werden, um es in seiner Proxy-Kette oder in seinen Web-Frontends zu unterstützen, sind eine Gelegenheit, parallel an der Einführung von IPv6 zu arbeiten.
+
+=== • INTERNES NETZ
+
+Was sind die Beweggründe für den Einsatz von IPv6 im internen Netz?
+
+Wie in den vorangegangenen Abschnitten beschrieben, ist die durchgängige Verarbeitung in Zeiten der zunehmenden Auslagerung von Cloud-Ressourcen eindeutig ein Vorteil. 
+Auch hier werden die Anbieter bestimmter Produkte wahrscheinlich Lösungen fördern, die die Zwischenverarbeitung von Paketen einschränken. 
+Beachten Sie, dass die IPv6-Header-Struktur einige Verzögerungen durch die Entfernung der Prüfsumme, die Verwendung von Feldern fester Größe und die Einbeziehung von Flowlabel zur einfacheren Verfolgung von Flows während der QoS-Verarbeitung bietet.
+
+Für große Strukturen bedeutet IPv6 auch die Beseitigung der Probleme, die durch die geringe Größe der privaten IPv4-Adressierung verursacht werden.
+
+RFC 1918 bietet 17 891 328 IPv4, das sind nur 70 000 Netze in /24. 
+Viele Organisationen haben die Bestandsgrenze bereits erreicht, und zwar aus mehreren Gründen. 
+Zuteilung nach Unternehmen, Verschwendung und Überzuteilung, Nichtabruf von Adressen bei der Stilllegung von Geräten oder Standorten, Wunsch, Routen aus einer Zeit zusammenzufassen, in der Router nur eine kleine Anzahl von Routen unterstützten, Weitergabe an Tochterunternehmen, die weiterverkauft wurden, aber noch über Verbindungen verfügen, usw.
+
+NAT44 kann zwar Verbindungen zu Partnern und neu erworbenen Unternehmen auf komplizierte Weise aufnehmen, doch ist es oft undenkbar, das eigene Unternehmen in sich überschneidende Bereiche aufzuteilen, obwohl auch dies eine Möglichkeit wäre.
+
+Andere nehmen den Weg der "Aneignung von IP-Netzen" und nutzen in ihrem internen Netz IPv4-Netze, die anderen gehören, mit mehr oder weniger Fingerspitzengefühl aus. 
+Es gibt zwei Gruppen:
+
+* Die Vorsichtigen, die doppeltes NAT44 einsetzen und so ein echtes separates Routing am Internetnetübergang schaffen. 
+Der Verkehr wird zweimal genatted und kann leicht dieselbe Quell- und Ziel-IP haben, wobei das NAT ein anderes NAT maskiert, die Verwirrung ist total;
+Diese vorsichtigen Leute sind ratlos, wenn ein Cloud-Anbieter ihnen empfiehlt, die öffentliche IP eines Dienstes in ihrem internen Backbone zu routen. 
+Was, wenn sich diese echte öffentliche IP mit einer gefälschten LAN-IP überschneidet? 
+Zumal ein Anbieter neue IPs mit nur wenigen Wochen Vorlaufzeit einführen kann. 
+Science-Fiction-Szenario? 
+Ganz und gar nicht! 
+Ein perfektes Beispiel ist die Verwendung der Kommunikationslösung TEAMS von Microsoft. Der Hersteller empfiehlt, seine öffentlichen IPs bekannt zu geben, aus Gründen, die weiter oben in diesem Dokument erläutert wurden.
+
+* Die Naiven, die IPs nutzen, die niemals im Internet veröffentlicht werden, wie die des US-Verteidigungsministeriums (DoD):
+6.0.0.0/8 7.0.0.0/8 11.0.0.0/8 21.0.0.0/8 22.0.0.0/8 26.0.0.0/8 28.0.0.0/8 29.0.0.0/8 30.0.0.0/8 33.0.0.0/8 55.0.0.0/8 214.0.0.0/8 215.0.0.0/8
+
+Nun, das ist nur theoretisch so, da Ende 2019 Abschnitt 1088 des Haushaltsentwurfs des Verteidigungsministeriums vorsah, dass diese ungenutzten IPv4-Netze innerhalb von 10 Jahren verkauft werden würden. (Siehe Anhang) 
+Der Gesetzentwurf wurde jedoch vom Senat nicht angenommen. 
+Aber was ist mit der Zukunft?
+
+Sollten diese Adressen zum Verkauf stehen, würden zweifellos einige in den Händen großer Cloud-Anbieter landen.
+
+Sehr kurz nach der Amtseinführung von Joe Biden begann AS 8003, über Hurriccane Electric BGP-Announcements für DoD-IPs zu machen. 
+Offiziell wurde der Washington Post Folgendes dazu berichtet:
+
+[text-align: center]
+Der Digitale Dienst des Verteidigungsministeriums (DDS) hat ein Pilotprojekt zum Announcement von DoD-Internetprotokoll-(IP)-Raum unter Verwendung des Border Gateway Protocol (BGP) genehmigt. 
+Dieser Pilotversuch wird die unbefugte Nutzung des DoD-IP-Adressraums bewerten, evaluieren und verhindern. 
+Darüber hinaus kann dieses Pilotprojekt potenzielle Schwachstellen aufzeigen. 
+Dies ist eine der vielen Bemühungen des DoD, die sich auf die kontinuierliche Verbesserung unserer Cyber-Stellung und -Verteidigung als Reaktion auf fortschrittliche anhaltende Bedrohungen konzentrieren. 
+Wir arbeiten im gesamten DoD zusammen, um sicherzustellen, dass potenzielle Schwachstellen entschärft werden._
+
+Manche sprechen von der Sammlung von Datenverkehr zu Analysezwecken (ein Honeypot), während das DoD den Kampf gegen das Cybersquatting seiner IP-Bereiche hervorhebt. 
+Aber was wäre, wenn es einfach darum ginge, die Umsetzung des obigen "vorsichtigen" Szenarios innerhalb des DoD selbst zu testen? 
+Und zu simulieren, dass der Verkauf und die Werbung für diese zahllosen IPv4-Netze keine Welleneffekte verursachen würden, bevor sie tatsächlich zum Verkauf freigegeben werden?
+
+Im Juni 2021 hat das DoD https://www.tachyondynamics.com/2021/07/07/dod-mandating-ipv6-only[angekündigt], dass alle neuen Dienste, die nach den Meilensteinen eingeführt werden, in IPv6 sein sollen.
+
+Am 7. September 2021 wird die überwiegende Mehrheit der Präfixe auf AS749 umgestellt, das dem Verteidigungsministerium gehört, sich aber von seinem üblichen Präfix AS721 unterscheidet.
+
+Wenn Sie sich dem Ende von RFC 1918 nähern, können Sie die Verwendung des für Carrier NAT44 reservierten Bereichs RFC 6598 100.64/10 als eine Möglichkeit zur gemeinsamen Nutzung von IPv4 zwischen Teilnehmern mit einem Carrier Grade NAT untersuchen. 
+Es wird jedoch empfohlen, diese Adressen nicht an Carrier-Geräte wie MPLS-Router zu vergeben oder sie in Cloud-Infrastrukturen zu verwenden, es sei denn, der Provider hat seine Zustimmung erteilt. 
+Es ist es kein Problem, diesen Bereich z. B. für Campus-Netze zu verwenden. 
+Einige Unternehmen tun dies bereits.
+
+IMPORTANT: *Der Bereich 100.64/10 wird de facto von einigen Overlay-Systemen wie der Zscaler Cloud-Proxy-Lösung zum Aufbau von Tunneln verwendet.*
+
+Wenn Sie eine Spielernatur sind, können Sie schließlich versuchen, die frühere IPv4 Klasse E (240/4) zu verwenden. 
+Diese IPv4 Klasse befindet sich an der hinteren Grenze von IPv4, hinter dem Multicast-Bereich. 
+Sie ist für eine künftige Nutzung reserviert, die nie eintreten wird, und wird von den Anbietern nicht genutzt, die erkannt haben, dass die zur Standardisierung dieses Bereichs erforderliche Arbeit länger dauern würde, um alle eingesetzten Geräte zu erreichen, als die Umstellung auf IPv6. 
+Im wirklichen Leben sollten Sie es nicht ausprobieren, außer im Labor aus reiner Neugier. 
+Google' GCP erlaubt die Verwendung auf VPC, erwähnt aber mögliche Probleme mit dem Betriebssystem: https://cloud.google.com/vpc/docs/vpc#valid-ranges . 
+Sie geben jedoch nicht an, dass Sie möglicherweise nicht einmal in der Lage sind, solche Präfixe auf Ihren BGP-Routern vor Ort zu lernen, obwohl mindestens zwei Anbieter diesen Bereich über einen Befehl unterstützen.
+
+Die Anwendung eines der oben beschriebenen "Schummel"-Szenarien zur Verlängerung der privaten Adressierung oder der kurze Zeithorizont des Erreichens des Endes des RFC 1918-Pools (weniger als ein paar Jahre bei Ihrer Verbrauchsrate) sollte Sie dazu veranlassen, eine IPv6-Einführung ernsthaft in Erwägung zu ziehen.
+
+Denken Sie an die Zeit, die für vergangene und zukünftige NAT44- und Umadressierungsprojekte im Zusammenhang mit der Eingliederung neu erworbener Unternehmen aufgewendet wurde. 
+Haben Sie schon einmal erlebt, dass eine IT-Abteilung beschlossen hat, ihre interne Adressierung mit dem 10.255.0.0/16-Block abwärts zu beginnen, weil ihr Unternehmen eines Tages übernommen werden würde und die neue Muttergesellschaft hoffentlich ihre Adressierung mit 10.0.0.0 begonnen hätte? 
+Schlimmer noch, IP-Adressierungskonflikte während der Strukturintegration verursachen Kosten und Verzögerungen, die oft beträchtlich sind, zusätzlich zu der zusätzlichen Komplexität für den langfristigen Betrieb, falls NAT44 bestehen bleibt.
+
+image::images/image01_03_mobile-conncetion-sharing.svg[Mobile Connection Sharing,width=574,height=328,title="Tethering am Smartphone"]
+
+//#### Ende des Kapitels ####

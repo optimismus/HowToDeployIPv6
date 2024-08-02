@@ -1,26 +1,32 @@
 image::images/image02_01_black-white.jpeg[Black and White,width=876,height=609]
 
-IETF is working with vendors and software editors to deliver mechanisms for handling IPv6 transition. 
+<<<
+
+[big]#*Transition Technologies*#
+
+The Internet Engineering Task Force (IETF) is working with vendors and software editors to deliver mechanisms for handling IPv6 transition. 
 These mechanisms are intended for carriers and/or enterprises.
 
 First, we must divide the mechanisms into 2 usage groups:
 
-* Those allowing to transport a protocol on a transport network of another version. They are typically used to connect IPv6 islands via IPv4 transport networks (or the opposite). There are systems based on encapsulation and others based on translation.
+* Those allowing to transport a protocol on a transport network of another version. They are typically used to connect IPv6 islands via IPv4 transport networks (or the opposite). 
+There are systems based on encapsulation and others based on translation.
 * Those allowing to make IPv4 host communicate with IPv6 host or the opposite. They are necessarily based on translation.
 
 Both are complementary in most usecase.
 
-==== Dual-Stack
+== Dual-Stack
 
 Dual-stack is simply the simultaneous use of IPv4 and IPv6, therefore it constitutes a simple cohabitation.
 
-However, running IPv4 and IPv6 in parallel causes overhead, not only for the network with dual routing configuration aspects or firewall rules. For example, all system deployment processes must run in parallel in v4 and v6. Quality of service monitoring requires each service to be monitored in both IPv4 and IPv6, etc.
+However, running IPv4 and IPv6 in parallel causes overhead, not only for the network with dual routing configuration aspects or firewall rules. 
+For example, all system deployment processes must run in parallel in v4 and v6. Quality of service monitoring requires each service to be monitored in both IPv4 and IPv6, etc.
 
 Dual-stack is therefore rarely viable in the long term in a large organization outside the networks carrying client terminals, thus typically campuses.
 
 During the transition phase, it enables not affecting the IPv4 legacy and therefore not causing any disruption or regression on services.
 
-==== Transport mechanisms
+== Transport mechanisms
 
 In the early days, mechanisms were designed to reach IPv6 islands from other islands, or simply from a workstation.
 
@@ -28,20 +34,24 @@ These methods include ISATAP (RFC 5214), Teredo (Microsoft - RFC 4380), 6over4 (
 
 Most of those based on tunnels use IP protocol 41 and/or UDP encapsulation as would do a VPN.
 
-These mechanisms are useful for structures whose migration of some or all parts of the network is impossible for technical reasons. Carriers have been using them to overcome protocols that do not support IPv6, such as cable operators before DOCSIS 3.1.
+These mechanisms are useful for structures whose migration of some or all parts of the network is impossible for technical reasons. 
+Carriers have been using them to overcome protocols that do not support IPv6, such as cable operators before DOCSIS 3.1.
 
-As with any tunneling technique, the main drawback is the lack of traffic visibility due to its encapsulation. In organizations, filtering requirements and quality of service management make it difficult to use tunnels because of the complexity and the small number of compatible solutions, especially firewalls.
+As with any tunneling technique, the main drawback is the lack of traffic visibility due to its encapsulation. 
+In organizations, filtering requirements and quality of service management make it difficult to use tunnels because of the complexity and the small number of compatible solutions, especially firewalls.
 
 Most of these methods bring security risks to the organization and are carrier-oriented.
 
-Transport networks often exploit a layering of technologies on top of each other, as is the case with MPLS or VxLAN. Deploying dual-stack across all transport layers is rarely relevant. However, it is important to implement it in the highest transport layer, the one visible to the network users, the overlay.
+Transport networks often exploit a layering of technologies on top of each other, as is the case with MPLS or VxLAN. Deploying dual-stack across all transport layers is rarely relevant. 
+However, it is important to implement it in the highest transport layer, the one visible to the network users, the overlay.
 
 //save sign: ◗
-==== INTEGRATION ON AN EXISTING IPV4 UNDERLAY
+=== • INTEGRATION ON AN EXISTING IPV4 UNDERLAY
 
 The existing transport solution often allows isolation of end-to-end customer contexts within the organization, both on the backbone and in the datacenter.
 
-While _VRFs lite_ are still in predominant in campuses, the other environments massively use underlay-based technologies. It is then relatively easy to transit IPv6 in the overlay.
+While _VRFs lite_ are still in predominant in campuses, the other environments massively use underlay-based technologies. 
+It is then relatively easy to transit IPv6 in the overlay.
 
 //[#_Toc88922626 .anchor]####MPLS
 ==== MPLS
@@ -53,7 +63,8 @@ MPLS allows IPv6 to be transmitted via 2 approaches:
 * 6PE (Provider Edge RFC 4798) which provides v6 in the native table (GRT) of the devices, useful only if one provides services via the GRT (like internet access or TV for a customer ISP);
 * 6VPE (RFC 4659), V makes all the difference, here we simply transit VPNv6 alongside VPNv4, it is therefore the equivalent of an L3VPN, the simplest method that meets most use cases.
 
-It is indeed possible to use an IPv6 IGP and LDPv6 to build an IPv6 underlay based MPLS, but there is little benefit to swap outside of an opportunity offered by another large project. And especially that does not provide v6 in the L3VPN of the overlay which is the main topic of giving v6 access to users.
+It is indeed possible to use an IPv6 IGP and LDPv6 to build an IPv6 underlay based MPLS, but there is little benefit to swap outside of an opportunity offered by another large project. 
+And especially that does not provide v6 in the L3VPN of the overlay which is the main topic of giving v6 access to users.
 
 The 6VPE implementation is the way to go, it will be easy to deploy on current devices and will require little configuration.
 
@@ -64,91 +75,121 @@ Note that you can have an IPv6 next hop for IPv4 VPN routes thanks to RFC 8950 i
 //[#_Toc88922627 .anchor]####VXLAN
 ==== VXLAN
 
-Mostly used in conjunction with EVPN, VxLAN solves the pitfalls of older DataCenter L2 _SPB fabrics_ and has become the industry standard. More rarely it is found on backbones that have abandoned MPLS to take advantage of EVPN which was available as a _control plane_ for VxLAN prior to MPLS.
+Mostly used in conjunction with EVPN, VxLAN solves the pitfalls of older DataCenter L2 _SPB fabrics_ and has become the industry standard. 
+More rarely it is found on backbones that have abandoned MPLS to take advantage of EVPN which was available as a _control plane_ for VxLAN prior to MPLS.
 
-Like MPLS, VxLAN encapsulates. The question of IPv6 compatibility therefore arises in the overlay that is intended to provide customer service. Configuration of an IPv6 overlay is mature with the major vendors, still, check for complete multicast’s mechanisms support (PIM snooping, BiDir, etc.)
+Like MPLS, VxLAN encapsulates. 
+The question of IPv6 compatibility therefore arises in the overlay that is intended to provide customer service. 
+Configuration of an IPv6 overlay is mature with the major vendors, still, check for complete multicast’s mechanisms support (PIM snooping, BiDir, etc.)
 
-While the underlay can remain in IPv4, note that the IETF is working on the implementation of RIFT (Routing in Fat Tree), to facilitate the deployment of _CLOS fabrics_ in the vein of zero touch provisioning. Targeting fabrics with iBGP underlay, it plans that loopback addresses and _route reflectors_ should be in IPv6. It is difficult to say if it will be completed before the fabrics migrate to SRv6 (RIFT also provides a mechanism for exchanging Node-SIDs and SRGB global segment routing prefixes in order to facilitate the deployment). See https://datatracker.ietf.org/wg/rift/documents/.
+While the underlay can remain in IPv4, note that the IETF is working on the implementation of RIFT (Routing in Fat Tree), to facilitate the deployment of _CLOS fabrics_ in the vein of zero touch provisioning. 
+Targeting fabrics with iBGP underlay, it plans that loopback addresses and _route reflectors_ should be in IPv6. 
+It is difficult to say if it will be completed before the fabrics migrate to SRv6 (RIFT also provides a mechanism for exchanging Node-SIDs and SRGB global segment routing prefixes in order to facilitate the deployment). 
+See https://datatracker.ietf.org/wg/rift/documents/.
 
 //[#_Toc88922628 .anchor]####SD-WAN
 ==== SD-WAN
 
-SD-WAN products generally work with DPI and flow classification _ingress_ to apply QoS and possibly choose a transit path (internet/MPLS/etc.) Traffic is then often encrypted in an IPSEC tunnel specific to the client context and encapsulated to the destination router (except when an analysis requires its decapsulation on the hub for example).
+SD-WAN products generally work with DPI and flow classification _ingress_ to apply QoS and possibly choose a transit path (internet/MPLS/etc.) 
+Traffic is then often encrypted in an IPSEC tunnel specific to the client context and encapsulated to the destination router (except when an analysis requires its decapsulation on the hub for example).
 
 The underlay is designed to leverage an existing IPv4-based network in order to limit the preparations for the implementation of this type of product.
 
-These products mainly target large networks consisting of small and medium-sized sites with dedicated device line and/or integration with more traditional hardware lines. On the Datacenter concentrator side, we find large chassis, again from dedicated or conventional product lines.
+These products mainly target large networks consisting of small and medium-sized sites with dedicated device line and/or integration with more traditional hardware lines. 
+On the Datacenter concentrator side, we find large chassis, again from dedicated or conventional product lines.
 
 When one wants to use some of the major market's solutions on campuses with more than 2000 users, limits of dedicated products are often reached, although manufacturers are progressing and trying to cover the last percentile of missing usages.
 
-The fact remains that IPv6 is rarely required by customers since these solutions are intended for their internal network. As a result, the compatibility of SD-WAN solutions on the market varies greatly from one vendor to another and among different releases. It is therefore important to follow the vendor's roadmap and test the solution before a v6 deployment, but also at each new major release, as the code can be heavily modified given the speed of evolution of these solutions and the competition.
+The fact remains that IPv6 is rarely required by customers since these solutions are intended for their internal network. 
+As a result, the compatibility of SD-WAN solutions on the market varies greatly from one vendor to another and among different releases. 
+It is therefore important to follow the vendor's roadmap and test the solution before a v6 deployment, but also at each new major release, as the code can be heavily modified given the speed of evolution of these solutions and the competition.
 
-Finally, the Local Breakout aspect of these solutions is another element also gradually integrating IPv6. Often with a whole layer of local security services commonly referred to as "SASE".
+Finally, the Local Breakout aspect of these solutions is another element also gradually integrating IPv6. 
+Often with a whole layer of local security services commonly referred to as "SASE".
 
-==== SPECIFIC ENCAPSULATION
+=== • SPECIFIC ENCAPSULATION
 
 It is not always possible to transit IPv6 on a transport perimeter, and as seen previously, few technical solutions are exploitable on both sides on enterprise hardware series.
 
 This leaves the possibility of tunneling IPv6 traffic. This can be done via well-known solutions such as GRE/mGRE or IPsec (the latter is however less efficient due to the encryption resources required).
 
-Finally, you can configure 6in4 on a large portion of the routers on the market if no other solution mentioned above satisfies you. 6rd is also often available but mainly targets north/south topologies.
+Finally, you can configure 6in4 on a large portion of the routers on the market if no other solution mentioned above satisfies you. 
+6rd is also often available but mainly targets north/south topologies.
 
 We do not recommend looking at 6to4 (non-configurable endpoint), 6over4 (IPv4 multicast based), ISATAP (DNS discovery based) and Teredo (UDP encapsulation) which are now very rarely used.
 
 The availability of a given method on your devices, in conjunction with the integration with your routing, will determine your choice.
 
-==== AND IN THE OPPOSITE WAY?
+=== • AND IN THE OPPOSITE WAY?
 
-As discussed at the beginning of this chapter, there are also transition technologies that enable you to dispense of IPv4 on your backbone. It is then limited to user networks, IPv4aaS
+As discussed at the beginning of this chapter, there are also transition technologies that enable you to dispense of IPv4 on your backbone. 
+It is then limited to user networks, IPv4aaS
 
-Some operators are already moving away from IPv4 on their backbone, to save addresses and even share IPs between subscribers by splitting ports. The so-called Address+Port (AP) approaches have become widespread. First DS-Lite, then _Lightweight 4over6_ (lw4o6) and more recently MAP T/E and 4rd. The last two prevail in today's deployments, thanks to their aggregation capacity, which avoids having to terminate an astronomical number of tunnels and as many routes within the ISP's core..
+Some operators are already moving away from IPv4 on their backbone, to save addresses and even share IPs between subscribers by splitting ports. 
+The so-called Address+Port (AP) approaches have become widespread. 
+First DS-Lite, then _Lightweight 4over6_ (lw4o6) and more recently MAP T/E and 4rd. 
+The last two prevail in today's deployments, thanks to their aggregation capacity, which avoids having to terminate an astronomical number of tunnels and as many routes within the ISP's core..
 
 Those who have not yet transitioned to an IPv6 backbone and lack of available IPv4 addresses do simple NAT44 on a CGN core platform and use the famous 100.64/10 scope of RFC 6598.
 
 Those in IPv6 typically provide IPv4 via one of the following methods:
 
-* 4rd (RFC 7600) which works in the opposite way than 6rd and provides an efficient stateless method. It can work in mesh or hub&spoke mode;
+* 4rd (RFC 7600) which works in the opposite way than 6rd and provides an efficient stateless method. 
+It can work in mesh or hub&spoke mode;
 * MAP (T or E) (RFC 7599), available in translation and encapsulation modes, is also stateless;
 * Older deployments use DS-Lite and Lw4o6.
 
 The first two are quite similar and use common rules on a domain, edge routers (BR), EA bits to define IP sharing level, announcement of mapping rules via DHCP to end devices (CPE).
 
-The implementation of these techniques on the client router side is done in software, they can be found in our home routers. However, it is unlikely to find a device that can handle MAP or 4rd via its ASIC on the client side, as high-end devices only deal with the Border Router aspect.
+The implementation of these techniques on the client router side is done in software, they can be found in our home routers. 
+However, it is unlikely to find a device that can handle MAP or 4rd via its ASIC on the client side, as high-end devices only deal with the Border Router aspect.
 
 Concerning MPLS and VxLAN, it is possible to replace IPv4 by IPv6 on the transport underlay, you should consider it on greenfield deployment and start to think about transtionning your underlay after having checked with your vendor(s).
 
-For the particular situations where the transport cannot transit IPv4, we find the same thing as before. Specific tunnels to connect IPv4 islands together. We can thus implement GRE/mGRE, 4in6. 4rd does not seem to be very present in enterprise routers yet.
+For the particular situations where the transport cannot transit IPv4, we find the same thing as before. 
+Specific tunnels to connect IPv4 islands together. We can thus implement GRE/mGRE, 4in6. 
+4rd does not seem to be very present in enterprise routers yet.
 
-the absence of fragmentation on routers.
+//the absence of fragmentation on routers.
 
 //TO REMIND
 //image:extracted-media/media/image370.svg[extracted-media/media/image370,width=41,height=94]
 
 NOTE: You can often easily transport IPv6 on an IPv4 underlay and might want to wait for a large backbone project, renewal,… to swap your underlay. If you’re working on a greenfield deployment, consider an IPv6 underlay. Moreover, care about designing your topology and addressing plan to be ready for an SRv6 deployment. It will save you time later, if you don’t directly start with it.
 
-==== Translation mechanisms
+== Translation mechanisms
 
 The purpose of translation is to allow exchanges between clients and servers using different versions of IP.
 
-If we stick to the dual-stack logic, we must deploy IPv6 everywhere. But this leads to a lot of duplicate operations and only works if all elements are dual-stack compatible. How to make IPv6 clients talk to IPv4 servers? (or in the opposite direction)
+If we stick to the dual-stack logic, we must deploy IPv6 everywhere. 
+But this leads to a lot of duplicate operations and only works if all elements are dual-stack compatible. 
+How to make IPv6 clients talk to IPv4 servers? (or in the opposite direction)
 
-NAT64 and DNS64 provide a joint solution that is already widely deployed and allows IPv6 clients to contact IPv4 servers. Inversely, SIIT (Stateless IP/ICMP Translation Algorithm) lets IPv4 clients enter an IPv6-only network.
+NAT64 and DNS64 provide a joint solution that is already widely deployed and allows IPv6 clients to contact IPv4 servers. 
+Inversely, SIIT (Stateless IP/ICMP Translation Algorithm) lets IPv4 clients enter an IPv6-only network.
 
-Obviously, since the IPv6 header is longer, it is technically simpler to keep the header information when sending IPv4 clients to an IPv6 server than the opposite. But the direction of deployment is a matter of need, strategy, scheduling and consistency.
+Obviously, since the IPv6 header is longer, it is technically simpler to keep the header information when sending IPv4 clients to an IPv6 server than the opposite. 
+But the direction of deployment is a matter of need, strategy, scheduling and consistency.
 
-==== NAT64 + DNS64
+=== • NAT64 + DNS64
 
-NAT64 (RFC 6146) coupled with DNS64 (RFC 6147) uses the principle of "lying" DNS in concert with a translator to allow IPv6 terminals to access IPv4 resources. IETF publishes a deployment guide (RFC 7269).
+NAT64 (RFC 6146) coupled with DNS64 (RFC 6147) uses the principle of "lying" DNS in concert with a translator to allow IPv6 terminals to access IPv4 resources. 
+IETF publishes a deployment guide (RFC 7269).
 
 When a resource does not have a DNS AAAA record, the DNS server will synthesize one from an IPv6 /96 prefix and the IPv4 /32 address returned in the DNS A record.
 
 The terminal will then initiate a connection to an IPv6.
 
-Somewhere on the network, (we will see locations later), a device advertising the /96 prefix will receive the connection. This NAT64 platform will remove the IPv6/96 prefix from the destination and replace the IPv6 header with an IPv4. In doing so it NATs the packet and picks a source address from its NAT pool (along with a source port for the PAT) and sends the packet. By maintaining a session table it will perform the reverse operation on the returning packet.
+Somewhere on the network, (we will see locations later), a device advertising the /96 prefix will receive the connection. 
+This NAT64 platform will remove the IPv6/96 prefix from the destination and replace the IPv6 header with an IPv4. In doing so it NATs the packet and picks a source address from its NAT pool (along with a source port for the PAT) and sends the packet. 
+By maintaining a session table it will perform the reverse operation on the returning packet.
 
-Note that the endpoint is at no time aware of the trickery. This results in problems on P2P protocols as well as those embedding the address in the payload like SIP, H323, IPSEC AH, SCCP, etc. features can be implemented as ALG on NAT64 platforms to solve the problem, but potentially at the cost of performance degradation.
+Note that the endpoint is at no time aware of the trickery. 
+This results in problems on P2P protocols as well as those embedding the address in the payload like SIP, H323, IPSEC AH, SCCP, NFS older version 4 etc. features can be implemented as ALG on NAT64 platforms to solve the problem, but potentially at the cost of performance degradation.
 
-DNSSEC validation by the host will also be prevented by this scenario. This problem could be solved if the host was aware of NAT64 (which is the case on mobile with APN configuration or when RFC 7050 is used, but the latter is not very useful with desktop OSes since they don't support it yet. There is also a desire to be able to notify hosts via DHCPv6 and PCP of the NAT64 prefix.)
+DNSSEC validation by the host will also be prevented by this scenario. 
+This problem could be solved if the host was aware of NAT64 (which is the case on mobile with APN configuration or when RFC 7050 is used, but the latter is not very useful with desktop OSes since they don't support it yet. 
+There is also a desire to be able to notify hosts via DHCPv6 and PCP of the NAT64 prefix.)
 
 On the application side, NAT64 works as long as it can open IPv6 sockets and that it calls a hostname and not a literal IP.
 
@@ -160,46 +201,61 @@ On a small network a single platform will be sufficient, it will generally use t
 //image:extracted-media/media/image20.svg[Combiné contour,width=75,height=75] marginalspalte ??
 Be aware that if you use an ULA prefix, NAT64 will always be deprioritized in comparison to IPv4.
 
-Don't forget in your project that if 99% of the connections are initiated by client endpoint, there are special cases such as remote control by the support. And of course, P2P telephony. Those will require full IPv6 compatibility.
+Don't forget in your project that if 99% of the connections are initiated by client endpoint, there are special cases such as remote control by the support. 
+And of course, P2P telephony. 
+Those will require full IPv6 compatibility.
 
-On a large network it is preferable to have several platforms, each with its own prefix. A range is reserved for this purpose, although not mandatory: The 64:ff9b:1::/48 (RFC 8215).
+On a large network it is preferable to have several platforms, each with its own prefix. 
+A range is reserved for this purpose, although not mandatory: 
+The 64:ff9b:1::/48 (RFC 8215).
 
 //[#_Toc88922634 .anchor]####Topology
 ==== Topology
 
 The placement of these platforms will vary according to your constraints.
 
-Setting them up directly on the sites will avoid tromboning in the datacenter (round trip). But this will require the use of as many NSP prefixes as you have sites, in addition to adapting the DNS64 configuration each time. Through a DNS proxy configured accordingly on each site. (It can be _Bind9, Unbound_ or other solution.)
+Setting them up directly on the sites will avoid tromboning in the datacenter (round trip). 
+But this will require the use of as many NSP prefixes as you have sites, in addition to adapting the DNS64 configuration each time. 
+Through a DNS proxy configured accordingly on each site. (It can be _Bind9, Unbound_ or other solution.)
 
-It is also possible to use the same prefix on each site as long as they are dead ends and the route advertisements to the backbone filter the NSP. This makes DNS64 configuration easier.
+It is also possible to use the same prefix on each site as long as they are dead ends and the route advertisements to the backbone filter the NSP. 
+This makes DNS64 configuration easier.
 
-Putting NAT64 on the sites involves in any case maintaining an IPv4 transit in backbone. Note that it will be difficult to get rid of this quickly anyway, as sites rarely contain only user stations. Creating NAT sessions on X sites also implies collecting session creation logs on all sites. Finally, it will be necessary to provision numerous NAT IPv4 pools and adapt the filtering ACLs.
+Putting NAT64 on the sites involves in any case maintaining an IPv4 transit in backbone. 
+Note that it will be difficult to get rid of this quickly anyway, as sites rarely contain only user stations. 
+Creating NAT sessions on X sites also implies collecting session creation logs on all sites. 
+Finally, it will be necessary to provision numerous NAT IPv4 pools and adapt the filtering ACLs.
 
 On the other hand, centralizing it makes it easier to implement on all levels, but is not desirable if it generates tromboning on flows that could have remained internal to the sites.
 
-A good trade-off is to have NAT64 gateways on the largest sites, especially those that host services locally and need these services to work even during a WAN outage. For others, centralize it in the datacenter or at the backbone edge.
+A good trade-off is to have NAT64 gateways on the largest sites, especially those that host services locally and need these services to work even during a WAN outage. 
+For others, centralize it in the datacenter or at the backbone edge.
 
-//image:extracted-media/media/image48.svg[extracted-media/media/image48,width=566,height=318] Marginalspalte
+image::images/image02_48_DNS64.svg[extracted-media/media/image48,width=566,height=318,title="Using NAT64"]
 
 //[#_Toc108476610 .anchor]####MTU matters
 ==== MTU matters
 
-IPv6 header is 20 bytes longer than IPv4, meaning that a large IPv4 packet returning to NAT64 platform might be dropped if the platform doesn’t handle fragmentation properly. As fragmentation can occurs only on IPv4 side, before returning translation, you will often need to adjust a specific NAT64 MTU setting that doesn’t change any real interface MTU, but just packets internal handling.
+IPv6 header is 20 bytes longer than IPv4, meaning that a large IPv4 packet returning to NAT64 platform might be dropped if the platform doesn’t handle fragmentation properly. 
+As fragmentation can occurs only on IPv4 side, before returning translation, you will often need to adjust a specific NAT64 MTU setting that doesn’t change any real interface MTU, but just packets internal handling.
 
 Platform might also send back an ICMP reply “Fragmentation Needed” to IPv4 server.
 
-You may have to use the 2^nd^ option for some traffics, and obviously for those who don’t support IPv4 fragmentation, such as TFTP. See RFC 7915.
+You may have to use the 2nd option for some traffics, and obviously for those who don’t support IPv4 fragmentation, such as TFTP. See RFC 7915.
 
-In the opposite direction, you must be sure that PMTU-D send at least a length of 1280 bytes, so always set the IPv4 side interface of your NAT64 with a MTU greater than 1260 (1260 + 20 overhead IPv6 = 1280) Without this, attackers might use your platform to perform unwanted fragmentation. See RFC 7269.
+In the opposite direction, you must be sure that PMTU-D send at least a length of 1280 bytes, so always set the IPv4 side interface of your NAT64 with a MTU greater than 1260 (1260 + 20 overhead IPv6 = 1280) Without this, attackers might use your platform to perform unwanted fragmentation. 
+See RFC 7269.
 
 //[#_Toc108476611 .anchor]####Note about filtering
 ==== Note about filtering
 
-Once NAT64 is crossed, how to filter the flows? If NAT64 is done close to the user, identifying a population is simple, if it is centralized it requires a lot of fine-grained ACLs in one location.
+Once NAT64 is crossed, how to filter the flows? 
+If NAT64 is done close to the user, identifying a population is simple, if it is centralized it requires a lot of fine-grained ACLs in one location.
 
-The solution lies in segmenting IPv4 NAT pools, create matching rules so that machines behind an IPv6 prefix X emerge with a dedicated IPv4 NAT pool Y, and so on. Again, the more segmentation there is, the more complex it will be to enforce on sites.
+The solution lies in segmenting IPv4 NAT pools, create matching rules so that machines behind an IPv6 prefix X emerge with a dedicated IPv4 NAT pool Y, and so on. 
+Again, the more segmentation there is, the more complex it will be to enforce on sites.
 
-==== Which scope and therefore which technology?
+== Which scope and therefore which technology?
 
 Now that you know which technology allows a client to interact with a server that does not speak the same language and how to deal with transport, let's see the relevance of each solution.
 
@@ -207,107 +263,161 @@ An ideal approach is to ask yourself what is the easiest to migrate.
 
 What types of endpoints are present on the network?
 
-==== CAMPUS
+=== • CAMPUS
 
-On the user side, we generally find homogeneous workstations, with an identical ecosystem reproduced per site/geographic zone and other more centralized bricks. This ecosystem includes file storage, authentication directory, messaging and other collaborative tools such as telephony, printing, proxy, workstation management agent, protection agent, and of course business applications. The latter are now almost systematically web applications and therefore often rely on the browser on the client side.
+On the user side, we generally find homogeneous workstations, with an identical ecosystem reproduced per site/geographic zone and other more centralized bricks. 
+This ecosystem includes file storage, authentication directory, messaging and other collaborative tools such as telephony, printing, proxy, workstation management agent, protection agent, and of course business applications. 
+The latter are now almost systematically web applications and therefore often rely on the browser on the client side.
 
-Network equipment also often follows repeated architecture patterns, with 2 to 3 generations coexisting at the organization level. Unfortunately, campus equipment is the one that is most behind when it comes to IPv6 compatibility, especially in terms of security features.
+Network equipment also often follows repeated architecture patterns, with 2 to 3 generations coexisting at the organization level. 
+Unfortunately, campus equipment is the one that is most behind when it comes to IPv6 compatibility, especially in terms of security features.
 
-However, it is difficult not to realize that if this perimeter is wide, it is also relatively homogeneous. This homogeneity is a strength. By deploying IPv6 in dual stack on a site of each type in pilot mode, and by implementing it on the elements of the "office/workplace" ecosystem, it becomes possible to industrialize rollout.
+However, it is difficult not to realize that if this perimeter is wide, it is also relatively homogeneous. 
+This homogeneity is a strength. 
+By deploying IPv6 in dual stack on a site of each type in pilot mode, and by implementing it on the elements of the "office/workplace" ecosystem, it becomes possible to industrialize rollout.
 
 This can occur when replacing site equipment, moving, etc.
 
-Eventually, it is even possible to withdraw IPv4 from the campuses in order to get rid of the dual-stack management. This is the preferred scenario if your organization lacks private IPv4 address space.
+Eventually, it is even possible to withdraw IPv4 from the campuses in order to get rid of the dual-stack management. 
+This is the preferred scenario if your organization lacks private IPv4 address space.
 
 //[#_Toc88922638 .anchor]####NAT64 + DNS64
 ==== NAT64 + DNS64
 
-If this path fits your needs, you will have to study the NAT64 and DNS64 placement. We repeat the elements of the topology section:
+If this path fits your needs, you will have to study the NAT64 and DNS64 placement. 
+We repeat the elements of the topology section:
 
 If your sites do not have any IPv4 compatible services and/or only rely on datacenter or Cloud servers, there is no need to have NAT64 on site, this is typically the case for banking agencies for example.
 
-On the other hand, a large industrial site will often have on-site business servers, so that production does not depend entirely on the WAN's reliability. And some of these systems will only work in IPv4. It is therefore necessary to be able to exchange locally in IPv4.
+On the other hand, a large industrial site will often have on-site business servers, so that production does not depend entirely on the WAN's reliability. 
+And some of these systems will only work in IPv4. 
+It is therefore necessary to be able to exchange locally in IPv4.
 
-If few clients need to run the affected applications and if they are limited to specific networks, it seems appropriate to preserve dual-stack. This can be done physically or logically, using a radius server for example.
+If few clients need to run the affected applications and if they are limited to specific networks, it seems appropriate to preserve dual-stack. 
+This can be done physically or logically, using a radius server for example.
 
 On the other hand, if many workstations need to be able to reach a local IPv4 resource, the implementation of a local NAT64+DNS64 becomes interesting, and is even recommended if you encounter a lack of private IPv4.
 
 //image:extracted-media/media/image20.svg[Combiné contour,width=75,height=75] Marginalspalte ??
 This NAT64 will be deployed in stateful mode (with session tables and port assignment).
 
-Although it is possible to take out IPv4 with NAT64 each time a site is migrated, one component is problematic: telephony. Indeed, while the vast majority of flows are sent to a server, telephony has the particularity of generating direct P2P UDP traffic between 2 users. Unless your equipment manufacturer offers a mechanism to segregate the IPv4 and IPv6 population automatically in order to force translation via a dual-stack media relay server when a call is established between the two domains, you will need to deploy IPv6 on all campuses before starting to remove IPv4 from some of the terminals, including those in remote access (VPN or other).
+Although it is possible to take out IPv4 with NAT64 each time a site is migrated, one component is problematic: telephony. 
+Indeed, while the vast majority of flows are sent to a server, telephony has the particularity of generating direct P2P UDP traffic between 2 users. 
+Unless your equipment manufacturer offers a mechanism to segregate the IPv4 and IPv6 population automatically in order to force translation via a dual-stack media relay server when a call is established between the two domains, you will need to deploy IPv6 on all campuses before starting to remove IPv4 from some of the terminals, including those in remote access (VPN or other).
 
-Don't forget that some services may have to initiate an IPv6 session to a workstation, for example the helpdesk to connect to a workstation and troubleshoot. The helpdesk will therefore also need IPv6 connectivity. And if this helpdesk is outsourced, you will have to review your contracts.
+Don't forget that some services may have to initiate an IPv6 session to a workstation, for example the helpdesk to connect to a workstation and troubleshoot. 
+The helpdesk will therefore also need IPv6 connectivity. 
+And if this helpdesk is outsourced, you will have to review your contracts.
 
 This constraint linked to SIP and RTP traffic forces a global response before IPv4 is cleared.
 
-==== DATACENTER
+=== • DATACENTER
 
-Datacenter resources, whether on premises or Cloud-based, can be very diverse or relatively homogeneous. It all depends on your business and your history.
+Datacenter resources, whether on premises or Cloud-based, can be very diverse or relatively homogeneous. 
+It all depends on your business and your history.
 
-While GAFAM have published IPv6 transition resources, they are rarely practical in a large enterprise. To understand this, you only need to look at services in terms of volume and deployment scale. When you run fifty or so services on hundreds of thousands of servers, you are bound to be industrialized, with an orchestrator that calls for automation. It is then feasible to carry out a pilot migration to IPv6, service by service, and then to generalize. A similar approach to the one mentioned above for campuses, many machines but with a similar configuration. In an arbitrary way, let's say a major actor of the Web has a ratio of 100 000 machines per service, what is the ratio of a company?
+While GAFAM, Google-Amazon-Facebook-Apple-Microsoft, have published IPv6 transition resources, they are rarely practical in a large enterprise. 
+To understand this, you only need to look at services in terms of volume and deployment scale. 
+When you run fifty or so services on hundreds of thousands of servers, you are bound to be industrialized, with an orchestrator that calls for automation. 
+It is then feasible to carry out a pilot migration to IPv6, service by service, and then to generalize. 
+A similar approach to the one mentioned above for campuses, many machines but with a similar configuration. 
+In an arbitrary way, let's say a major actor of the Web has a ratio of 100 000 machines per service, what is the ratio of a company?
 
-List your servers, VMs, containers, and divide by the number of applications your IT has. The result is likely to be between 3 and 10. Not really something to call scalable, though. But don't get discouraged, these servers often run a much more limited number of middlewares, about ten. Their IPv6 compatibility is good, but you still have to check that each application works properly. The "applications" section will help you.
+List your servers, VMs, containers, and divide by the number of applications your IT has. 
+The result is likely to be between 3 and 10. Not really something to call scalable, though. 
+But don't get discouraged, these servers often run a much more limited number of middlewares, about ten. 
+Their IPv6 compatibility is good, but you still have to check that each application works properly. 
+The "applications" section will help you.
 
 // Marginalspalte?? [#_Toc88922640 .anchor]##image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75]
 ==== Dual-stack servers and applications
 
-As explained in the dual-stack section of the transition technologies, keeping everything in double in the long-term leads to various additional costs. It is ideal to provide IPv6 connectivity on your server masters in order to be ready for any scenario on the system side. These aspects are discussed later in the document. Dual-stack remains recommended for critical and heavy load services (DNS, directory, proxy, NAS, etc.)
+As explained in the dual-stack section of the transition technologies, keeping everything in double in the long-term leads to various additional costs. 
+It is ideal to provide IPv6 connectivity on your server masters in order to be ready for any scenario on the system side. 
+These aspects are discussed later in the document. 
+Dual-stack remains recommended for critical and heavy load services (DNS, directory, proxy, NAS, etc.)
 
 //[#_Toc108476617 .anchor]####6/4 translation
 ==== 6/4 translation
 
-Application lifecycles can be as long as 2, 3 years or even more. It's hard to wait that long to offer access to them to clients who don't have native IPv4.
+Application lifecycles can be as long as 2, 3 years or even more. 
+It's hard to wait that long to offer access to them to clients who don't have native IPv4.
 
-If your application is exposed on the Internet, you can just let the NAT64 do its job on the operator's side for the clients who don't have native IPv4 anymore, smartphone in most cases. However, this makes troubleshooting more complex on your side since you don't have the control, and the service is provided with a carrier dependent performance level. If latency or session drops occur, the user will blame you and your reputation will be affected. He has no idea of the intermediate treatment of his carrier.
+If your application is exposed on the Internet, you can just let the NAT64 do its job on the operator's side for the clients who don't have native IPv4 anymore, smartphone in most cases. 
+However, this makes troubleshooting more complex on your side since you don't have the control, and the service is provided with a carrier dependent performance level. 
+If latency or session drops occur, the user will blame you and your reputation will be affected. 
+He has no idea of the intermediate treatment of his carrier.
 
 You have 2 possibilities to expose in IPv6, NAT64 or a reverse proxy.
 
-In order to limit the workload, you can rely on existing device to make things easier. If your presentation server is simply located behind a firewall with no other intermediary, then static NAT64 seems like a good idea. You would then match a NAT IPv6 to each server IPv4 statically, and publish the corresponding AAAA DNS record. You can even match IPv6 prefixes in /120 with IPv4 /24 networks for example, which involves even less rules. The firewall will perform NAT+PAT and track sessions.
+In order to limit the workload, you can rely on existing device to make things easier. 
+If your presentation server is simply located behind a firewall with no other intermediary, then static NAT64 seems like a good idea. 
+You would then match a NAT IPv6 to each server IPv4 statically, and publish the corresponding AAAA DNS record. 
+You can even match IPv6 prefixes in /120 with IPv4 /24 networks for example, which involves even less rules. 
+The firewall will perform NAT+PAT and track sessions.
 
 //image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
 IPv4 servers will need to track the session port in addition to the IP so they can correlate the firewall logs (see RFC 7768).
 
-For less popular servers, classic NAT64 stateful will suffice. Always remember that it requires the implementation of DNS64 on the resolve path and the choice of a Network Specific Prefix in /96 that you will expose on the internet. Same thing for internal network.
+For less popular servers, classic NAT64 stateful will suffice. 
+Always remember that it requires the implementation of DNS64 on the resolve path and the choice of a Network Specific Prefix in /96 that you will expose on the internet. 
+Same thing for internal network.
 
 Hybridization is a good option, static NAT64 with manually created AAAA for each heavily used front-end server, and dynamic NAT64 for everything else.
 
-This NAT64 processing is done at low level, with high performance on recent hardware. On the other hand, it requires synchronization of the session tables to guarantee the high availability of the stateful mode. This mode is not suitable for anycast servers since there is a chance, albeit small, that the client will switch from one NAT64 platform to another during session lifetime. A break would then occur (See SIIT below).
+This NAT64 processing is done at low level, with high performance on recent hardware. 
+On the other hand, it requires synchronization of the session tables to guarantee the high availability of the stateful mode. 
+This mode is not suitable for anycast servers since there is a chance, albeit small, that the client will switch from one NAT64 platform to another during session lifetime. 
+A break would then occur (See SIIT below).
 
 //image:extracted-media/media/image22.svg[Verrou contour,width=75,height=75] Marginalspalte??
 For fine grained traffic needs, for example due to the fact that the IPv4 server to be reached internally is located in a different datacenter than the NAT64 ingress platform, you can use dedicated IPv4 SNAT pools in order to respect fine grained filtering principles (Similar to the ACL issue discussed above).
 
-With an SLB (load balancer) at layer 4, NAT64 is also recommended, but if it works at higher layers (L7 with or without a WAF application firewall, HTTP for example) then the protocol rupture will lead to traffic reconstruction in the other version of the protocol and the question then no longer arises. Nevertheless, it is often useful to copy the client's IPv6 address into an "X-Forwarded-For" HTTP field when the latter is used. This allows the client's visibility to be traced back to the server.
+With an SLB (load balancer) at layer 4, NAT64 is also recommended, but if it works at higher layers (L7 with or without a WAF application firewall, HTTP for example) then the protocol rupture will lead to traffic reconstruction in the other version of the protocol and the question then no longer arises. 
+Nevertheless, it is often useful to copy the client's IPv6 address into an "X-Forwarded-For" HTTP field when the latter is used. 
+This allows the client's visibility to be traced back to the server.
 
 Since the public entrance to the datacenter is usually made up of several of these components, remember to bring IPv6 to at least the devices with fine-grained rules.
 
-Consider the example of Internet traffic passing through an L4 firewall and then a reverse http proxy application firewall (WAF) before reaching the server. We would be tempted to get rid of IPv6 at the network firewall and use NAT64. Consequently, certain detection of reverse proxy rules would no longer work since it would always see only the same pool of SNAT IPs from the network firewall and not the clients' IPs.
+Consider the example of Internet traffic passing through an L4 firewall and then a reverse http proxy application firewall (WAF) before reaching the server. 
+We would be tempted to get rid of IPv6 at the network firewall and use NAT64. 
+Consequently, certain detection of reverse proxy rules would no longer work since it would always see only the same pool of SNAT IPs from the network firewall and not the clients' IPs.
 
-For internal access to an IPv6-incompatible application, NAT64 or reverse proxy methods can also be used. Finally, for an internal application that still does not work with these approaches, it is still possible to use an internal VPN to reach the IPv4 island from an IPv6 station. Moving all the affected customers to a VDI in a datacenter is another viable but expensive alternative.
+For internal access to an IPv6-incompatible application, NAT64 or reverse proxy methods can also be used. 
+Finally, for an internal application that still does not work with these approaches, it is still possible to use an internal VPN to reach the IPv4 island from an IPv6 station. 
+Moving all the affected customers to a VDI in a datacenter is another viable but expensive alternative.
 
 //[#_Toc108476618 .anchor]####Native IPv6 Deployment
 ==== Native IPv6 Deployment
 
 Given the increasing proportion of IPv6 clients, why not consider providing its internet-facing services natively in IPv6 and implement a translation for IPv4 clients?
 
-This is the principle of Stateless IP/ICMP Translation (SIIT), in its original version it is limited to a 1 to 1 two-way translation between IPv4 and IPv6. This obviously requires as much IPv4 as IPv6 on both sides and is therefore only usable on very small and specific perimeters due to the limits it imposes. For example, for some servers between them.
+This is the principle of Stateless IP/ICMP Translation (SIIT), in its original version it is limited to a 1 to 1 two-way translation between IPv4 and IPv6. 
+This obviously requires as much IPv4 as IPv6 on both sides and is therefore only usable on very small and specific perimeters due to the limits it imposes. 
+For example, for some servers between them.
 
 In its DC flavor, SIIT-DC allows for access to IPv6 servers from IPv4 clients, without maintaining a stateful table.
 
-For this purpose, an IPv6/96 prefix will be reserved to map the IPv4 in the last 32 bits. Thus the system can be multiplied without constraint and support anycast and dissymmetry (since it does not rely on stateful). By default the prefix will be in the range 64:ff9b:1::/48 (RFC 8215).
+For this purpose, an IPv6/96 prefix will be reserved to map the IPv4 in the last 32 bits. 
+Thus the system can be multiplied without constraint and support anycast and dissymmetry (since it does not rely on stateful). 
+By default the prefix will be in the range 64:ff9b:1::/48 (RFC 8215).
 
-It is of course possible to use several prefixes, for example to link the mapped packets to the IPv4 internet entry where they landed. Very useful when the internet chain has stateful controls on its side (IPS, etc.)
+It is of course possible to use several prefixes, for example to link the mapped packets to the IPv4 internet entry where they landed. 
+Very useful when the internet chain has stateful controls on its side (IPS, etc.)
 
 One must however always provide as much IPv4 as there are IPv6 servers to expose.
 
-And when there is still a need for IPv4 on a server somewhere deep in DC, it is possible to use SIIT (Dual Translation). IPv4 internet traffic is translated to IPv6, passes through the datacenter, and is then re-translated by a device closer to the server.
+And when there is still a need for IPv4 on a server somewhere deep in DC, it is possible to use SIIT (Dual Translation). 
+IPv4 internet traffic is translated to IPv6, passes through the datacenter, and is then re-translated by a device closer to the server.
 
 Although we are talking about the Internet here, the same topology can be implemented for internal IPv4 clients.
 
 //[#_Toc88922643 .anchor]####Double mono-stack
 ==== Double mono-stack
 
-A rarely employed but viable method on huge clusters is to deploy servers exposing their services only in IPv6 in parallel with other existing IPv4 servers. If this technique does not go in the direction of homogenizing the configuration, it has the advantage of not touching the existing. Thus IPv4 clients in production have no risk of disruption or regression.
+A rarely employed but viable method on huge clusters is to deploy servers exposing their services only in IPv6 in parallel with other existing IPv4 servers. 
+If this technique does not go in the direction of homogenizing the configuration, it has the advantage of not touching the existing. 
+Thus IPv4 clients in production have no risk of disruption or regression.
 
 //[#_Toc108476620 .anchor]####Cloud providers
 ==== Cloud Providers
@@ -321,14 +431,16 @@ For example, most load balancing services are not yet compatible, and when they 
 
 For internet facing services, you may also rely on CDN and other intermediates services which have the ability to expose in dual-stack while the backend is only in one of the IP protocol versions.
 
-==== WAN
+=== • WAN
 
-WAN itself doesn’t directly offer services to users, it’s there to carry traffic across sites. You may come back to transport mechanisms section to see how to transport IPv6 traffic.
+WAN itself doesn’t directly offer services to users, it’s there to carry traffic across sites. 
+You may come back to transport mechanisms section to see how to transport IPv6 traffic.
 
 //[#_Toc108476623 .anchor]####Regional NAT platform
 ==== Regional NAT platform
 
-Depending on the size of your sites, and your typical flowing map, you may consider setting up regional NAT64 platforms on your backbone. Remember this adds a stateful service on it, therefore enforcing the need of symmetrical flows.
+Depending on the size of your sites, and your typical flowing map, you may consider setting up regional NAT64 platforms on your backbone. 
+Remember this adds a stateful service on it, therefore enforcing the need of symmetrical flows.
 
 Such service can also be provided by your usual carrier on your managed MPLS as long as you don’t cipher traffic between sites on your side.
 

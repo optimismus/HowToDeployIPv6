@@ -1,19 +1,24 @@
-image:images/image01_01_suspensionbridge.jpeg[Woods with bridge,width=609,height=910]
+image::images/image01_01_suspensionbridge.jpeg[Woods with bridge,width=609,height=910]
 
-=== Analytical method
+<<<
+
+[big]#*Grasp of the subject*#
 
 While technology is an important part of this subject, it would be a serious mistake to reduce IPv6 to just that, even if the breadth of the subject can make for difficult project management methodology and engineering choices, which may also vary depending on the perimeters set within the organisation.
 
 The current chapter aims to enlighten the reader on a number of methodological choices that can have a direct impact on the success of the project.
 
 // save sign: ◗
-==== SIMILAR PROJECTS
+=== • SIMILAR PROJECTS
 
-The subject may well be vast, but it is far from being the first of its kind. Depending on how old your company is, you may have tackled other projects that carried heavy restrictions which were similar in scope. Drawing on the lessons learned from planning and executing those projects could save you from repeating the same mistakes.
+The subject may well be vast, but it is far from being the first of its kind. 
+Depending on how old your company is, you may have tackled other projects that carried heavy restrictions which were similar in scope. 
+Drawing on the lessons learned from planning and executing those projects could save you from repeating the same mistakes.
 
 The oldest example would be the transition to the year 2000, which in some cases required profound alterations, notably to DBMS (Database Management System), as well as extensive testing for an element that was coded using two-digit values.
 
-More recently, the introduction of TLS certificates – including for purely in-house applications that are not exposed to the internet – required changes to servers and to proxies/load balancers, etc. From middleware configuration, PKI creation or extension, adding encryption to traffic audit and monitoring systems, up to supervising the proper deployment of the entire certification chain on the different nodes, a great many elements were affected.
+More recently, the introduction of TLS certificates – including for purely in-house applications that are not exposed to the internet – required changes to servers and to proxies/load balancers, etc. 
+From middleware configuration, PKI creation or extension, adding encryption to traffic audit and monitoring systems, up to supervising the proper deployment of the entire certification chain on the different nodes, a great many elements were affected.
 
 TLS has also been in a state of constant evolution, and requires regular changes as algorithms become obsolete, new mechanisms are added, etc.
 
@@ -21,28 +26,37 @@ The final example, which may be more or less common depending on a company’s s
 
 Other large-scale projects are also common, such as deploying an ERP system, but are more business-specific and so driven by the organisation’s core activity.
 
-==== UNTANGLING THE YARN
+=== • UNTANGLING THE YARN
 
-The Internet Protocol (IP) is the underlying element in the infrastructure that requires end-to-end compatibility between an information system’s various constituent parts. No single analytical or reasoning method provides an efficient way to cover every impact of the change, so a combination of several will be needed.
+The Internet Protocol (IP) is the underlying element in the infrastructure that requires end-to-end compatibility between an information system’s various constituent parts. 
+No single analytical or reasoning method provides an efficient way to cover every impact of the change, so a combination of several will be needed.
 
-A cartesian approach will be useful when examining elements individually – e.g.: in terms of IPv6, has my firewall supplier properly implemented a security function? Will my middleware behave the same way with an IPv4 and an IPv6 socket?
+A cartesian approach will be useful when examining elements individually – e.g.: 
+in terms of IPv6, has my firewall supplier properly implemented a security function? 
+Will my middleware behave the same way with an IPv4 and an IPv6 socket?
 
-On the flipside, a systemic method of analysis is well suited to getting a big-picture view of this mesh of interconnected equipment, each with its own system and application later. This method must be used to obtain a condensed, overall view of the IS’s building blocks in the different layers.
+On the flipside, a systemic method of analysis is well suited to getting a big-picture view of this mesh of interconnected equipment, each with its own system and application later. 
+This method must be used to obtain a condensed, overall view of the IS’s building blocks in the different layers.
 
 Lastly, and because it is impossible to explore every element of the information system in detail, reductionism will sometimes be needed, notably to address the ecosystem’s peripheral elements – such as supervision and log collection – allowing you to return your attention to them more efficiently during the pilot stage and not have to do the same work twice.
 
 Trying to examine everything all at once, to inventory everything will only lead to stagnation, and is not the right method to use.
 
-Like a good thriller writer, you need to reveal details about your characters at just the right moment. This is a long-haul project, and it is futile to take a deep dive into the entire ecosystem since it will have probably changed by the time pilots and deployments occur.
+Like a good thriller writer, you need to reveal details about your characters at just the right moment. 
+This is a long-haul project, and it is futile to take a deep dive into the entire ecosystem since it will have probably changed by the time pilots and deployments occur.
 
 Speaking of changes in the affected areas, each one is an opportunity to deploy IPv6, so check in regularly with your different departments, to keep up with any new projects, and so not miss out on these opportunities.
 
-//image:images/image00_07_connection.svg[Connections contour,width=75,height=75]
-=== Human factors
+//image:images/image00_07_connection.svg[Connections contour,width=75,height=75] margin ??
+== Human factors
 
-You are bound to come up against some resistance to change, so you will need to find support in each of the teams involved to be able to move forward. The steady involvement of members of the different teams needs to begin at just the right time. Too early and people’s enthusiasm will wane, and the project will lose momentum; too late and it will affect the project’s turnaround time. Ideally, proper planning will create the ability to increase the number of participants in a team once it needs to tackle the matter concretely.
+You are bound to come up against some resistance to change, so you will need to find support in each of the teams involved to be able to move forward. 
+The steady involvement of members of the different teams needs to begin at just the right time. 
+Too early and people’s enthusiasm will wane, and the project will lose momentum; too late and it will affect the project’s turnaround time. 
+Ideally, proper planning will create the ability to increase the number of participants in a team once it needs to tackle the matter concretely.
 
-Large, multi-department meetings should only be held to provide information, and not for brainstorming or debate. Other preliminary meetings with one or two representatives per team will be better suited to that. Specific details that concern a given team should be addressed with just that team, and possibly their neighbours in the ecosystem.
+Large, multi-department meetings should only be held to provide information, and not for brainstorming or debate. 
+Other preliminary meetings with one or two representatives per team will be better suited to that. Specific details that concern a given team should be addressed with just that team, and possibly their neighbours in the ecosystem.
 
 All these elements may seem par for the course, if not obvious, but because this type of project involves a very large number of players, a hierarchy needs to be established for the dialogue taking place within a large structure.
 
@@ -54,13 +68,14 @@ Lastly, hold individual discussions with the teams involved when they are in the
 
 For instance, there is no need to solicit the team in charge of middleware on a regular basis, to ask them to get ready when the network has not yet planned a pilot trial bearing qualification servers.
 
-==== TRAINING
+=== • TRAINING
 
 You will need to plan on training staff to prepare them for the introduction of IPv6.
 
 To shepherd the transition, you will need to draft lesson plans or training courses based on the different roles, occupations and expertise that need to be taken account for a successful transition.
 
-Before drafting a training programme, it would be wise to query staff members on the training they require to be able to perform their jobs properly with IPv6. And even in some cases, to build modules tailored to the company’s particular features and needs.
+Before drafting a training programme, it would be wise to query staff members on the training they require to be able to perform their jobs properly with IPv6. 
+And even in some cases, to build modules tailored to the company’s particular features and needs.
 
 At the very least, you can expect to divide the people requiring training into several different groups:
 
@@ -70,17 +85,21 @@ At the very least, you can expect to divide the people requiring training into s
 
 Ideally, the project team should test out all the modules with one or two representatives of each target audience.
 
-==== MUTUAL SUPPORT
+=== • MUTUAL SUPPORT
 
 Never hesitate to contact similar size companies and organizations that are planning or carrying out an IPv6 transition, to share best practices.
 
 IPv6 taskforce (jointly led by Arcep and Internet Society France) provides an opportunity to discuss the subject with your peers, so well worth taking advantage of. You may also join your local IPv6 forum.
 
-We are counting on you to help us enhance this guide and document examples of products being widely used in enterprises. See the section on feedback at the end of the guide.
+We are counting on you to help us enhance this guide and document examples of products being widely used in enterprises. 
+See the section on feedback at the end of the guide.
 
-=== Needs
+== Needs
 
-Earlier on, we cited examples of projects such as TLS and switching operating systems. These projects are typically driven by a need to solve a security issue or protect a technical device. Other projects are driven by legal compliance imperatives, such as ensuring the traceability of users’ actions or transposing GDPR requirements onto systems. Naturally, cost effectiveness is an impetus for other projects, spurred by either business considerations or to improve the level of service, such as with orchestration projects.
+Earlier on, we cited examples of projects such as TLS and switching operating systems. 
+These projects are typically driven by a need to solve a security issue or protect a technical device. 
+Other projects are driven by legal compliance imperatives, such as ensuring the traceability of users’ actions or transposing GDPR requirements onto systems. 
+Naturally, cost effectiveness is an impetus for other projects, spurred by either business considerations or to improve the level of service, such as with orchestration projects.
 
 It is hard to place an IPv6 project under any of these headings, and even harder to qualify IPv4 as a potential, short-term “technical debt”, as might be the case with an obsolete programming language for which developers are no longuer in activity.
 
@@ -89,52 +108,60 @@ This section will therefore look at IPv6 use cases and lay out their degree of r
 .Where do you need IPv6?
 image::images/image01_02_schema.svg[Schema need of IPv6:,width=566,height=318]
 
-==== EXPOSURE ON THE INTERNET
+=== • EXPOSURE ON THE INTERNET
 
 Making the public face of one’s network accessible in IPv6 is probably the biggest priority to be implemented.
 
 This includes web servers but also DNS, VPN gateways…
 
-Operators are gradually activating IPv6 on their different public networks. It began with residential connections, then mobile and finally telephone connection sharing. Most devices now operate only over IPv6 on some mobile networks, with NAT64 ensuring backwards compatibility.
+Operators are gradually activating IPv6 on their different public networks. 
+It began with residential connections, then mobile and finally telephone connection sharing. 
+Most devices now operate only over IPv6 on some mobile networks, with NAT64 ensuring backwards compatibility.
 
-So, both customers and staff are connecting to the company’s infrastructures over IPv6 connections. If operators meet their deployment forecasts, it is likely that more than half the population will have a native IPv6 connection at home and on their mobile by the end of 2023. In some countries IPv6 is already offered to more than half of customers.
+So, both customers and staff are connecting to the company’s infrastructures over IPv6 connections. 
+If operators meet their deployment forecasts, it is likely that more than half the population will have a native IPv6 connection at home and on their mobile by the end of 2023. 
+In some countries IPv6 is already offered to more than half of customers.
 
-Despite which, if IPv4 will not disappear anytime soon, it has become such a scarce resource that in more and more cases it is being shared by multiple subscribers, using various mechanisms. If, by definition, an internet connection provides no guarantee of service, it is statistically probable that the incursion of an intermediate element in the IPv4 chain will affect its quality of service. Added to which, technical teams’ lack of knowledge of these mechanisms can make solving connectivity and quality of service issues challenging, whereas an IPv6 connection is established end to end with no protocol trickery such as NAT44+PAT.
+Despite which, if IPv4 will not disappear anytime soon, it has become such a scarce resource that in more and more cases it is being shared by multiple subscribers, using various mechanisms. 
+If, by definition, an internet connection provides no guarantee of service, it is statistically probable that the incursion of an intermediate element in the IPv4 chain will affect its quality of service. 
+Added to which, technical teams’ lack of knowledge of these mechanisms can make solving connectivity and quality of service issues challenging, whereas an IPv6 connection is established end to end with no protocol trickery such as NAT44+PAT.
 
 Also worth noting is that operators are starting to switch over to a world where v6 is becoming the standard on their public backbone, and where v4 is becoming a service that is transmitted more and more in an encapsulated fashion.
 
-If your company provides services in countries with a smaller stock of IPv4 addresses, or that are simply more progressive by law, being IPv6 enabled may become necessary to align with expanding markets, or possibly to comply with a future legal requirement. Some countries like India and France encourage ISP to provide IPv6 to customers, other focus on their own internal administration like USA and Belgium, China is pushing for a full transition by 2025… Since 1 January 2021, operators in France that have acquired 5G frequencies must provide IPv6 connectivity, at the very least as an option.
+If your company provides services in countries with a smaller stock of IPv4 addresses, or that are simply more progressive by law, being IPv6 enabled may become necessary to align with expanding markets, or possibly to comply with a future legal requirement. 
+Some countries like India and France encourage ISP to provide IPv6 to customers, other focus on their own internal administration like USA and Belgium, China or Germany is pushing for a full transition by 2025… 
+Since 1 January 2021, operators in France that have acquired 5G frequencies must provide IPv6 connectivity, at the very least as an option.
 
 In addition to these aspects, one important overall point is that IPv6 transit is now viable, and in terms of quality its maturity is nearing that of IPv4.
 
-Pioneer adopters had long observed that IPv6 was a handicap. There were far fewer transit routes a decade ago, hence less redundancy and sub-optimal. How many of the early tutorials recommended, and rightly so, to switch off IPv6 to resolve access to a given site or public streaming service? All the more so since the Happy Eyeballs protocol did not yet exist and browsers could not save the day in a matter of milliseconds, the way they can today.
+Pioneer adopters had long observed that IPv6 was a handicap. 
+There were far fewer transit routes a decade ago, hence less redundancy and sub-optimal. 
+How many of the early tutorials recommended, and rightly so, to switch off IPv6 to resolve access to a given site or public streaming service? 
+All the more so since the Happy Eyeballs protocol did not yet exist and browsers could not save the day in a matter of milliseconds, the way they can today.
 
 IPv6 is no longer the “handicap” that it once was: quite the opposite, thanks to veritable end to end connection.
 
-In addition, the latency measured by Google in France, Canada and several other countries is better over IPv6, whereas the opposite was true in 2018. While IPv6 peering is becoming as good as IPv4, IPv4 now often transits through CG-NAT, and almost systematically so on mobile networks. 
+In addition, the latency measured by Google in France, Canada and several other countries is better over IPv6, whereas the opposite was true in 2018. 
+While IPv6 peering is becoming as good as IPv4, IPv4 now often transits through CG-NAT, and almost systematically so on mobile networks. 
 A more minimal factor in reducing latency is the eradication of the checksum header check at each router along the IPv6 path, as well as the absence of fragmentation on routers.
 
-//Marginalspalte mit Bild + "TO REMIND", Textblock eingerückt ??
-//TO REMIND
-//image:images/image_glass.svg[ex Image 370,width=41,height=94]
-//It's possible to use Unicode glyphs as admonition icons.
-
-IMPORTANT: It is therefore important to remember that IPv4 is being relayed more and more in a non-native fashion via CG-NAT, especially on mobile systems. Which adds an SPOF and a further element that can affect the user experience. 
+IMPORTANT: It is therefore important to remember that IPv4 is being relayed more and more in a non-native fashion via CG-NAT, especially on mobile systems. 
+Which adds an SPOF and a further element that can affect the user experience. 
 Providing a service over IPv6 means no longer having to depend on these operators’ translation infrastructures.
 
 .Statistics for access to Google services over IPv6 in France | October 2021 
 image::images/image01_04_google-stats.png[world map stats google,width=493,height=319]
 
-More and more customers gain access to IPv6 networks, in France, half of Google services requests are sent over IPv6.
+More and more customers gain access to IPv6 networks, in France and Germany more than the half of Google services requests are sent over IPv6.
 
-.RIPE-NCC IPv4 waiting list| January 2022
+.RIPE-NCC IPv4 waiting list January 2022
 image::images/image01_05_ripe-waitinglist.png[Chart of the RIPE IPv4-Waitinglist,width=412,height=354]
 
 //==== image:extracted-media/media/image40.svg[extracted-media/media/image40,width=68,height=49]
 
 Grabing IPv4 space is getting harder every day.
 
-==== ACCESS TO EXTERNAL RESSOURCES
+=== • ACCESS TO EXTERNAL RESSOURCES
 
 Regardless of size, from a protocol standpoint your company is a client of third-party resources. 
 Here too, the number of sites and services that are IPv6-capable is rising steadily. 
@@ -146,12 +173,17 @@ See instead:
 .Percentage of global traffic accessing Google services over IPv6
 image::images/image01_06_google-v6-services.png[Chart of Google IPv6 services,width=474,height=240]
 
-Traffic patterns during the global lockdown in March-April were similar to the ones seen during the week of Christmas to New Year’s. The percentage change remains in the upper bracket. Why? Simply because people connecting to the internet from home more often have access to IPv6.
+Traffic patterns during the global lockdown in March-April were similar to the ones seen during the week of Christmas to New Year’s. 
+The percentage change remains in the upper bracket. 
+Why? 
+Simply because people connecting to the internet from home more often have access to IPv6.
 
 .Percentage of global traffic accessing Google services over IPv6 in detail
 image::images/image01_07_google-detail.png[Detailed chart,width=465,height=235]
 
-This phenomenon can be seen across the course of a week: here, from the end of April to early May 2019. Peaks always occur during weekends. May 1^st^ and 8^th^ which are free days in many countries can be noted with hills within the two last weeks.
+This phenomenon can be seen across the course of a week: 
+here, from the end of April to early May 2019. 
+Peaks always occur during weekends. May 1^st^ and 8^th^ which are free days in many countries can be noted with hills within the two last weeks.
 
 By Summer 2024, the average global IPv6 availability is likely to exceed 50%. Will you be part of the majority by then?
 
@@ -161,83 +193,128 @@ By Summer 2024, the average global IPv6 availability is likely to exceed 50%. Wi
 
 Let's take the opportunity to address a crucial point in internet resources access and talk about the reign of the connected mode. By connected mode we are not talking about hyperconnectivity addiction, but simply about TCP.
 
-TCP has been dominating for a long time thanks to its control mechanisms, and UDP is generally restricted to real time where retransmission is useless such as voice or online gaming. However, connectivity is always more reliable and integrity checks are done in the higher layers for an increasing number of exchanges.
+TCP has been dominating for a long time thanks to its control mechanisms, and UDP is generally restricted to real time where retransmission is useless such as voice or online gaming. 
+However, connectivity is always more reliable and integrity checks are done in the higher layers for an increasing number of exchanges.
 
 Thus, if we go up in the layers of the OSI model, we find probably the biggest client of TCP, HTTP. If HTTP/1.1 has been set in stone since 1997, 20 years later HTTP/2 brought prioritization, parallelization, compression, and predictive caching. HTTP/3 (RFC 9114) brings a schism by separating from TCP to base itself on a new transport protocol, QUIC.
 
-While wrapped in UDP to ease its deployment, QUIC is a full-fledged transport protocol that that seeks to unify the best of both worlds by offering mechanisms that considerably reduce the number of client/server exchanges, in addition on forming a symbiosis with TLS which is now directly embedded. It therefore aims to offer secure, parallelizable connections, while reducing the number of round trips.
+While wrapped in UDP to ease its deployment, QUIC is a full-fledged transport protocol that that seeks to unify the best of both worlds by offering mechanisms that considerably reduce the number of client/server exchanges, in addition on forming a symbiosis with TLS which is now directly embedded. 
+It therefore aims to offer secure, parallelizable connections, while reducing the number of round trips.
 
-Some vendors are already pushing UDP in enterprises, especially for communication solutions. These providers sometimes even ask their customers to announce their public IPv4 from the conference service on their internal backbone so as not to have to alter the content of the SIP message in the upper layers, to offer UDP support and to dispense with any intermediate processing. How many people have noticed during the lockdown that these solutions work better at home on their own desk or on their business workstation when they provide split-tunneling VPN?
+Some vendors are already pushing UDP in enterprises, especially for communication solutions. 
+These providers sometimes even ask their customers to announce their public IPv4 from the conference service on their internal backbone so as not to have to alter the content of the SIP message in the upper layers, to offer UDP support and to dispense with any intermediate processing. 
+How many people have noticed during the lockdown that these solutions work better at home on their own desk or on their business workstation when they provide split-tunneling VPN?
 
-What if tomorrow these Cloud service providers push QUIC and therefore UDP for other services? What to do?
+What if tomorrow these Cloud service providers push QUIC and therefore UDP for other services? 
+What to do?
 
 And HTTP/3 is not the only one moving towards QUIC, the widely used network sharing protocol SMB is making the jump, with Microsoft working on implementing it in Azure Files and Windows Server.
 
 Have a look at your flow monitoring to see what the cumulative proportion of HTTP(s) and SMB on your network is, a hint, it's most probably high...
 
-At the moment, firewall vendors recommend disabling QUIC, until its support is properly implemented. It will also be necessary for the equipment deciphering the traffic to adapt, as they are tuned for the TCP+TLS couple.
+At the moment, firewall vendors recommend disabling QUIC, until its support is properly implemented. 
+It will also be necessary for the equipment deciphering the traffic to adapt, as they are tuned for the TCP+TLS couple.
 
 The redesign of egress paths to the Internet is an opportunity to deploy IPv6, which would limit any packet modification steps to proxies only.
 
-NAT+PAT of many QUIC streams is a challenge, if the device vendor introduces Application Layer Gateways to apply specific processing to QUIC sessions, it risks compromising some of its security. The draft RFC draft-duke-quic-natsupp-01 recommends that no optimization should be attempted on NAT.
+NAT+PAT of many QUIC streams is a challenge, if the device vendor introduces Application Layer Gateways to apply specific processing to QUIC sessions, it risks compromising some of its security. 
+The draft RFC draft-duke-quic-natsupp-01 recommends that no optimization should be attempted on NAT.
 
-Again, an IPv6 session eliminates these issues. Is this trivial? Consider the problems you may have personally experienced on your home network with NAT and UDP for dynamic needs such as multi-player gaming, P2P, or VoIP in their earliest days. One solution is to stay with HTTP/2 over TCP, but for how long? A transitional operation could be to allow QUIC without deep packet inspection only for trusted SaaS offerings at first. And let's not forget that QUIC can carry many other things than http.
+Again, an IPv6 session eliminates these issues. 
+Is this trivial? 
+Consider the problems you may have personally experienced on your home network with NAT and UDP for dynamic needs such as multi-player gaming, P2P, or VoIP in their earliest days. 
+One solution is to stay with HTTP/2 over TCP, but for how long? 
+A transitional operation could be to allow QUIC without deep packet inspection only for trusted SaaS offerings at first. 
+And let's not forget that QUIC can carry many other things than http.
 
-Note that these elements are valid for access to your resources by others as well, or by your remote workers. Therefore, the way of the so-called "zero trust" solutions leads to the removal of VPNs and a more direct exposure of resources, which will also shift to QUIC.
+Note that these elements are valid for access to your resources by others as well, or by your remote workers. 
+Therefore, the way of the so-called "zero trust" solutions leads to the removal of VPNs and a more direct exposure of resources, which will also shift to QUIC.
 
 This protocol has just been ratified in RFC 8999, 9000, 9001 and 9002.
 
-*Note about proxy*: in order to benefit from its contributions, the proxyfication layer must be upgraded, both on the browser and proxy side. 2 modes exist, a tunnel mode, the most efficient and the only one able to support the initial exchange of a QUIC session (with long header). And a forward mode where the proxy keeps a protocol rupture role, but only once the session is established.
+*Note about proxy*: in order to benefit from its contributions, the proxyfication layer must be upgraded, both on the browser and proxy side. 
+2 modes exist, a tunnel mode, the most efficient and the only one able to support the initial exchange of a QUIC session (with long header). 
+And a forward mode where the proxy keeps a protocol rupture role, but only once the session is established.
 
 //TO KEEP IN MIND
 //image:images/image_glass.svg[ex Image 370,width=41,height=94]
 
 NOTE: This transport protocol is expected to have a faster deployment curve than IPv6, the efforts made to support it on its proxy chain or on its web front-ends in the other direction are an opportunity to work on rolling out v6 in parallel.
 
-==== INTERNAL NETWORK
+=== • INTERNAL NETWORK
 
 Beyond the edge of the infrastructure in contact with the Internet, what are the motivations for deployment on the internal network?
 
-Continuing from the previous sections, end-to-end is clearly an advantage in an era of increasing outsourcing of Cloud resources. Again, vendors of certain products will likely encourage solutions that limit intermediate processing on packets. Note that the IPv6 header structure offers some delays savings by removing the checksum, using fixed size fields, and include flowlabel to offer an easier tracking of flows during QoS processing.
+Continuing from the previous sections, end-to-end is clearly an advantage in an era of increasing outsourcing of Cloud resources. 
+Again, vendors of certain products will likely encourage solutions that limit intermediate processing on packets. 
+Note that the IPv6 header structure offers some delays savings by removing the checksum, using fixed size fields, and include flowlabel to offer an easier tracking of flows during QoS processing.
 
 For large structures, IPv6 also means the removal of the problems caused by the small size of IPv4 private addressing.
 
-RFC 1918 offers 17 891 328 IPv4, that is only 70 000 networks in /24. Many organizations have already reached the stock limit, for multiple reasons. Allocation by entity, waste and over-allocation, non-retrieval of addresses when decommissioning devices or sites, desire to aggregate routes dating back to a time when routers only supported a small number of routes, transmission to subsidiaries that have been resold but have remaining links, etc.
+RFC 1918 offers 17 891 328 IPv4, that is only 70 000 networks in /24. 
+Many organizations have already reached the stock limit, for multiple reasons. 
+Allocation by entity, waste and over-allocation, non-retrieval of addresses when decommissioning devices or sites, desire to aggregate routes dating back to a time when routers only supported a small number of routes, transmission to subsidiaries that have been resold but have remaining links, etc.
 
 While NAT44 may uncomfortably accommodate connections to partners and newly acquired entities, it is often unthinkable to split one's business into overlapping scopes; although this is also a possibility.
 
-Others take the appropriation way and exploit on their internal network IPs belonging to others with more or less tact. There are 2 groups:
+Others take the appropriation way and exploit on their internal network IPs belonging to others with more or less tact. 
+There are 2 groups:
 
-* The cautious, who deploy double NAT44 and create a real hatch partitioning routing at the edge of the Internet. Traffic is natted twice and can easily have the same source and destination IP, with the NAT masquerading another NAT, the screen is total;
-These cautious people find themselves at a loss when a Cloud provider recommends that they advertise the public IP of a service on their internal backbone. What if this real public IP overlaps with a spoofed LAN IP? Especially since a provider can introduce new IPs with only a few weeks’ notice. SF scenario? Not at all! A perfect example is the use of Microsoft's communication solution, TEAMS. The editor recommends announcing their public IPs, for reasons explained earlier in this document.
+* The cautious, who deploy double NAT44 and create a real hatch partitioning routing at the edge of the Internet. 
+Traffic is natted twice and can easily have the same source and destination IP, with the NAT masquerading another NAT, the screen is total;
+These cautious people find themselves at a loss when a Cloud provider recommends that they advertise the public IP of a service on their internal backbone. 
+What if this real public IP overlaps with a spoofed LAN IP? 
+Especially since a provider can introduce new IPs with only a few weeks’ notice. 
+SF scenario? 
+Not at all! 
+A perfect example is the use of Microsoft's communication solution, TEAMS. 
+The editor recommends announcing their public IPs, for reasons explained earlier in this document.
 
 * The confident ones, which leverage IPs that will never be advertised on the Internet like those of the US Department of Defense (DoD):
 6.0.0.0/8 7.0.0.0/8 11.0.0.0/8 21.0.0.0/8 22.0.0.0/8 26.0.0.0/8 28.0.0.0/8 29.0.0.0/8 30.0.0.0/8 33.0.0.0/8 55.0.0.0/8 214.0.0.0/8 215.0.0.0/8
 
-Well, that's purely theoretical, as the end of 2019 Section 1088 of the DoD budget bill projected that these ranges would be sold within 10 years. (See appendix) However, the bill did not pass the Senate. But what about the future?
+Well, that's purely theoretical, as the end of 2019 Section 1088 of the DoD budget bill projected that these ranges would be sold within 10 years. (See appendix) 
+However, the bill did not pass the Senate. 
+But what about the future?
 
 Should these addresses end up for sale, no doubt some would end up in the hands of major Cloud providers.
 
-Very shortly after Joe Biden's investiture, AS 8003 began advertising DoD IPs via Hurriccane Electric. Officially, the following was reported to the Washington Post:
+Very shortly after Joe Biden's investiture, AS 8003 began advertising DoD IPs via Hurriccane Electric. 
+Officially, the following was reported to the Washington Post:
 
 [text-align: center]
-_Defense Digital Service (DDS) authorized a pilot effort advertising DoD Internet Protocol (IP) space using Border Gateway Protocol (BGP). This pilot will assess, evaluate and prevent unauthorized use of DoD IP address space. Additionally, this pilot may identify potential vulnerabilities. This is one of DoD’s many efforts focused on continually improving our cyber posture and defense in response to advanced persistent threats. We are partnering throughout DoD to ensure potential vulnerabilities are mitigated._
+_Defense Digital Service (DDS) authorized a pilot effort advertising DoD Internet Protocol (IP) space using Border Gateway Protocol (BGP). 
+This pilot will assess, evaluate and prevent unauthorized use of DoD IP address space. 
+Additionally, this pilot may identify potential vulnerabilities. 
+This is one of DoD’s many efforts focused on continually improving our cyber posture and defense in response to advanced persistent threats. 
+We are partnering throughout DoD to ensure potential vulnerabilities are mitigated._
 
-Some people talk about traffic gathering for analysis (a honey pot), while the DoD highlights the fight against cybersquatting of its IP ranges. But what if it was simply a matter of testing the implementation of the "prudent" scenario above within the DoD itself? And to simulate that the sale and advertisement of these countless IPs would not cause any ripple effects before actually releasing them for sale?
+Some people talk about traffic gathering for analysis (a honey pot), while the DoD highlights the fight against cybersquatting of its IP ranges. 
+But what if it was simply a matter of testing the implementation of the "prudent" scenario above within the DoD itself? 
+And to simulate that the sale and advertisement of these countless IPs would not cause any ripple effects before actually releasing them for sale?
 
 In juin 2021, the DoD https://www.tachyondynamics.com/2021/07/07/dod-mandating-ipv6-only[announced] that all new services deployed after milestones dates should be in IPv6.
 
 On september 7th 2021, the vaste majority of prefixes migrated to AS749, owned by the DoD, but different from its usual preduction AS (721).
 
-If you are getting close to the end of RFC 1918, you can investigate the use of the RFC 6598 100.64/10 range reserved for carrier NAT44 as a way to share IPv4 between subscribers with a Carrier Grade NAT. However, it is recommended not to assign these addresses to carrier devices such as MPLS routers or to use them on Cloud infrastructures, except after receiving the provider's approval. On the other hand, there is no problem to use this range for user campuses, for example. Some companies are already doing it.
+If you are getting close to the end of RFC 1918, you can investigate the use of the RFC 6598 100.64/10 range reserved for carrier NAT44 as a way to share IPv4 between subscribers with a Carrier Grade NAT. 
+However, it is recommended not to assign these addresses to carrier devices such as MPLS routers or to use them on Cloud infrastructures, except after receiving the provider's approval. 
+On the other hand, there is no problem to use this range for user campuses, for example. Some companies are already doing it.
 
 Beware, the 100.64/10 range is de facto used by some overlay systems such as the Zscaler Cloud proxy solution to build its tunnels.
 
-Lastly, if you are a gambler, you can try to use the former class E (240/4). This class is located at the frontiers of IPv4, after the multicast section. Reserved for a future use that will never come and unusable by vendors who recognize that the work needed to standardize this range would take longer to reach all the deployed fleets than to migrate to IPv6. In real life, don't try it, except in the lab out of pure curiosity. Google’ GCP allows to use it on VPC but mention possible OS problems: https://cloud.google.com/vpc/docs/vpc#valid-ranges . Nevertheless they don’t specify you might even be unable to learn such prefixes on your on premises BGP routers, although at least 2 vendors support this space via a command.
+Lastly, if you are a gambler, you can try to use the former class E (240/4). 
+This class is located at the frontiers of IPv4, after the multicast section. 
+Reserved for a future use that will never come and unusable by vendors who recognize that the work needed to standardize this range would take longer to reach all the deployed fleets than to migrate to IPv6. 
+In real life, don't try it, except in the lab out of pure curiosity. 
+Google’ GCP allows to use it on VPC but mention possible OS problems: https://cloud.google.com/vpc/docs/vpc#valid-ranges . 
+Nevertheless they don’t specify you might even be unable to learn such prefixes on your on premises BGP routers, although at least 2 vendors support this space via a command.
 
 The use of one of the "cheat" scenarios described above to extend private addressing or the short horizon of reaching the end of the RFC 1918 pool appearing to be near (less than a few years at your consumption rate) should prompt you to give serious consideration to an IPv6 deployment.
 
-Remember the time spent on past and future NAT44 and re-addressing projects related to the incorporation of newly acquired entities. Have you ever seen an IT department decide that they would start their internal addressing with the 10.255.0.0/16 block in the downstream direction because their company would be acquired one day and hopefully the new parent entity would have started their addressing with 10.0.0.0? More seriously, IP addressing conflicts during structure integration generate costs and delays that are often significant, in addition to added complexity for long-term operation in the event that NAT44 remains in place.
+Remember the time spent on past and future NAT44 and re-addressing projects related to the incorporation of newly acquired entities. 
+Have you ever seen an IT department decide that they would start their internal addressing with the 10.255.0.0/16 block in the downstream direction because their company would be acquired one day and hopefully the new parent entity would have started their addressing with 10.0.0.0? 
+More seriously, IP addressing conflicts during structure integration generate costs and delays that are often significant, in addition to added complexity for long-term operation in the event that NAT44 remains in place.
 
 .Mobile Connection Sharing
 image::images/image01_03_mobile-conncetion-sharing.svg[Mobile Connection Sharing,width=574,height=328]

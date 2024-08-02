@@ -1,8 +1,12 @@
 image::images/image06_01_tartan.jpeg[Tartan,width=609,height=729,align="center"]
 
+<<<
+
+[big]#*Appendix*#    
+
 The appendix contains technical supplements and specific information related to domestic use.
 
-=== URL AND LINK-LOCAL IP
+=== • URL AND LINK-LOCAL IP
 
 The link-local address, in the FE80::/10 range, has the particularity of incorporating an interface identifier. 
 This identifier uses the name or number of the interface depending on the system.
@@ -11,20 +15,18 @@ Linux adds the name of the interface, for example %eth0, macOS similarly with %e
 
 Windows on the other hand adds the interface number, %1 and so on.
 
-.netsh interface ipv6 show address
-image::images/image06_02_netsh.png[netsh,width=513,height=174]
+image::images/image06_02_netsh.png[netsh,width=513,height=174,title="netsh interface ipv6 show address"]
 
-Under Windows, the netsh interface ipv6 show address command displays all assignated IPv6. 
-In powershell _Get-NetAdapter_ and _Get-NetIPAddress_ also display information.
+[.blue]#Under Windows, the `netsh interface ipv6 show address` command displays all assignated IPv6. 
+In powershell `Get-NetAdapter` and `Get-NetIPAddress` also display information.#
 
-.Get-NetIPv6Protocol
-image::images/image06_03_powershell.png[powershell,width=279,height=311]
+image::images/image06_03_powershell.png[powershell,width=279,height=311,title="Get-NetIPv6Protocol"]
 
-The powershell Get-NetIPv6Protocol command returns global host IPv6 configuration.
+[.blue]#The powershell `Get-NetIPv6Protocol` command returns global host IPv6 configuration.#
 
 For development purposes, or simply for personal use, URLs are commonly formed with IP.
 
-In IPv6, an http URL will be for example in the form http://[AAAA:BBBB::H]:8080
+In IPv6, an http URL will be for example in the form http://[2001:db8:AAAA:BBBB::H]:8080
 
 It is currently impossible to use link-local addresses within a URL under a popular web browser. 
 RFC 6874 forces the use of the % character before the interface identifier in a URL (%2, %eth0, etc.)
@@ -39,7 +41,7 @@ And Chromium https://bugs.chromium.org/p/chromium/issues/detail?id=70762
 
 remember, make sure that a strictly local application (such as an industrial control interface) never needs a user to connect to it via the local link address in a browser.
 
-=== MULTI-PREFIXES
+=== • MULTI-PREFIXES
 
 IPv6 allows multiple prefixes to be used simultaneously on a network, but while the mechanism works very well at a low level on the network and hosts, it does raise some issues.
 
@@ -55,18 +57,18 @@ For intermediate size networks, it is a choice to be opposed to the combination 
 The later being stateless and easy to configure.
 
 [NOTE]
-====
+=== •=
 A mechanism was designed to allow a client and a server to exchange their different addresses via a header extension and to switch in case of failure without affecting the upper layer and therefore without timeout. 
 This was Shim6. They could even authenticate themselves via addresses generated with cryptographic mechanisms (CGA). 
 In practice, Shim6 has been dropped, so we remain in the realm of timeout + establishment of a new session in case of loss of a path, or taken into account by a upper layer protocol. 
 As far as the OSI model is involved, it should be noted that IP was never supposed to provide this type of mechanism anyway, it is the role of TCP and now QUIC.
-====
+=== •=
 
-=== CONTAINERS
+=== • CONTAINERS
 
 //[#_Toc88922583 .anchor]##image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] Marignalspalte ??
 
-==== Docker
+=== •= Docker
 
 Docker operates by default a bridge, a Docker0 interface and attaches ports to NAT44 rules pointing to published container ports. Additional bridges can be created to isolate containers from each other.
 
@@ -88,10 +90,11 @@ He also points out that the absence of NAT leaves all ports accessible in IPv6, 
 
 For large deployments, we recommend the IPvlan L3 mode.
 
-Do we really need IPv6 in Docker? As indicated in the document, it is interesting to provide IPv6 support on the frontend (for example SLB containers such as traefik, hap, envoy, caddy, etc.). Beyond that the backend can stay in IPv4.
+Do we really need IPv6 in Docker? As indicated in the document, it is interesting to provide IPv6 support on the frontend (for example SLB containers such as traefik, hap, envoy, caddy, etc.). 
+Beyond that the backend can stay in IPv4.
 
 //[#_Toc88922584 .anchor]####Kubernetes
-==== Kubernetes
+=== •= Kubernetes
 
 Kubernetes exposes by default one IP per Pod (grouping of containers on a host). 
 The host is named node. 
@@ -115,7 +118,7 @@ Remember that unless you are running Headless Services, load balancing will alwa
 
 For outgoing traffic to the Internet, the use of public IPv6 addresses avoids the need for proxying or NAT.
 
-=== SCADA
+=== • SCADA
 
 A SCADA network is for recall a closed network, often found in industrial world. The point of migrating to IPv6 is relatively limited here. 
 The compatibility of industrial solutions with the protocol will take time to reach full maturity. 
@@ -126,12 +129,12 @@ But failing that you can always operate in IPv4 addressing overlay/overlap with 
 This leaves the overlap treatment to be managed only on the interface elements between the general Information System and the SCADA Information System, elements which are also, for security reasons, rather few.
 
 //=== image:extracted-media/media/image30.svg[Smartphone contour,width=75,height=75]◗ Marginalspalte
-=== NAT64 ON MOBILE CARRIERS NETWORKS
+=== • NAT64 ON MOBILE CARRIERS NETWORKS
 
 Let's see what is involved when setting up NAT64 between smartphones and the Internet.
 
 //[#_Toc88922587 .anchor]####Service discovery
-==== Service discovery
+=== •= Service discovery
 
 The NAT64 section of the document explains its implementation with workstations. 
 Some methods are used to supply hosts with the NAT64 prefix, mainly on mobile platforms. 
@@ -158,7 +161,7 @@ PC OSes unfortunately do not support any of these methods on their LAN interface
 Leaving DNS64 in the enterprise for a long time to come.
 
 //[#_Toc108476738 .anchor]####Operation on mobile OSes
-==== Operation on mobile OSes
+=== •= Operation on mobile OSes
 
 To ensure compatibility with the literal use of IPv4 addresses as well as support for DNSsec signatures, etc., mobile OSes need to be able to use IPv4.
 
@@ -177,7 +180,7 @@ Thus, no IPv4 packet is ever really created.
 This way is more efficient from an energetical point of view.
 
 //[#_Toc88922589 .anchor]####Connection sharing
-==== Connection sharing
+=== •= Connection sharing
 
 Also known as hotspot or tethering, sharing involves providing dual-stack WiFi to hosts that are unaware that only IPv6 is supplied to the router, in this instance a smartphone.
 
@@ -188,10 +191,12 @@ Instead of performing a stateful NAT44 followed by a NAT46, it will create a sta
 Thus no need for a state table and no port change on the phone side. 
 The traffic will then undergo the stateful NAT64 of the carrier to switch back to IPv4 on the internet.
 
-Remember, the IPv6 header being longer, the first gateway may have to fragment traffic. So don't be surprised if uploading a file is slowed down by CLAT. ARM SoCs currently available on the market offer hardware support for all 464 XLAT operations to avoid such problems.
+Remember, the IPv6 header being longer, the first gateway may have to fragment traffic. 
+So don't be surprised if uploading a file is slowed down by CLAT. 
+ARM SoCs currently available on the market offer hardware support for all 464 XLAT operations to avoid such problems.
 
 //=== image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75]◗ IPV4 PORT SHARING Mariginalspalte
-=== IPV4 PORT SHARING
+=== • IPv4 PORT SHARING
 
 The Address + Port techniques are briefly covered in the section on transition mechanisms. (4rd and MAP-T/E for the most recent ones). 
 Hosts behind a home router using such a mechanism are not aware that only part of the 65,535 ports is assigned to their WAN.
@@ -204,12 +209,11 @@ RFC 6269 discusses the problems associated with sharing, including the one menti
 
 An ISP should not share IPs between more than 16 customers.
 
-.MAP A+P port sharing simulation
-image::images/image06_04_mapap.png[MAP A+P,width=546,height=90]
+image::images/image06_04_mapap.png[MAP A+P,width=546,height=90,title="MAP A+P port sharing simulation"]
 
 In this example, IPv4 are shared between 4 customers http://map46.cisco.com/MAP.php
 
-=== RFC DRAFTS TO SAVE IPV4
+=== • RFC DRAFTS TO SAVE IPv4
 
 Some people are striving to extend the life of IPv4 by finding ways to increase its addressing capabilities.
 
@@ -229,12 +233,12 @@ On a different front, the EzIP proposal is in its ninth iteration, if you like N
 
 https://datatracker.ietf.org/doc/html/draft-chen-ati-adaptive-ipv4-address-space-09
 
-=== EXAMPLES OF IPV6 IMPLEMENTATION PROBLEMS
+=== • EXAMPLES OF IPV6 IMPLEMENTATION PROBLEMS
 
 Here are some examples of implementation bugs encountered when using IPv6.
 
 //[#_Toc85149062 .anchor]####Non-decommissioning of routes
-==== Non-decommissioning of routes
+=== •= Non-decommissioning of routes
 
 With IPv4, you either have connectivity or you don't. 
 As soon as you switch to dual-stack, how can you be sure of the availability of IPv6 connectivity? 
@@ -258,10 +262,10 @@ We can only recommend to carriers to lower the expiration times to a value below
 People who want to play with IPv6 multihoming will quickly encounter similar failover problems.
 
 //[#_Toc85149063 .anchor]####Unexpected use of IPv4 prefix representation
-==== Unexpected use of IPv4 prefix representation
+=== •= Unexpected use of IPv4 prefix representation
 
-In order to simplify your information system, you have decided to use only the IPv6 notation in your CMDB. S
-o you use the prefix ::ffff:0:0/96 to indicate an IPv4 in your configuration scripts, etc.
+In order to simplify your information system, you have decided to use only the IPv6 notation in your CMDB. 
+So you use the prefix ::ffff:0:0/96 to indicate an IPv4 in your configuration scripts, etc.
 
 Strangely, your script creates an ACL rule/policy, but then is unable to find it in its check and ends its execution on a failure. 
 However, the concerned flow works.
@@ -272,21 +276,20 @@ This kind of behaviour have existed on some F5 products for example: https://cdn
 
 Practical, but to be considered in automations.
 
-.We can encounter this automatic conversion in common tools, such as Windows ping
-image::images/image06_05_ping.png[ping,width=477,height=76]
+image::images/image06_05_ping.png[ping,width=477,height=76,title="We can encounter this automatic conversion in common tools, such as Windows ping"]
 
 //[#_Toc85149064 .anchor]####Incompatible input fields
-==== Incompatible input fields
+=== •= Incompatible input fields
 
 When entering an IPv6, the field checks are sometimes inadequate. 
 One can find the following glitches in graphical environments and, more rarely, in a command line environment.
 
 A completely incompatible field will reject an address that is not in IPv4 form, but subtleties can get through the checks. 
 For example, sometimes the [ ] used to separate the address from the port is not taken into account. 
-//maybe examples with 2001:db:AAAA....
-Thus the entry of [A123:8BBB::2D5E]:8443 may be transformed by the software into A123:8BBB::2D5E:8443 .
+.
+Thus the entry of [2001:db8::2D5E]:8443 may be transformed by the software into 2001:db8::2D5E:8443 .
 
-=== WASTE OF ADDRESSING SPACE
+=== • WASTE OF ADDRESSING SPACE
 
 Yes, there are plenty of IPv6 addresses! 
 Internet is full of wise calculations to explain us that 2E128 is equal to 3,4 * 10E38 addresses, that is to say 667 sextillions by m² of terrestrial surface. 
@@ -305,7 +308,7 @@ The Indian post with its 160,000 post offices is therefore quiet...
 Well, unless someone decides that the guest WiFi and the smart building IoT project each need their respective /48 per site, because security/policy/delegation/internal organization (strike out the irrelevant) requires it. 
 This will make you chuckle, but look back at IPv4, this kind of reasoning is far too widespread.
 
-=== USE OF ADDRESS UNICITY FOR OTHER PURPOSES
+=== • USE OF ADDRESS UNICITY FOR OTHER PURPOSES
 
 The huge number of possible addresses has given engineers ideas for how to manipulate them based on the precise identification of the user and/or the resource to be accessed.
 
@@ -326,7 +329,7 @@ These /64 could as well be handled by Load Balancers.
 
 For systems with regular change of address it implies to reassemble a session each time, but after all, it would never be more than a new use of the 0-RTT of QUIC for example.
 
-=== SRv6
+=== • SRv6
 
 Segment Routing is spreading rapidly among carriers and GAFAMs. 
 Currently SR-MPLS leads the deployments, but forecasts show that its counterpart based on a simple IPV6 data-plane will take over within a few semesters.
@@ -349,11 +352,11 @@ In the same way, we will probably witness full SRv6 processing on servers, inclu
 Manufacturers are currently pushing companies to make the transition towards SR-MPLS, only to come back later with SRv6. 
 However, we may soon start to assist to direct SRv6 transition on corporate network and not longer only on carrier’s networks.
 
-=== THREAD
+=== • THREAD
 
-.Logo of Thread
-image::images/image06_06_thread-logo.png[Logo of Thread,width=125,height=23] 
-is a IoT oriented network protocol pushed by the Thread Group https://www.threadgroup.org/ .
+Thread is a IoT oriented network protocol pushed by the Thread Group https://www.threadgroup.org/ .
+
+image::images/image06_06_thread-logo.png[Logo of Thread,width=125,height=23,title="Thread logo"] 
 
 Its purpose is to provide a mesh communication network between home automation devices based on 6LoWPAN. 
 It exploits IPv6 with notions of scope, router nodes and children. 
@@ -361,7 +364,7 @@ Check the OpenThread open source project page https://openthread.io/guides/threa
 
 The smart home connectivity standard *Matter* is built with it.
 
-=== SELF-HOSTING AND RESIDENTIAL USE
+=== • SELF-HOSTING AND RESIDENTIAL USE
 
 The experience of implementing IPv6 on a simple home network allows to easily understand some of the differences compared to IPv4. 
 In particular, we will see here the exposure of services to the outside world.
@@ -369,7 +372,7 @@ In particular, we will see here the exposure of services to the outside world.
 Although these examples can be used in a small structure, we remind you that it is essential to have a real filtering and analysis layer at the entrance of the Internet on a production system, even small.
 
 //[#_Toc85149302 .anchor]####Addressing and DNS publication
-==== Addressing and DNS publication
+=== •= Addressing and DNS publication
 
 Most of the time, consumer carriers only provide a /64 without the possibility of using the other prefixes assigned to the router (often in a /56).
 
@@ -391,7 +394,7 @@ There are several methods to trace the IP/ AAAA DNS record pair directly on a ma
 It is also possible to rely on a router and its NDP information, but then we leave the simple use of the carrier device.
 
 //[#_Toc108476752 .anchor]####Flow opening
-===== Flow openinng
+=== •== Flow openinng
 
 The provisioning of a firewall in IPv6 is unevenly treated by operators. 
 Some have implemented it very late in All or Nothing mode, others offer a granularity similar to what we find in IPv4.
@@ -400,8 +403,7 @@ Some have implemented it very late in All or Nothing mode, others offer a granul
 Let's take the example of an Orange ISP LiveBox 4. 
 In IPv4 the opening is done in the network section.
 
-.IPv4 Orange ISP LiveBox 4 (French)
-image::images/image06_07_orange-router.png[Webinterface organge ISP router,width=520,height=380]
+image::images/image06_07_orange-router.png[Webinterface organge ISP router,width=520,height=380,title="IPv4 Orange ISP LiveBox 4 (France)"]
 
 In IPv4 we are used to have different ports between internal and external, which avoids having to change the ports on the servers, but prevents publishing several machines on the same external port (unless you go through an intermediate reverse proxy)
 
@@ -409,16 +411,14 @@ In IPv6 the situation is the exact opposite, each machine has its IP and therefo
 
 At Orange ISP the configuration is in the firewall section.
 
-.IPv6 Orange ISP LiveBox 4 (French)
-image::images/image06_08_orangeIPv6.png[Webinterface IPv6width=483,height=230]
+image::images/image06_08_orangeIPv6.png[Webinterface IPv6width=483,height=230,title="IPv6 Orange ISP LiveBox 4 (France)"]
 
 //[#_Toc85149304 .anchor]####Reachability test
-==== Reachability test
+=== •= Reachability test
 
 The test can be conducted via an online port scanner such as http://www.ipv6scanner.com/
 
-.Port scan result
-image::images/image06_09_ipscan.png[Port scan result,width=566,height=90]
+image::images/image06_09_ipscan.png[Port scan result,width=566,height=90,title="Port scan result"]
 
 Here everything is in line, otherwise remember that Happy-Eyeballs V2 will switch the connection back to IPv4 in the absence of a v6 response.
 
@@ -426,26 +426,24 @@ Some providers don't offer fine firewalls, this is the case of Iliad Free which 
 Free has only offered an IPv6 firewall since 2020 and it is very light. 
 Many customers are asking for the implementation of a real firewall on the bugtracker https://dev.freebox.fr/bugs/index.php?string=ipv6&project=9&type%5B%5D=&sev%5B%5D=&pri%5B%5D=&due%5B%5D=&reported%5B%5D=&cat%5B%5D=&status%5B%5D=open&opened=&dev=&closed=&duedatefrom=&duedateto=&changedfrom=&changedto=&openedfrom=&openedto=&closedfrom=&closedto=&do=index
 
-=== HOST-INITIATED AUTO OPENING
+=== • HOST-INITIATED AUTO OPENING
 
 Discussed earlier in the document, PCP V2 allows a port to be opened by the router on request by an application. 
 Generally for P2P uses.
 
-.Wireshark PCP v2 IPv6
-image::images/image06_10_PCP.png[Wireshark,width=542,height=272]
+image::images/image06_10_PCP.png[Wireshark,width=542,height=272,title="Wireshark PCP v2 IPv6"]
 
 Example of Wireshark capture of PCP V2 with the filter "udp.port eq 5351". 
 We notice opening requests both in IPv4 and IPv6.
 
-.Wireshark PCP v2 IPv4
-image::images/image06_11_wirehark.png[Wireshark,width=548,height=226]
+image::images/image06_11_wirehark.png[Wireshark,width=548,height=226,title="Wireshark PCP v2 IPv4"]
 
 Observe that the IPv4 version of the request has its internal IP written as an IPv6 represented IPv4, and that the WAN address is set to 0.0.0.0 since it is the router's IPv4 WAN anyway (again in the same form with ::ffff: )
 
 This is a world away from the heavy XML of UPnP-IGD requiring the exchange of many packets.
 
 //image:extracted-media/media/image32.svg[Conception web contour,width=75,height=75]◗ Marginalspalte ??
-===  EVOLUTION OF ONLINE GAMING
+=== •  EVOLUTION OF ONLINE GAMING
 
 Currently, the gaming industry does not integrate IPv6 into its communications between players and servers. 
 The impact of IPv4 CG-NAT and other IPv4aaS mechanisms could be avoided with an effort from the studios.
@@ -454,7 +452,7 @@ Games where the party is managed by a dedicated server should switch their serve
 
 For P2P games where one of the players hosts the game, it would be good to include in the host election algorithms a weighted element based on the availability of the dual-stack if for example at least 40% of the players in the game have active IPv6.
 
-=== WHAT TO EXPECT FROM CONSUMER CARRIERS?
+=== • WHAT TO EXPECT FROM CONSUMER CARRIERS?
 
 Regulators bodies should ask carriers to implement the following mechanisms in addition to IPv6 on fixed connections (xDSL, FTTh, fixed 4/5G, Low Orbit SAT,etc.):
 

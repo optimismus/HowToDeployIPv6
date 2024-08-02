@@ -1,0 +1,1231 @@
+image::images/image05_01_arrows.jpeg[Pfeile,width=609,height=812,align="center"]
+
+<<<
+
+[big]#*Sicherheit und Best Practises*#
+
+Mit der Einführung der neuen Version des IP-Protokolls kommt die Anforderung, Sicherheitsregeln auf verschiedenen Ebenen zu implementieren.
+Viele dieser Regeln entsprechen den Best Practises von IPv4, andere sind spezifisch für IPv6.
+
+Es ist besonders wichtig, dass Sie die IPv4-Sicherheitsmechanismen und die IPv6-Funktionen beherrschen, insbesondere die Varianten der Adresszuweisung und die Verwendung des des Neighbor Discovery Protocol (RFC 4861), bevor Sie mit diesem Abschnitt beginnen.
+
+Um Ihnen die Zuordnung der Regelumsetzung auf Ihren Geräten zu erleichtern, sind sie in folgende Bereiche unterteilt:
+
+* TRANSIT für jedes L3-Gerät (Router, FW usw.);
+* ACCESS befasst sich mit der letzten Meile, den Geräten der Host-Träger und ihren Besonderheiten. Er befasst sich speziell mit NDP und der Interaktion mit der OSI-Schicht 2 (MAC);
+* HOST bezieht sich auf Endgeräte, hauptsächlich Computer und Server;
+* FILTERING für Firewalls.
+
+== Access
+
+//image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75]◗ marginal??
+
+=== • DYNAMISCHE ADRESSZUWEISUNG
+
+Zur Verfolgung von Endgeräten innerhalb einer Organisation wird DHCPv6 stateful wegen seiner Fähigkeit gegenüber der automatischen Adresszuweisung auf der Grundlage von SLAAC bevorzugt.
+Server können statische Adressierung verwenden. Einige Geräte, vor allem Android-Geräte, unterstützen DHCPv6 nicht, was manchmal zu Ausnahmen führen muss, siehe dazu das entsprechende Kapitel.
+
+Zunächst sei daran erinnert, dass die Verwendung von Router Advertisements (RA) erforderlich ist, auch bei DHCPv6 stateful.
+Dieses RA liefert zumindest die Link-Local-Gateway-Adresse und die Zeitgeber.
+Nur eine vollständige und nicht empfohlene manuelle IPv6-Konfiguration erlaubt es, auf RA zu verzichten.
+
+//[#_Toc88922526 .anchor]####Mechanisms
+==== Mechanismen
+
+Mehrere Bits werden verwendet, um Hosts anzuzeigen, wie sie sich verhalten sollen:
+
+* A - "Autonomous Address Autoconfiguration" sagt dem Host, dass er sich selbst konfigurieren soll (SLAAC RFC 4862);
+* M - "Managed Address Config" gibt auf der Gegenseite an, DHCPv6 stateful (RFC 3315) zu verwenden, um seine Adresse zu beziehen;
+* O - "Other Config" gibt an, dass andere Optionen außer der IPv6-Adresse von einem zustandslosen DHCPv6 (RFC 3736) geholt werden können, diese Optionen können DNS-Server, NTP, Domänensuffix, usw. beinhalten;
+* L - "On-Link" zeigt an, dass das RA und der Präfix sich auf demselben L2-Link befinden. 
+Dieses Bit wird auf 0 zurückgesetzt, wenn die Ankündigung einen Router überquert, um Störeffekte einer falsch konfigurierten L2-Erweiterung oder ungewolltes Relaying zu vermeiden. 
+Im Gegensatz zu IPv4 geht ein IPv6-Host nicht davon aus, dass ein Host, der sich im gleichen Präfix wie er befindet, direkt in L2 erreicht werden kann (außer bei link-lokalen Adressen). 
+Siehe RFC 5942.
+
+Beachten Sie, dass die Bits A und L innerhalb des Präfixes gesendet werden, nicht im RA-Bereich.
+
+[width="100%",cols="19%,9%,10%,12%,31%,19%",options="header",]
+|===
+|Methode    a|Bit A+
+            Auto
+                        a|Bit M +
+                            Managed
+
+                                    a|Bit O +
+                                        Other
+                                                |Resultierende Adressen             |Optionen
+|SLAAC      |1          |0          |0          a|-temporary SLAAC (kurzlebig) +
+                                                    -Link-Lokal
+
+                                                                                    a|RDNSS +
+                                                                                        RFC 6106
+|Stateless DHCPv6 |1    |0          |1          a|-temporary SLAAC (kurzlebig) +
+                                                    -Link-Lokal
+                                                                                    |DHCPv6
+|Stateful DHCPv6 |0     |1          |Redundant mit M a|-DHCPv6 +
+                                                        -Link-Lokal
+                                                                                    |DHCPv6
+a|DHCPv6 Stateful + SLAAC +
+(Wahl des Host-Betriebssystems)
+
+            |1          |1          |Redundant mit M a|-OS Wahl +
+                                                        -Link-Lokal
+                                                                                    |DHCPv6 oder RDNSS je nach Betriebssystem
+|===
+
+Die dritte Methode (Stateful DHCPv6) ist dank ihrer Fähigkeit zur Gerätenachverfolgung ideal für Unternehmen.
+
+Vergewissern Sie sich, dass Sie nicht versehentlich den letzten Fall nutzen, in dem die Dinge zufällig sind.
+
+Wenn ein System einer RA mit auf 1 gesetzten A- und M-Bits präsentiert wird, konfigurieren die meisten Betriebssysteme beide und verwenden nur eine der Methoden für ausgehende Verbindungen (hauptsächlich SLAAC temporäre Adresse + Privacy Extensions) oder lassen RFC 7608 entscheiden, indem sie die längste übereinstimmende Adresse des Hosts mit dem Ziel vergleichen.
+Nur verwenden, wenn Sie Adresslotterie mögen.
+Dies ist ein übliches Verhalten von Heimroutern.
+RFC 4862 erwähnt in seinem Abschnitt 5.6, dass die zuletzt erhaltenen Informationen verwendet werden sollten.
+
+Es ist möglich, einem Client über DHCP mehrere Adressen in verschiedenen Präfixen zur Verfügung zu stellen; dieser Fall wird hier nicht behandelt.
+
+Interessanter Punkt: Wenn Sie jemals eine Infrastruktur mit dem zweiten Fall (zustandsloses DHCP) einrichten, dann müssen Ihre Server keine Leases synchronisieren, sondern nur die Konfiguration der Optionen für jedes Präfix.
+
+Beachten Sie, dass einige Betriebssysteme wie Windows eine DHCP-Anfrage senden, auch wenn das RA angibt, SLAAC zu verwenden.
+
+//[#_Toc88922527 .anchor]##image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
+==== DHCP Identifizierung
+
+DHCPv6 verlässt sich nicht auf die MAC-Adresse wie bei IPv6, sondern der Host gibt eine Kennung namens DUID an. Dieser Bezeichner wird später im Abschnitt "Hosts" des Sicherheitskapitels näher erläutert.
+
+DHCPv6 bietet Optionen, die in IPv4 als Unteroptionen 82 existieren, und führt einige neue ein.
+
+* Herstellerklasse (Option 16) ermöglicht es dem Client-Gerät, seinen Hersteller, sein Modell, seine Version usw. zu senden;
+* Vendor Specific (Option 17) für proprietäre Optionen;
+* Interface-ID (Option 18), die es ermöglicht, den Namen einer Schnittstelle und das VLAN zu identifizieren. (Circuit-ID in DHCPv4);
+* Remote-ID (Option 37) RFC 4649, mit der der physische Port, die einem VPN zugewiesene Benutzer-ID und insbesondere die MAC abgerufen werden können;
+* Subscriber-ID (Option 38) wird eher von Internetprovidern für andere Identifikationsinformationen verwendet.
+
+Missverständlich werden diese Optionen auch bei DHCPv6 oft als Option 82 bezeichnet, während es bei DHCPv4 die Option 82 ist.
+
+Es ist möglich, die MAC des Clients in der Option Remote-ID bei Zugangsgeräten (Switches, AP usw.) anzugeben. Dies ist wichtig, da so die MAC-Adresse der Hosts erfasst werden kann.
+
+Weitere Empfehlungen in Bezug auf DHCPv6 zur Erleichterung der Identifizierung von Endgeräten finden Sie im Abschnitt "Hosts".
+
+=== • ICMP REDIRECT BLOCKING
+
+Das _Neighbor Dicovery Protocol_ umfasst fünf Nachrichtentypen:
+
+* _Router Solicitation_ und _Advertisement_;
+* _Neighbor Solicitation_ und _Advertisement_;
+* _Redirect_.
+
+Mit diesem neuesten Nachrichtentyp kann das Gateway angeben, dass ein anderer Router verwendet wird, um ein bestimmtes Ziel zu erreichen, und dass der Host seine Routing-Tabelle entsprechend aktualisieren sollte.
+
+ICMP-Redirect (Typ 137) sollte blockiert werden, da es einem Angreifer ermöglichen könnte, den Verkehr umzuleiten.
+Diese Option sollte nur verwendet werden, wenn ein Netzwerksegment zwei Router hat, die unterschiedliche Ressourcen erreichen; ein sehr seltener Fall.
+
+=== • IPv6 SNOOPING
+
+Erinnern wir uns zunächst kurz an den Zweck der beiden häufigsten Nachrichtentypen im NDP.
+
+Die Nachrichten "Neighbor Solicitation" (135) und "Advertisement" (136) werden verwendet, um die Verbindung mit Schicht 2 innerhalb eines Netzwerksegments herzustellen, wobei in der Regel die MAC-Adresse eines Hosts auf der Grundlage seiner IP-Adresse abgefragt und beantwortet wird. 
+Wie ARP in IPv4.
+
+Die Abfrage erfolgt im Multicast-Modus, im Unicast-Modus kann auch geprüft werden, ob ein Host noch erreichbar ist, wobei in diesem Fall angegeben wird, wer gefragt wird (Zieladresse).
+
+Wenn diese Adresse nicht angegeben ist (::/128), handelt es sich um eine DAD-Nachricht (Duplicate Address Detection)
+
+Die Antwort auf eine Neighbor Solicitation hat ein "Override"-O-Bit, das standardmäßig auf 1 gesetzt ist, um anzugeben, dass ein vorhandener Eintrag in einem ND-Cache überschrieben werden soll.
+Der RFC gibt an, dass das Setzen des Bits auf 0 für Proxified-Antworten auf Aufforderungen oder für Anycast-Dienstadressen gedacht ist.
+
+Praktisch ergeben sich die folgenden zwei Beispiele:
+
+* Ein ND-Proxy (ARP-Proxy-Äquivalent) überschreibt mit seiner Antwort nicht eine direkte Antwort, die der betroffene Host direkt hätte senden sollen.
+* Zwei Server mit der gleichen Anycast-Adresse in einem Segment werden nicht versuchen, die sie betreffenden Einträge zu überschreiben.
+
+Das S-Bit "Solicited" gibt an, dass die Antwort für eine Unicast-Anfrage mit Zieladresse, d. h. eine Erreichbarkeitsanfrage, bestimmt ist.
+
+Das Bit R "Router" schließlich zeigt an, dass der Host ein Router ist.
+Wenn es auf 0 gesetzt ist, wird die Erkennung der Unerreichbarkeit des Nachbarn zu dem Schluss kommen, dass der Host nicht mehr in der Lage ist, ein Routing durchzuführen.
+Es wird dann eine Router-Solicitation eingeleitet und auf einen anderen verfügbaren Router umgeschaltet (basierend auf Prioritäten, falls mehrere vorhanden sind).
+
+Bevor wir überhaupt über Router Solicitation und Advertisement sprechen, werden Sie bereits bemerkt haben, was ein Angreifer mit den NDP-Nachbarschaftsinformationen anstellen kann.
+Es wird daher dringend empfohlen, zumindest in der Infrastruktur der Zugangsebene auf dem Campus/Benutzerseite geeignete Antispoofing-Mechanismen zu implementieren.
+
+[NOTE]
+====
+NDP erzeugt Multicast-Gruppen, die Solicited-Node Multicast genannt werden. Jeder Host erstellt eine Multicast-Gruppe für jede zugewiesene Adresse, die ein standardisiertes Präfix FF02:0:0:0:1:FF00::/104 und die letzten 24 Bits der Adresse enthält.
+Diese Multicast-Adressen werden für DAD verwendet, aber auch, um einen MAC/IP-Abgleich durchzuführen, ohne alle zu stören, wie es beim ARP-Broadcast in IPv4 der Fall ist.
+
+Der erste Kontakt zwischen zwei IPv6-Knoten im selben Netz ist daher immer ein Multicast.
+====
+
+//[#_Toc108476675 .anchor]####
+==== ND-Fragmentierung
+
+RA-Nachrichten können groß sein, wenn sie viele Präfixe enthalten und daher eine Fragmentierung erfordern. In RFC 6980 heißt es, dass es dann besser ist, mehrere Nachrichten zu senden, anstatt das Paket zu fragmentieren.
+Es gibt nur wenige Gründ, so viele Präfixe und Optionen in einer RA zu haben, das 1280 Byte Größe erreicht werden, dem IPv6-Minimum.
+
+Daher sollten NDP-Protokollfragmente blockiert werden.
+
+//[#_Toc88922531 .anchor]####Binding
+==== Zuordnung
+
+Die Sicherheitsmechanismen beruhen Switch-intern auf dem Aufbau einer Tabelle mit Beziehungen zwischen IP, MAC und physischem Standort, in der Regel dem Switch-Port.
+
+Der einfachste Weg ist die Nutzung von DHCPv6-Snooping, das die von DHCPv6 zurückgegebenen IPv6-Zuweisung nutzt, um eine Steuertabelle, die sogenannte Bindingtable, zu erstellen.
+
+ND, DHCPv6 und andere Prüfungen werden nicht immer auf die korrekteste Weise implementiert.
+Einige funktionieren perfekt mit Header-Erweiterungen und sogar Fragmentierung. 
+Andere wiederum funktionieren nur im einfachsten Fall.
+Diese Diskrepanz ist häufig auf die ASIC-Fähigkeiten des Geräts zurückzuführen.
+Bei einigen Produktlinien wird die Funktion in der Control-Plane ausgeführt und ist mit den Hardware-Optimierungsoptionen daher nicht kompatibel.
+
+Auf der Konfigurationsebene können diese Funktionen Teil eines einheitlichen Pakets sein, andernfalls die Summe mehrerer Optionen, die unabhängig voneinander zu aktivieren sind, und manchmal sogar nebeneinander bestehen (all-in-one + separat) und die Aktivierung einer Art die andere aufheben.
+
+Prüfen Sie daher die Dokumentation des Herstellers sorgfältig und testen Sie mit einem Paketfälscher wie https://scapy.net/[scapy].
+
+Jedes Alarm-/Sicherheitsevent im Zusammenhang mit diesem Regelsatz sollte einen Alarm in Ihrem SIEM auslösen.
+
+Denken Sie daran, die Wiederherstellung der Bindingtable so einzurichten, dass sie sofort gefüllt wird, wenn der Switch neu gestartet wird.
+In der Regel ist es möglich, sie regelmäßig zu exportieren und/oder aktive Leases vom DHCP-Server zu holen (wenn Sie sich auf Stateful DHCPv6 verlassen).
+
+Es ist möglich, einen Teil dieser Sicherheitsmerkmale ohne DHCP zu nutzen, allerdings beeinträchtigt der Verlust einer sicheren Lernquelle das Schutzniveau (RFC 6620).
+Heutzutage gibt es Unternehmen, in denen DHCP in Verbindung mit statischen Leases innerhalb des Rechenzentrums verwendet wird, um dieses Sicherheitsniveau auf der Server-Hosting-Zugriffsebene zu gewährleisten. 
+Es ist dann keine manuelle Hostkonfiguration mehr erforderlich.
+
+Ohne DHCP baut das Gerät die Tabelle auf der Grundlage der ausgetauschten DAD-Nachrichten während der automatischen SLAAC-Zuweisung auf.
+
+Beachten Sie, dass bei L3-Fabric-basierten Lösungen das Signalisierungsprotokoll der für den Aufbau der Tabelle erforderlichen Informationen enthält und eine Überprüfung nur für bestimmte Konfigurationen erforderlich ist.
+In einer EVPN+VxLAN-Infrastruktur wird das MAC/IP-Paar beispielsweise bereits über EVPN-Routen des Typs 2 angekündigt.
+
+Aus dieser Tabelle können dann verschiedene Prüfungen abgeleitet werden, hier die wichtigsten:
+
+//[#_Toc108476677 .anchor]####Source
+==== Quelle
+
+Ein Paket mit einer unbekannten, nicht zugewiesenen Quelladresse wird verworfen.
+Der Switch kann versuchen, den DHCP-Server und/oder seinen Nachbarn über NDP zu fragen, ob die Adresse bekannt ist, bevor er den Verkehr verwirft.
+
+Diese Prüfung setzt das Vorhandensein einer Bindingtable voraus, sie führt selbst keine ND-Prüfung durch.
+
+Vergessen Sie nicht, den Verkehr über die lokale Link-Adresse zuzulassen, manchmal über einen zusätzlichen Befehl, und vertrauenswürdige Ports für statische Ressourcen wie manuell adressierte Server.
+
+//[#_Toc88922533 .anchor]####Destination
+==== Zielort
+
+Wenn ein Paket eintrifft, überträgt das Gerät es und führt gegebenenfalls eine ND-Auflösung durch, wenn der Empfänger in der Bindingtable bekannt ist. Andernfalls wird das Paket verworfen.
+
+Dieser Mechanismus ermöglicht es, Datenverkehr an eine missgebildete oder nicht existierende Adresse zu kontern, zum Beispiel für lokale Denial-of-Service-Zwecke.
+
+//[#_Toc88922534 .anchor]####Move
+==== Umzüge
+
+Wenn ein Host zu einem anderen Anschluss wechselt, kann die physische Standortverfolgung eine ND-Solicitation an den Host an der zuvor bekannten Position in der Bindingtable initiieren.
+Erhält er eine Antwort, so ist der Neuankömmling ein Spoofer.
+
+Dadurch wird der Angriff dann unwirksam, wenn der ursprüngliche Host online ist und antworten kann.
+
+//[#_Toc88922535 .anchor]####ND unterdrücken
+==== ND Unterdrückung
+
+Zur Optimierung des Datenverkehrs und zur Begrenzung des Multicast-Verkehrs ist es möglich, das Zugangsgerät anstelle des betreffenden Hosts auf NS Neighbor Solicitation-Anfragen antworten zu lassen.
+Diese Funktion kann zumindest für Multicast-Anfragen, aber auch für Unicast aktiviert werden.
+ND/ARP-Unterdrückung ist eine übliche Funktion bei EVPN/VxLAN-Verbindungen (wo das Lernen anders abläuft), kann aber auch bei einigen Campus-Produkten eingesetzt werden.
+
+Bedenken Sie jedoch, dass eine der Verwendungen von Unicast-Anfragen (die mit der Zieladresse) darin besteht, die Erreichbarkeit eines Hosts zu prüfen.
+Es ist daher nicht sinnvoll, im Namen des Hosts für etwas anderes als Multicast zu antworten, es sei denn, das Gerät unterscheidet zwischen Unicast-Anfragen mit und ohne Zieladresse und handelt nur im letzteren Fall.
+
+Mit anderen Worten, ein Gerät sollte niemals ein Neighbor Advertisement mit auf 1 gesetztem S-Bit anstelle des Hosts senden müssen.
+
+Eine mögliche Ausnahme ist WiFi, wo die Überwachung der Funkverbindung mit der Station durch den Zugangspunkt die Beantwortung anstelle der Station selbst für einen Erreichbarkeitstest zulassen kann.
+Dabei wird einem weniger gesprächigen Medium, dem Funkkanal, Vorrang eingeräumt.
+
+//[#_Toc88922536 .anchor]####Prefix
+==== Präfix
+
+Auf der Grundlage von Informationen aus den folgenden Quellen:
+
+* Router-Ankündigung;
+* DHCP-Präfix-Delegation;
+* Manuelle Konfiguration, falls erforderlich.
+
+Mit der Präfixkontrolle können Sie ein Paket blockieren, dessen routingfähige Quelladresse nicht zu dem im L2-Segment verwendeten Präfix gehört.
+So wird Adress-Spoofing auf der Zugriffsschicht blockiert, noch bevor URPF später z. B. beim Routing verwendet wird.
+
+//[#_Toc88922537 .anchor]####Cache-Vergiftung
+==== Cache-Poisoning
+
+Wie sein Vorgänger ARP Cache Poisoning ist es möglich, den ND-Cache von Hosts zu füllen, was zu einem Überlauf führt.
+Insbesondere bei 2^64 möglichen Adressen in einem Netzwerk hat ein Angreifer viele Möglichkeiten.
+
+Ein gängiger Angriff besteht darin, sich in einem Neighbor Advertisement als Router auszugeben und das R-Bit auf 0 zu setzen, was bedeutet, dass die Route nicht mehr verwendet wird.
+Der Angreifer kann auch einen Man-in-the-Middle-Angriff versuchen, indem er sich als Host oder Router ausgibt.
+
+Die Binding Security verhindert dieses Verhalten, aber es wird dennoch empfohlen, eine Begrenzung der Cache-Größe für Netzwerkgeräte festzulegen.
+Wenn Sie eine granulare Begrenzung berechnen wollen, denken Sie daran, dass es nicht ausreicht, Hosts, sondern Adressen zu zählen.
+Jeder Host hat mindestens 2 und kann mehr haben (SLAAC mit temporären Adressen zum Beispiel).
+Moderne Betriebssysteme verfügen in der Regel über akzeptable Vorgabewerte.
+
+Für weitere Informationen siehe RFC 6583.
+
+=== • DHCP ROGUE
+
+//[#_Toc88922539 .anchor]####Physical
+==== Physisch
+
+Der in RFC 7610 beschriebene DHCP-Shield-Mechanismus umfasst die Definition der physischen Ports, die DHCP-Server-Datenverkehr empfangen dürfen.
+Im Allgemeinen handelt es sich um Uplink-Ports.
+DHCP-Verkehr von nicht definierten Ports wird verworfen.
+
+Das Gerät muss den gesamten Inhalt jeder Nachricht, die vom DHCP-Server kommt, analysieren.
+Auch hier ist je nach ASIC und Implementierung Vorsicht geboten.
+
+Wenn das Gerät diese Funktion nicht unterstützt, ist es immer noch möglich, eine ACL zu verwenden, die den Verkehr mit dem Quellport UDP 547 und dem Zielport UDP 546 blockiert, aber es wird nicht mit einem gefälschten fragmentierten Paket funktionieren.
+
+//[#_Toc88922540 .anchor]####Logical
+==== Logisch
+
+Der ausführliche RFC 8415, der sich mit DHCPv6 befasst, enthält einen Abschnitt über die Sicherung des Datenaustauschs zwischen dem Server und den Clients und/oder Relays.
+
+IPsec kann zur Authentifizierung oder sogar Verschlüsselung des DHCP-Austauschs zwischen Servern und Relays verwendet werden (RFC 8213).
+Die kryptografische Konfiguration kann manuell oder auf der Grundlage einer PKI vorgenommen werden.
+
+Die Verwendung von IPsec kann auch anderen Verwaltungsverkehr wie Syslog, SNMP, NTP, RADIUS usw. schützen.
+
+Achtung, die Unterstützung von IKEv2 mit Pre-Shared Secrets ist in diesem RFC nicht zwingend vorgeschrieben.
+
+Die Verwendung eines einfachen gemeinsamen Schlüssels ermöglicht es einem Angreifer, Pakete wiederzugeben.
+RDM schränkt das Risiko des Wiederholens ein, allerdings nur auf der Client-Seite und nicht zwischen einem Relay und dem Server.
+
+In vielen überholten RFCs wurden andere Authentifizierungsmechanismen vorgeschlagen.
+Heute bildet RFC 7227, der sich mit der Implementierung von DHCP-Optionen befasst, die Grundlage für viele Vorschläge.
+Sie können etwas über die Projekte DHCPv6Sec und Secure-DHCPv6 finden.
+
+Der letzte in RFC 8415 verfügbare Sicherheitselement, RKAP (Reconfiguration Key Authentication Protocol), verhindert die Neukonfiguration eines Clients durch einen böswilligen Server.
+Bei der ersten Antwort wird ein eindeutiger Schlüssel an den Client gesendet.
+Der Server verwendet dann HMAC-MD5, um seine Nachrichten zu signieren.
+
+RKAP ist jedoch neu und in der Praxis noch nicht nutzbar.
+
+Die Rekonfiguration ist übrigens eine neue Funktion, mit der Sie Clients dazu zwingen können, DHCP erneut anzufordern (ohne auf das Auslaufen ihres Lease oder einen Neustart zu warten).
+Diejenigen unter Ihnen, die jemals Hunderte von PoE-Geräten neu starten mussten, damit sie eine neue Option über DHCP berücksichtigen, werden diese Funktion begrüßen.
+Hüten Sie sich davonr selbst DDoS auszulösen, indem Sie diese neue Funktion in einem zu großen Segment ausprobieren...
+
+Kurz gesagt, implementieren Sie IPsec zwischen Ihren Relays und dem Server und überlassen Sie der DHCPShield-Komponente die Sicherheit der Relay-/Client-Seite nur in Bezug auf den Uplink-Ports von autorisierten DHCP-Server-Nachrichten.
+
+Und schließlich sollten Sie immer daran denken, dass DHCPv6 demselben Client mehrere IPv6 zur Verfügung stellen kann (DUID).
+
+=== • RA GUARD
+
+Router Advertisement-Nachrichten sind ein zentraler Punkt von IPv6, es muss sichergestellt werden, dass sie von einem autorisierten Router ausgegeben werden.
+
+RFC 6105 empfiehlt, eines oder mehrere der folgenden Elemente in Zugangsgeräten manuell zu setzen, um eine RA-Nachricht zu validieren oder zu blockieren:
+
+* Physischer Anschluss;
+* MAC-Adresse des Routers;
+* Gateway-IP;
+* beworbenes Präfix;
+* RA-Priorität;
+* Hop-Count-Grenze;
+* Wert der Bits M - Managed und O - Other.
+
+Am einfachsten ist es, nur Uplink-Schnittstellen zuzulassen, wobei es oft auch möglich ist, eine TTL-Grenze festzulegen.
+
+Der RFC schlägt auch einen so genannten zustandsabhängigen Lernmodus vor, bei dem das Gerät die RA-Quelle(n) für einen bestimmten Zeitraum lernt.
+Danach würde es keine neue RA-Quelle mehr akzeptieren.
+
+Dieser zustandsbehaftete Modus wird allmählich in Geräte implementiert.
+
+Wenn der Router auf einen Zwilling umschaltet, der ein Protokoll vom Typ NHRP verwendet, muss sichergestellt werden, dass das Fehlen eines gespeicherten Nachbarn dazu führt, dass das Gerät in den Lernzustand zurückfällt, oder dass sich die kontrollierten Elemente nicht ändern (z. B. eine virtuelle MAC oder IP).
+
+Wenn das Gerät den RA-Guard nicht unterstützt, können Sie zumindest Router Advertisements mit einer ACL an den Zugangsports blockieren.
+
+=== • RA HOP LIMIT
+
+Um zu verhindern, dass ein Router Advertisement aus dem Segment herausspringt, erinnert uns Abschnitt 6.1 von RFC 4861 an die grundlegenden Kontrollen, die bei ND-Nachrichten durchzuführen sind.
+Solche Kontrollen wie die Löschung von RA mit einem Hop-Limit unter 255 sollten automatisch funktionieren, ohne dass eine spezielle Sicherheitskonfiguration erforderlich ist.
+Der ND Shield Entwurf https://tools.ietf.org/html/draft-gont-opsec-ipv6-nd-shield-00 schlägt vor, weiter zu gehen.
+
+Diese Sicherheit erinnert Sie vielleicht an das, was in BGP mit GTSM (Generalized TTL Security Mechanisms) RFC 5082 existiert.
+GTSM verwirft eine BGP-Nachricht, wenn ihre TTL/Hop-Limit kleiner als 254 ist, da sie diesmal mit Sicherheit nicht vom Nachbarn stammt (außer natürlich bei Verwendung der BGP-Multihop-Option).
+
+Vergessen Sie nicht, die Konfiguration der Zwischengeräte so anzupassen, dass sie in bestimmten Konfigurationen wie einer L2-Netzerweiterung oder einfach bei der Verwendung von L3-Rechenzentrums-Switches in MLAG die Hop-Limitierung nicht einfach herabsetzen.
+
+Seien Sie vorsichtig, denn in den Dokumentationen einiger Hersteller wird erwähnt, dass der Wert des RA-Hop-Limits bearbeitet werden muss, und oft wird ein Wert von 64 als Standard angegeben.
+Dies ist in Wirklichkeit das Feld _current hop-limit_ (CHL), das den Hosts, die die RA empfangen, den Wert für das Hop-Limit angibt, den sie auf ihrer Seite konfigurieren.
+
+=== • ANDERE RA-EINSTELLUNGEN
+
+Nachdem wir die spezifischen Punkte zu den Modi Sicherheit und Adresszuweisung gesehen haben, wollen wir uns nun einige der anderen Einstellungen der Router-Anzeige ansehen.
+Diese Parameter müssen auf jeder Schnittstelle konfiguriert werden.
+
+* RA-Intervall: Verzögerung in Sekunden zwischen zwei unaufgeforderten RA-Übertragungen, mit einem Mindest- und einem Höchstwert.
+** Der Höchstwert muss zwischen 4 und 1800 liegen. Der Standardwert ist 600s;
+** Das Minimum muss zwischen 3s und ¾ des Maximalwerts liegen. Der Standardwert ist 1/3 des Maximalwerts oder 3s, wenn der Maximalwert weniger als 9s beträgt.
+* RA-Lebensdauer: Lebensdauer, nach der der Router als nicht mehr benutzbar angesehen wird.
+Der Wert muss zwischen dem MAX-Intervall und 9000 Sekunden liegen.
+Der Standardwert ist das dreifache max. Intervall.
+** Ein Wert von 0 bedeutet, dass der Router standardmäßig nicht verwendet werden soll;
+** Im Falle einer Punkt-zu-Punkt-Verbindung zwischen zwei Routern, z. B. BGP-Peering, wird die RA-Lebensdauer normalerweise ignoriert, da die Lebensdauer des Nachbarn über das Routing-Protokoll selbst überwacht wird.
+* MTU: es ist möglich, den Hosts die MTU der Verbindung mitzuteilen, der Standardwert ist 0.
+** Wenn an einem Standort Probleme mit Path-MTU-D auftreten, können Sie diesen Wert vorübergehend so einstellen, dass das Problem in der ausgehenden Richtung behandelt wird, während Sie das Problem prüfen.
+Dies ist schneller, als jeden einzelnen Host zu konfigurieren.
+* Prefix: der Router kündigt ein oder mehrere routingfähige Präfixe an, jedes mit:
+** _Lifetime_ : die Lebensdauer der Route, die in Sekunden seit der letzten Ankündigung oder über eine feste Zeit angegeben werden kann.
+Diese letzte Option kann verwendet werden, um ein Präfix sauber stillzulegen, bevor es aus der Konfiguration entfernt wird.
+Der Standardwert ist 2592000 verbleibende Sekunden, also 30 Tage.
+Es wird nicht empfohlen, den Wert 0xffffffffff zu verwenden, der dazu führt, dass die Route permanent gültig ist, was eine gute Möglichkeit ist, ein schwarzes Loch zu bauen, wenn der Router seine lokale Link-Adresse ändert;
+** _On-Link_ (Bit L) : wie bereits oben erwähnt, zeigt es an, dass der Router auf dem Link ist, standardmäßig 1.
+* SLAAC
+** _Lifetime_ : die bevorzugte Gültigkeitsdauer der Adressen, die die Hosts selbst konfigurieren; auch dies kann in verbleibenden Sekunden oder mit einem festen Datum/Uhrzeit konfiguriert werden.
+Der Standardwert ist 7 Tage (604800 s).
+Auch hier ist es nicht empfehlenswert, unendlich (0xffffffff) zu verwenden.
+Schließlich ist zu beachten, dass der Wert nicht größer sein darf als die Gültigkeit der Route des zugehörigen Präfixes;
+** Wenn Sie nicht DHCP stateless mit SLAAC verwenden, können Sie DNS-Serveradressen über RDNSS angeben (obligatorisch für Android).
+* Priorität
+** Die Routerpriorität kann Niedrig, Normal (Standard) oder Hoch sein.
+Sie können diese Option immer dann verwenden, wenn Sie nahtlos zwischen Gateways wechseln möchten, ohne dass Sie dieselbe IP beibehalten müssen.
+Es kann eine gute Praxis sein, die Priorität auf "Hoch" zu setzen, um die Auswirkung eines unerwünschen Eintrages zu verringern.
+
+Weitere Felder sind im RFC enthalten, werden aber nicht verwendet und sind auf den meisten Plattformen nicht konfigurierbar (Reachable Time und Retransmit Time).
+
+Gut zu wissen, dass die Hersteller einen Statusbefehl implementieren, um alle Präfixe anzuzeigen, die für die entsprechende Schnittstelle ausgegeben werden.
+
+=== • seND (NICHT EINSETZBAR)
+
+Die _Secure Neighbor Discovery_ dient der Authentifizierung von NDP-Nachrichten innerhalb einer Organisation und wurde ursprünglich in RFC 3971 beschrieben.
+
+Das Protokoll stützt sich auf:
+
+* Adressen, die aus einer kryptografischen RSA-Datenbank (CGA) generiert werden RFC 3972;
+* PKI und Vertrauensanker;
+* Pseudozufallsuhr und Nonce (Anti-Replay).
+
+Wenn ein Host eine Verbindung herstellt, gibt der Router den Zertifizierungspfad und den "Vertrauensanker" an, was zu einer sechsten Art von ND-Nachricht führt, der _Certificate Path Solicitation_.
+Siehe RFC 6494 über Zertifikatsprofile und -verwaltung und RFC 6495, X.509-Felder.
+
+Das Vorhandensein von Zertifikaten bedeutet ein höheres Nachrichtengewicht und neue Risiken im Zusammenhang mit der Fragmentierung, siehe RFC 6980.
+
+Wenn man sich den RFC im Detail ansieht, stellt man fest, dass ähnliche Probleme wie bei 802.1x bestehen.
+Wenn der RFC damit beginnt, uns daran zu erinnern, dass IPsec nicht praktikabel war, weil NDP der erste Kontakt mit einem Netzwerk ist, gibt es kein Abhilfesystem, wie es bei 802.1x der Fall ist.
+
+Der Host muss mindestens einen Vertrauensanker vorkonfiguriert haben.
+
+[IMPORTANT]
+====
+*Netzwerkgeräte beginnen damit, SeND zu implementieren, aber es gibt immer noch keine Unterstützung für SeND in Betriebssystemen, abgesehen von einigen wenigen akademischen Projekten.*
+
+*SeND ist daher zur Zeit leider nicht verwendbar und kann nur innerhalb einer Organisation mit verwalteten Arbeitsplätzen, wie 802.1x, eingesetzt werden.*
+====
+
+=== • MLD
+
+IPv6 nutzt Multicast, während es in einem IPv4-Netz selten verwendet wird.
+Dort ist es oft auf Erkennungsprotokolle wie mDNS, SSDP, LLMNR oder sogar bei der Implementierung von OSPF beschränkt.
+
+Infolgedessen ist Multicast innerhalb eines Netzsegments nicht immer gut implementiert.
+Wir sprechen hier nicht einmal von Multicast-Routing, sondern nur von einem Austausch auf demselben L2-Segment.
+
+MLDv1 (RFC 2710) ist das Äquivalent zu IGMPv2 und verwendet drei Arten von Nachrichten:
+
+* _Listener Queries_, entweder allgemein, um alle Knoten zu fragen, ob sie Mitglieder mindestens einer Multicast-Gruppe sind, oder spezifisch, um die Mitglieder einer Gruppe anhand einer bestimmten Adresse zu identifizieren;
+* _Listener_ _Reports_, um Hosts auf Anfragen antworten zu lassen;
+* _Done_ um mitzuteilen, dass sie nicht mehr Teil einer Gruppe sein müssen.
+
+MLDv2 (RFC 3810) baut auf IGMPv3 auf und fügt Quellenfilterung (SSM) hinzu, so dass Quellen ein- oder ausgeschlossen werden können.
+
+Die Hosts senden Berichte über Zustandsänderungen zusätzlich zu den periodischen Berichten, und der Nachrichtentyp "done" verschwindet (er wird von der Zustandsänderung übernommen).
+
+Die Nachrichten werden erneut übertragen, um sie robust gegenüber Paketverlusten zu machen. Eine Robustheitsvariable gibt an, wie oft die Nachrichten erneut übertragen werden sollen. Der Standardwert ist zwei, es kann sinnvoll sein, diesen Wert z. B. bei WLAN zu erhöhen.
+
+MLDv2 ist abwärtskompatibel mit MLDv1, wobei zu beachten ist, dass es auf ICMPv6 aufbaut, im Gegensatz zu IGMP, das direkt auf IPv4 aufsetzt.
+
+MLD ermöglicht es, die Bedürfnisse der Clients zu kennen und sie insbesondere im Falle von geroutetem Multicast an den PIM-Agenten weiterzuleiten.
+Ohne einen anderen Mechanismus verhält sich der Multicast-Verkehr jedoch wie Broadcast-Verkehr innerhalb des Netzsegments. Er wird an alle Ports gesendet.
+
+MLD-Snooping optimiert die Zustellung von Multicast-Verkehr, indem es ihn nur an Hosts, die ihn anfordern, und an Router, die den Dienst bereitstellen, sendet.
+L2-Geräte analysieren den Inhalt des MLD-Austauschs, um Tabellen zu erstellen, die Ports und Multicast-Adressen zuordnen.
+In MLDv1 basiert diese Zuordnung auf der Ziel-Multicast-Adresse, in MLDv2 wird sie um die Quelladresse(n) ergänzt, SSM ist dann erforderlich.
+
+Daher ist es wichtig, dass die MLD-Querier-Funktion auf dem Router (mrouter) aktiv ist und dass die L2-Geräte die MLD-Berichte verwenden, um Snooping durchzuführen.
+Ohne "mrouter" wird der Status auf allen Switches repliziert, was unerwünscht ist.
+
+Wenn bei MLD mehrere Router versuchen, eine Anfrage zu stellen, wird derjenige mit der kleinsten link-local IP zum Abfrager.
+Diese kleine Optimierung vermeidet die Probleme, die manchmal bei IPv4 mit IGMP auftreten, wo derjenige gewinnt, der die meisten Anfragen stellt.
+
+Vernachlässigen Sie nicht die Optimierung durch Snooping und überprüfen Sie, ob es auf der gesamten Übertragungsstrecke ordnungsgemäß funktioniert.
+Nutzen Sie die Gelegenheit, um gleichzeitig IGMP auf IPv4 zu überprüfen.
+
+In Rechenzentrumsumgebungen sollten Sie sich die Zeit nehmen, die Verteilung der zugrundeliegenden Multicast-Bäume in EVPN+VxLAN-Netzen zu berücksichtigen.
+Die Best Practise ist im Allgemeinen, Netzwerke auf mindestens zwei Underlay-Bäume zu verteilen und dedizierte Bäume für Netzwerke mit intensiven Multicast-Hosts (Cluster, Videosender usw.) zu erstellen.
+Diese Praxis kann auch für andere Overlay/Underlay-basierte Topologien gelten.
+
+Zusammenfassend lässt sich sagen, dass MLDv2 zwar technisch nur bei Verwendung von SSM erforderlich ist, seine Fähigkeit, den Verlust von mindestens einem Paket zu tolerieren, jedoch einen Vorteil gegenüber V1 darstellt (siehe Robustheitswert).
+Snooping ist eine Optimierungsanforderung, die auch einen Angriff über unbekannte Multicast-Adressen oder ohne Client-Hosts vermeidet.
+
+[IMPORTANT]
+====
+*Wenn wir über IPv6 und Multicast sprechen, denken wir sofort an Well-Know-Multicast-Gruppen, wie "alle Router" (ff02::2) oder "alle DHCP-Server" (ff02::1:2).*
+*Wir vergessen jedoch Solicited-Node Multicast, mit dem wir uns bereits beschäftigt haben.*
+
+*Zur Erinnerung: Jeder Host erstellt eine Multicast-Gruppenadresse, die auf den letzten 24 Bits jeder konfigurierten Adresse und dem Präfix F02:0:0:0:0:0:1:FF00::/104 basiert.*
+*Diese Adressen dürfen nicht von MLD-Snooping verarbeitet werden, da sie die Tabellen (mit mindestens einer Gruppe pro Host) schnell überlasten könnten.*
+*Diese Umgehung ist manchmal standardmäßig aktiviert, manchmal muss ein Befehl wie nd-workaround auf die MLD-Snooping-Konfiguration angewendet werden.*
+*Erkundigen Sie sich bei Ihrem Hersteller und werfen Sie einen Blick auf den Inhalt des MLD-Snooping-Inhalts, während die Hosts kommunizieren.*
+====
+
+=== • STORM CONTROL
+
+Klassischere und einfachere Sicherheit, Implementierung von Storm Control für Multicast und unknown Verkehr zumindest auf den Uplinks der Zugangsgeräte.
+Der dritte Punkt über Broadcast betrifft nur IPv4.
+
+Seien Sie sich bewusst, dass es immer noch besser ist, einen hohen Wert wie 30 % des Links zu haben, als gar keine Konfiguration, während Sie beobachten, um sie nach der Untersuchung des Verkehrs zu verfeinern.
+
+=== • ZU BLOCKIERENDE MULTICAST-GRUPPEN
+
+Es gibt einige Multicast-Adressen, die direkt auf den Zugangsgeräten blockiert werden können.
+Sie finden diese im Abschnitt "Deaktivieren von automatischen Erkennungsprotokollen" im Host-Teil.
+
+== Host
+
+//image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] marginalspalte ??
+
+Abgesehen von seltenen Ausnahmen (Firewall mit Profil) werden die Einstellungen, die Sie auf einen Host anwenden, unabhängig von dem Netz, mit dem er verbunden ist, wirksam.
+Leider ist es nicht möglich, Profile zu erstellen, z. B. SLAAC auf der Hostseite zu deaktivieren, wenn das in der RA empfangene Präfix das Firmenpräfix ist.
+
+Seien Sie daher vor allem bei Rechnern vorsichtig, die eine Verbindung zu Netzwerken außerhalb Ihres Unternehmens herstellen können.
+Ein Benutzer mit einem Laptop zu Hause wird es beispielsweise schwer haben, etwas zu tun, wenn der Administrator SLAAC vollständig deaktiviert hat.
+
+Andererseits können Sie Ihre Server so weit wie möglich härten.
+
+=== • DHCP
+
+//[#_Toc88922550 .anchor]####DHCP DUID
+==== DHCP DUID
+
+//image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
+
+Der DHCP Unique IDentifier ermöglicht es dem DHCP-Server, den Client zu identifizieren und seine Lease zu verfolgen.
+Es gibt mehrere Methoden, diesen Identifikator zu erstellen, wobei die einfachste die Hardware-Adresse (MAC) ist.
+
+Diese DUID ist normalerweise innerhalb eines Systems unabhängig von der Netzwerkschnittstelle beständig.
+Ein Laptop mit einer DUID, die aus der MAC seiner kabelgebundenen Ethernet-Karte gebildet wird, verwendet beispielsweise denselben Wert, wenn er eine Anfrage über die WLAN-Karte stellt.
+
+Die möglichen Varianten im ursprünglichen RFC 8415 sind:
+
+* _Link-Layer-Adresse_ (DUID-LL);
+* _Link-Layer-Adresse plus Zeit_ (DUID-LLT);
+* _Anbieterbasierte Unternehmensnummer_ (DUID-EN);
+* _Universell eindeutiger Bezeichner_ (DUID-UUID) RFC 6355.
+
+Die erste ist explizit, die zweite fügt Zeitpunkt der ersten Erzeugung hinzu, sie wird gespeichert und ändert sich nicht, merken Sie sich das.
+
+Die dritte ist nach Wahl des Herstellers.
+
+Die vierte, UUID, versucht, die Persistenz für ein System zu garantieren, das aus dem Netz oder in mehreren Phasen gestartet wird.
+Der Start eines Servers in PXE mit einem leichten Bootstrapper, der dann zu einem echten Betriebssystem wechselt, ist ein interessanter Fall:
+
+Sie hat mehrere Schnittstellen, so dass wir nicht garantieren können, dass die DUID-LL auf der gleichen Schnittstelle basiert.
+Der Hersteller unterscheidet sich zwischen der Firmware der PXE-Karte, dem Light-Bootstrapper und dem Betriebssystem.
+
+Die UUID kann konsistent nachverfolgt werden, wenn die gesamte Kette auf denselben Informationen beruht, z. B. der dem UEFI bekannten System-Seriennummer.
+
+Die meisten Betriebssysteme verwenden standardmäßig DUID-LLT, es gibt keinen Grund, dies zu ändern.
+
+//[#_Toc108476696 .anchor]####DHCP-Identitätszuordnungen
+==== DHCP-IAID
+
+Während eine DUID für ein System eindeutig ist, ist die IAID für eine bestimmte Schnittstelle eindeutig. Hier gibt es keine besondere Konfiguration.
+
+//[#_Toc88922552 .anchor]####DHCP ohne RA
+==== DHCP ohne RA
+
+Wenn das _Router Advertisement_ angibt, ob DHCPv6 verwendet werden soll oder nicht, was ist zu tun, wenn kein RA vorhanden ist?
+
+RFC 4862 besagt, dass ein System in Ermangelung von RA DHCP durchführen kann. Dies ist in den meisten Betriebssystemen implementiert. Gut zu wissen ist auch, dass einige Betriebssysteme DHCPv6-Anfragen senden, auch wenn sie vom Router angewiesen werden, nur SLAAC zu verwenden.
+
+//[#_Toc88922553 .anchor]####DHCP-Optionen-Unterstützung im Dual-Stack
+==== Unterstützung von DHCP-Optionen im Dual-Stack
+
+Was passiert, wenn ein Dual-Stack-Host sowohl in DHCPv4 als auch in DHCPv6 bestimmte Optionen empfängt, die sich inhaltlich unterscheiden, und zwar mit widersprüchlichem Inhalt?
+
+Gilt der Vorrang, d. h. der erste, der die Option anbietet?
+Es könnte interessant sein, dies zu überprüfen.
+
+=== • SLAAC-ADRESSGENERIERUNGSVERFAHREN
+
+Ursprünglich war geplant, dass die SLAAC-Adresse aus der System-MAC-Adresse in Form von EUI-64 gebildet wird.
+Dies wirft jedoch viele Probleme auf:
+
+* Da die MAC-Adresse eindeutig ist, kann ein Host im Internet verfolgt werden, unabhängig davon, von welchem Netz (Präfix) aus er sich verbindet;
+* Es ist einfacher, einen Adressenscan in einem Netz durchzuführen, da die Verwendung von EUI-64 eine gewisse Vorhersagbarkeit dessen bietet, was häufig in den ersten Bits gefunden werden kann;
+* Die Kenntnis der MAC-Adresse ermöglicht es, den Hersteller zu kennen, so dass es beispielsweise möglich ist, die Marke und das Modell des Geräts zu erraten, mit dem man spricht, indem man den Hersteller und das während des Austauschs verwendete Protokoll korreliert;
+* Ein Wechsel der Netzwerkschnittstelle führt zu einer Änderung der SLAAC-Adresse.
+
+Zwei RFCs schlagen Ansätze zur Begrenzung dieser Probleme vor, siehe:
+
+* RFC 4941 _Privacy Extensions for Stateless Address Autoconfiguration in IPv6_;
+* RFC 7217 _A Method for Generating Semantically Opaque Interface Identifiers with IPv6 Stateless Address Autoconfiguration_ (SLAAC).
+
+//[#_Toc88922555 .anchor]####Vorläufige Adresse
+==== Temporäre Adresse
+
+Die temporäre Adresse ist ein Zusatz zur stable Adresse (RFC 4941).
+Sie ändert sich je nach den Einstellungen des Betriebssystems mehr oder weniger häufig, wobei die vom Router Advertisement SLAAC angekündigten Lebensdauern eingehalten werden.
+
+Einige Systeme erstellen beispielsweise alle 25 Minuten eine neue Adresse und deaktivieren die vorherige Adresse 5 Minuten nach der Erstellung der neuen Adresse und wenn keine Sitzung mit der ältesten temporären IP-Adresse existiert.
+Neue vom Host initiierte Sitzungen verwenden daher nie länger als 30 Minuten eine Adresse.
+
+Der Host bleibt jedoch jederzeit über seine stable Adresse erreichbar, und nur die stable Adresse unterliegt der DNS-Selbstregistrierung.
+
+Die Verwendung temporärer Adressen kann aufgrund ihrer kurzen Lebensdauer Probleme verursachen.
+
+Im RFC wird der Fall erwähnt, dass ein Server prüft, ob ein PTR-Reverse-DNS-Eintrag für den Client existiert, bevor er den Zugriff zulässt.
+Es lassen sich aber leicht weitaus häufigere Fälle finden:
+
+Stellen Sie sich vor, Sie authentifizieren sich auf einer Website mit einer temporäre Adresse in der 24. Minute ihrer Gültigkeit, um Zugang zu einem Kundenbereich zu erhalten.
+
+Zwei Minuten später fordert uns der Server erneut auf, uns zu authentifizieren, obwohl wir seit der Verbindung ununterbrochen gesurft haben.
+
+Dieser Fall ist durchaus plausibel, denn wenn der Server aus Sicherheitsgründen vom Kunden verlangt, zusätzlich zu seinem Cookie dieselbe IP zu haben, wird er die Sitzung ablehnen.
+Ähnlich verhält es sich, wenn ein Front-End-L4-Load-Balancer damit beginnt, den Client an einen anderen Server umzuleiten, der nichts von der Web-Sitzung des Clients weiß, weil er glaubt, es handele sich um einen neuen Client aufgrund einer neuen IP.
+Derzeit gibt es keinen Mechanismus, der es Browsern erlaubt, einem Server, für den eine Browser-Registerkarte aktiv ist (oder kürzlich aktiv war), die IP-Änderungsinformationen mitzuteilen.
+
+Auch bei einem P2P-Online-Spiel mit selbst gehostetem Matchmaking könnten die Spiele nach wenigen Minuten unterbrochen werden.
+
+Bei einem Spiel wäre es wünschenswert, dass der Entwickler die Sitzungen über die stable Adresse aufbaut, aber bei einem Browser würde dies den Wert der temporären Adresse völlig zunichte machen, da der Webverkehr den Großteil der Verfolgungsmöglichkeiten ausmacht.
+
+Wenn wir einen Schritt zurückgehen, können wir sagen, dass die Nachverfolgung (z. B. Werbung) sich mit der Identifizierung des /64-Präfix begnügen wird, der ausreicht, um einen Haushalt auf die gleiche Weise zu identifizieren wie eine heutige IPv4-Adresse.
+Es ist jedoch nicht ausgeschlossen, dass Werbetreibende anfangen werden, IPv6-Adressen über eine Woche hinweg zwischenzuspeichern, um diejenigen als stable zu kennzeichnen, die mehrmals gesehen wurden, und somit zwangsläufig eine EUI-64- oder stable privacy Adresse verwenden.
+Dies gibt ihnen schließlich die Möglichkeit, den einzelnen Nutzer statt des Haushalts zu verfolgen, und zwar ohne Cookies! Darüber sollte man nachdenken...
+
+Erst kürzlich, im Februar 2021, wurden in RFC 8981 Änderungen an temporären Adressen vorgenommen.
+
+In der Liste der Änderungen finden wir die Möglichkeit, nur temporäre Adressen zu haben ohne stable.
+Der RFC schreibt immer noch keinen Mechanismus vor, um Präfixe von der Verwendung temporärer Adressen auszuschließen, aber er empfiehlt es.
+Microsofts Antwort ändert sich vielleicht nicht https://social.technet.microsoft.com/Forums/azure/en-US/e36e82e9-1911-4f4d-91a2-c62f6e04c9c1/ipv6-turn-off-privacy-extensions-temporary-addresses-for-certain-prefixes-ie-ula-in-win-10?forum=win10itpronetworking
+
+//[#_Toc88922556 .anchor]####Zufallsgenerierte Schnittstellenkennung
+==== Zufallsgenerierte Interface-ID
+
+Anstatt seine MAC in EUI-64 zu verwenden, generiert der Host seine Adresse auf der Grundlage eines Pseudozufallsbezeichners.
+Dieser Bezeichner ändert sich beim Neustart. Systeme, die die Speicherpersistenz unterstützen, können ihre Adresse zusätzlich zur Pseudo-Zufallszahl auf die vorherige Adresse stützen.
+
+//[#_Toc88922557 .anchor]####Stabile Datenschutzadresse
+==== Stable Privacy Address
+
+Dieser Mechanismus ermöglicht es Ihnen, immer dieselbe IPv6-Adresse zu erhalten, solange Sie sich im selben Netz/Präfix befinden und sie bei der Verbindung zu anderen Netzen zu ändern.
+Dies wird dadurch erreicht, dass die Adresse neben dem empfangenen Präfix auch von internen Konstanten des Gerätes abgeleitet wird.
+
+Insbesondere die folgenden:
+
+* Über RA empfangenes Präfix;
+* Schnittstellennummer (wie vom Betriebssystem gesehen);
+* DAD-Zähler (0, wird bei Konflikten erhöht);
+* Geheimschlüssel, der beim ersten Mal zufällig generiert und gespeichert wird;
+* Optional die Netzwerkkennung, in der Regel die Wifi SSID.
+
+So ist es unmöglich, die Maschine zu verfolgen, wenn sie sich in verschiedenen Netzen bewegt und auch unmöglich, die MAC aus der Adresse zu ermitteln.
+Andererseits wird der stabile Aspekt innerhalb jedes frequentierten Netzes die Arbeit des Administrators erleichtern, der DHCPv6 stateful vermeiden möchte.
+
+//[#_Toc88922558 .anchor]####SLAAC-Synthese
+==== SLAAC-Synthese
+
+Hier finden Sie eine Übersicht über die Verfolgbarkeit nach Adressentyp.
+Vergessen Sie nicht, dass die globale Adresse routingfähig ist und daher potenziell überall im Internet sichtbar ist.
+
+[width="99%",cols="23%,19%,19%,20%,19%",options="header",]
+|===
+|SLAAC-Modus |Lokales Tracking |Globales Tracking |Informationen über das Gerät |Tracking aus demselben Netzwerk über die Zeit
+|EUI-64 (MAC) |YES |YES |YES (Hersteller) |YES
+|Randomisiert (Änderung bei Neustart) |NO |NO |NO |Über mehrere Stunden/Tag je nach Standby VS-Neustart
+|Stable Privacy (abgeleitet von Präfix) |YES |NO |NO |YES
+|NO (für host-initiierte Sitzung) |NO (für host-initiierte Sitzung) |NO (für host-initiierte Sitzung) |Normalerweise weniger als ein Tag (für host-initiierte Sitzung)|
+|===
+
+Idealerweise sollten Sie das Standardverhalten des Betriebssystems für Rechner beibehalten, die möglicherweise eine Verbindung nach außen herstellen.
+Dieses Verhalten variiert im Allgemeinen zwischen Randomized oder Stable Privacy, mit oder ohne temporäre Adresse.
+
+Bei anderen Rechnern ist es möglich, SLAAC vollständig zu deaktivieren, da die Verwendung von DHCPv6 stateful und/oder die manuelle Konfiguration (z. B. von Servern) diesen Mechanismus nutzlos macht.
+Wir folgen dann der Logik der Verringerung der Angriffsfläche für das Protokoll und schließen die Tür.
+
+//[#_Toc88922559 .anchor]####Link-Lokale Adressgenerierungsmethode
+==== Verfahren zur Generierung von Link-Local-Adressen
+
+Obwohl sie nur lokal gilt, profitiert die lokale Verbindungsadresse ebenfalls von den drei oben erwähnten automatischen Konfigurationsmodi.
+
+Die Konfiguration folgt im Allgemeinen der der globalen Adresse auf Consumer-Betriebssystemen, wenige Systeme bieten eine spezifische Konfigurationsgranularität nach Adressklassen.
+
+Die Server- und netzorientierten Systeme basieren jedoch im Allgemeinen auf EUI-64.
+
+=== • IPv6-STACK NICHT DEAKTIVIEREN
+
+Wenn Sie aus irgendeinem Grund verhindern wollen, dass ein Host in IPv6 kommuniziert, deaktivieren Sie seinen IPv6-Stack nicht.
+Verwenden Sie stattdessen die folgenden Optionen:
+
+* Ändern Sie die Rangfolge, um IPv4 Vorrang zu geben;
+* Deaktivieren Sie SLAAC auf dem Host und sperren Sie ihn ggf. für DHCPv6;
+* Stellen Sie die OS-Firewall so ein, dass jeglicher IPv6-Verkehr untersagt wird.
+
+Wenn Sie den IPv6-Stack deaktivieren, kann es bei einigen Programmen zu Anomalien kommen.
+Windows verlangt beispielsweise seit mehreren Jahren, IPv6 nicht zu deaktivieren, da sonst einige der häufig verwendeten Komponenten nicht mehr ausgeführt werden können.
+Unter Linux kann das einfache Fehlen des Loopbacks ::1 ebenfalls zu Überraschungen führen.
+Neuere Kernel lassen die Verwendung des ::1 Loopbacks auch bei deaktiviertem Stack zu.
+
+=== • DEAKTIVIERUNG VON ÜBERGANGSMECHANISMEN
+
+Einige Mechanismen ermöglichen es Hosts, IPv6 über IPv4-Netze auszutauschen:
+
+* TEREDO;
+* ISATAP;
+* 6to4.
+
+Diese Mechanismen sind nicht mehr von Interesse und die ersten beiden sind sogar verschwunden.
+Es ist daher ratsam, sie zu deaktivieren.
+
+=== • DEAKTIVIERUNG VON AUTOMATISCHEN ERKENNUNGSPROTOKOLLEN
+
+Es ist ratsam, in das Betriebssystem eingebettete automatische Erkennungsprotokolle zu deaktivieren.
+Wenn sie bei Heimanwendern nützlich sind, stellen sie in einem Unternehmen ein echtes Risiko dar.
+
+Dazu gehören:
+
+* SSDP (Multi OS, ff02::c - UDP 1900) und folgende Adressen FF0X::C, je nach Bereich:
+* Node-local : FF01::C (kommt nicht mal raus...)
+** Link-local : FF02::C ;
+** Site-local : FF05::C (veraltet);
+** Organisation-local : FF08::C (veraltet);
+** Global : FF0E::C.
+* mDNS (mehrere Betriebssysteme, ff02:fb - UDP 5053)
+* LLMNR (Windows, ff02::1:3 - UDP und TCP 5355)
+
+Abgesehen von den Angriffen, die mit diesen Protokollen verbunden sind, unterscheidet sich ihr Betrieb mit IPv6 in einem ganz bestimmten Punkt.
+
+Bei IPv4 hat ein Rechner nur eine IP.
+Wenn zwei Rechner miteinander zu kommunizieren beginnen, nachdem sie ihren Namen über eines dieser Protokolle aufgelöst haben, wird die Zuordnung von IP und Rechner in der Regel über DHCP-Protokolle aufrechterhalten.
+
+In IPv6 erlauben diese Protokolle den Rechnern, sich gegenseitig über ihre link-local-Adresse aufzulösen. (FE80::/10).
+Finden Sie also in einem Protokoll heraus, welcher Rechner eine FE80 war...
+
+Dieses Verhalten tritt in der Produktion in Unternehmen auf, die noch nicht einmal IPv6 eingeführt haben.
+Es genügt zum Beispiel ein SMTP-Relay zwischen zwei Microsoft Exchange-Servern, die sich im selben Netzwerksegment befinden.
+Wenn die oben genannten Protokolle nicht deaktiviert sind, sehen Sie in den E-Mail-Kopfzeilen eine Zustellung über FE80.
+Glücklicherweise gibt SMTP immer noch den Hostnamen an.
+
+=== • BLOCKIERUNG DES LINK-LOKALEN VERKEHRS
+
+Zu Hause kann die lokale Link-Adresse verwendet werden, um mit Ihrem NAS, Drucker, Chromecast/Airplay-Empfänger usw. zu kommunizieren, nachdem sie über die oben genannten Protokolle erkannt wurde.
+Die DNS-Autoregistrierung auf dem heimischen Router bevorzugt die globale Adresse.
+
+In einem Unternehmen hat ein Host jedoch keinen Grund, etwas anderes als ICMP (und darauf basierende Protokolle wie MLD) über seine lokale Link-Adresse zu verwenden.
+Es wird daher empfohlen, den gesamten TCP- und UDP-Verkehr in beiden Richtungen innerhalb der OS-Firewall zu blockieren.
+Aber lassen Sie, wie gesagt, ICMP zu.
+
+[IMPORTANT]
+====
+*Bei geclusterten Servern ist es durchaus möglich, dass eine Softwarelösung, bei der sich die Rechner im gleichen Netzsegment befinden müssen, die Local-Link-Adressen für den Datenaustausch oder einfach für den Heartbeat verwendet.*
+====
+
+Machen Sie eine Ausnahme für DHCP und EAPOL 802.1x auf Systemen, die diese verwenden.
+
+Für mobile Geräte ist es auch interessant, NAT-PMP (RFC 6886) und seinen Nachfolger PCP V2 (RFC 6887) zu öffnen, um den Betrieb von Anwendungen zu ermöglichen, die unaufgeforderten Verkehr empfangen müssen.
+Typischerweise sind das Konferenzsysteme.
+Diese beiden Protokolle ermöglichen es, das Gateway aufzufordern, einen Port zu öffnen, was der automatischen Weiterleitung des NAT44-Ports in IPv4 über UPnP-IGD entspricht.
+
+NAT-PMP verwendete ursprünglich auf beiden Seiten den Port 5351, was jedoch bei Rechnern, die sowohl als Client als auch als Server fungierten, zu Problemen führte, z. B. bei der erneuten gemeinsamen Nutzung einer Verbindung. Daher wurden die Clients auf Port 5350 umgestellt.
+PCP verwendet ebenfalls 5350 auf der Client-Seite und 5351 auf der Server-Seite.
+
+Wir behalten also UDP 5350 und 5351 im Listening und 5351 im Zielbereich.
+
+Wenn Sie weniger Einschränkungen wünschen, können Sie auch nur den Verkehr in der eingehenden Richtung blockieren.
+
+=== • VPN
+
+Die Einführung von IPv6 in Heimnetzwerken kann ein Risiko für falsch konfigurierte VPN-Sitzungen darstellen.
+Ein Unternehmen, das kein Split-Tunneling praktiziert und die Route 0.0.0.0/0 bekannt gibt, wenn das System AAAA-DNS-Ressourcen auflösen kann und die Firewall ihn nicht blockiert, kann er über IPv6 mit dem Internet kommunizieren.
+
+Die Auflösung ist möglich, wenn der DNS-Server des Unternehmens auf AAAA-Anfragen antwortet, auch über IPv4-Verbindungen, oder wenn der Stack des Hosts die Auflösung über IPv6-DNS erlaubt, das dem Host lokal im VPN zur Verfügung gestellt wird.
+
+Wenn Sie Split-Tunneling verwenden, stellen Sie sicher, dass die IPv4- und IPv6-Regeln übereinstimmen.
+
+Auf vielen Websites können Sie einen IPv6-VPN-Leak-Test durchführen.
+
+Beachten Sie, dass "Consumer"-VPNs selten IPv6 unterstützen, aber dennoch eine Standard-IPv6-Route bekanngeben, um Datenverkehr an ein Blackhole zu senden um ein Datenleck zu vermeiden.
+Sie können dasselbe tun und ::/0 in Ihrem VPN ankündigen, auch wenn Sie keine echte Konnektivität bieten.
+
+=== • DESKTOP OS KONFIGURATION
+
+Dieser Abschnitt enthält einige Konfigurationsbeispiele.
+
+//[#_Toc108476711 .anchor]####Windows
+==== Windows
+
+Unter Windows, auch wenn es noch _netsh_-Befehle gibt, wird jetzt empfohlen, _powershell cmdlets_ zu verwenden.
+
+Der größte Teil der Konfiguration ist hier zu finden:
+
+https://docs.microsoft.com/en-us/powershell/module/nettcpip/set-netipv6protocol?view=win10-ps[https://docs.microsoft.com/en-us/powershell/module/nettcpip/set-netipv6protocol?]
+
+Einige der Konfigurationen können direkt in der Registry vorgenommen werden, z. B. die DHCP-DUID-Generierungsmethode über den Schlüssel HKLM\SYSTEM\CurrentControlSet\services\TCPIP6\Parameters\Dhcpv6DUID
+
+0001 - DUID-TTL
+
+0002 - DUID-EN
+
+0003 - DUID-LL
+
+Die persistente DUID wird unter demselben Schlüssel angezeigt.
+
+//[#_Toc88922566 .anchor]####Linux
+==== Linux
+
+Hier sind einige Konfigurationen für GNU/Linux.
+
+Einige werden immer auf der Kernel-Ebene angewendet, entweder direkt oder mit Hilfe eines Drittanbieter-Tools.
+
+Der Rest hängt von den Paketen ab, die für die entsprechenden Funktionen zuständig sind.
+Da das GNU-Ökosystem per Definition reichhaltig und offen ist, gibt es viele Möglichkeiten, Dinge zu tun, sogar innerhalb der gleichen Distribution.
+Die offizielle Dokumentation der Distributionen ist nicht immer einheitlich.
+
+Konfigurationen können über vorgenommen werden:
+
+* Befehle;
+* Konfigurationsdateien;
+* Pseudographisches Werkzeug wie nmtui (für Network Manager).
+
+Nachfolgend finden Sie Links zur Kernel-Dokumentation:
+
+https://www.kernel.org/doc/Documentation/networking/ipv6.txt
+
+https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
+
+https://github.com/torvalds/linux/blob/master/net/ipv6/Kconfig
+
+Ein besser lesbare Zusammenfassung https://sysctl-explorer.net/net/ipv6/
+
+==== Network-Manager
+
+Network Manager ist ein relativ weit verbreitetes Tool des Gnome-Projekts, das zur Verwaltung von Netzwerken verwendet wird.
+
+https://wiki.gnome.org/Projects/NetworkManager
+
+https://developer.gnome.org/NetworkManager/stable/settings-ipv6.html
+
+https://developer.gnome.org/NetworkManager/stable/nm-settings-ifcfg-rh.html
+
+https://developer.gnome.org/NetworkManager/stable/nm-settings-keyfile.html
+
+CLI nmcli https://developer.gnome.org/NetworkManager/stable/nmcli.html
+
+Pseudographische nmtui https://developer.gnome.org/NetworkManager/stable/nmtui.html
+
+==== Systemd Netzwerkd
+
+systemd-networkd (Netzwerk) und systemd-resolved (DNS) sind omnipräsent, aber nicht unbedingt aktiviert.
+Achten Sie darauf, die globale Verwaltung (oder die Verwaltung bestimmter Schnittstellen) durch einen anderen Daemon wie Network-Manager zu deaktivieren, um Konflikte mit Networkd zu vermeiden.
+Auch das Gegenteil ist der Fall.
+
+https://systemd.io/
+
+https://www.freedesktop.org/software/systemd/man/resolvconf.html[https://www.freedesktop.org/software/systemd/man/resolvconf.html#]
+
+https://www.freedesktop.org/software/systemd/man/systemd-networkd.service.html[https://www.freedesktop.org/software/systemd/man/systemd-networkd.service.html#]
+
+https://www.freedesktop.org/software/systemd/man/systemd.network.html[https://www.freedesktop.org/software/systemd/man/systemd.network.html#] (das Wichtigste)
+
+==== netplan
+
+Netplan ist kein direkter Verwaltungsdämon, sondern ein Abstraktionswerkzeug, das bei Canonical (Ubuntu) vorhanden ist.
+Es konfiguriert dann den Network Manager oder Networkd.
+
+https://netplan.io
+
+https://netplan.io/reference/
+
+Allerdings scheint Netplan keine DHCP-PD-Unterstützung zu bieten, was für einige Anwendungen ein großer Nachteil ist (z. B. wenn man Hypervisor-Pods /64 zur Verfügung stellen möchte).
+In der Zwischenzeit können Sie es mit einem systemd Override auf diesem Element verwenden.
+
+[.underline]#https://bugs.launchpad.net/netplan/+bug/1771886#
+
+// suse Linux verwendet wicked als Netzwerkmanager ?? hier beschreiben
+==== wickedd
+wickedd bietet einen Dienst zur Verwaltung von Netzwerkschnittstellen. 
+Er überwacht die Schnittstellen des Systems, indem er relevante Informationen vom Kernel über netlink, sysfs und andere Schnittstellen abruft.
+
+Auf ihn kann über einen DBus-Dienst zugegriffen werden, der dazu verwendet werden kann, Schnittstellen neu zu konfigurieren, sie hoch- oder herunterzufahren.
+
+*Komponenten*
+
+Zusätzlich zum Haupt-Daemon wickedd stellt das wicked-Framework mehrere Hilfs-Daemons und Supplicants zur Verfügung:
+
+[cols="30%,70%",options="header"]
+|===
+|Komponente	    |Beschreibung
+|wickedd-nanny  |Ereignisgesteuerter Policy-Daemon, der für Hotplugging zuständig ist.
+|wickedd-dhcp6	|DHCPv6 Client-Antragsteller
+|wickedd-dhcp4	|DHCPv4-Client-Antragsteller
+|wickedd-auto4	|IPv4 autoip-Antragsteller
+|===
+
+Außerdem kommuniziert er auch mit dem externen wpa-supplicant für die Unterstützung von Wireless (WPA).
+wickedd wird von der Suse-Distribution verwendet.
+
+https://manpages.opensuse.org/Tumbleweed/wicked/wickedd.8.en.html
+
+==== Linux-Distributionen
+
+In der Dokumentation jeder Distribution finden Sie Hinweise darauf, welches Tool standardmäßig installiert ist.
+In den meisten Fällen liegt die Wahl zwischen systemd-networkd und Network-Manager. 
+Conman und WICD zum Beispiel sind aus der Landschaft verschwunden.
+
+Wie so oft, ist die ArchLinux-Dokumentation sehr vollständig.
+Hier ist ein Link zu den Konfigurationselementen für jeden Typ von Netzwerkmanager https://wiki.archlinux.org/title/Network_configuration#Network_managers
+
+Siehe auch IPv6 Abschnitt https://wiki.archlinux.org/title/IPv6
+
+Ubuntu netplan man http://manpages.ubuntu.com/manpages/jammy/man5/netplan.5.html
+
+Hier gibt es viele Elemente http://mirrors.deepspace6.net/Linux+IPv6-HOWTO/
+
+und http://www.bieringer.de/linux/IPv6/.
+
+//==== image:extracted-media/media/image30.svg[Smartphone Kontur,width=75,height=75] Marginalspalte ?
+=== • MOBIL UND EMBEDDED
+
+Mobile Betriebssysteme können in einem Unternehmensnetz in verschiedenen Formen anzutreffen sein:
+
+* IoT Hardware (Drucker, Raumbuchung)
+* Unternehmens Smartphones
+* persönliche Smartphones (BYOD)
+* Nicht verwaltete Geräte in einem Gastnetzwerk
+
+//[#_Toc88922568 .anchor]####Android
+==== Android
+
+Android ist jetzt der führende Akteur in diesen Segmenten, und es hat ein ärgerliches Problem: Es unterstützt DHCPv6 nicht.
+
+Überraschend?
+Diese Wahl scheint Teil einer Vertrauensstrategie zu sein, um die Implementierung von SLAAC durchzusetzen.
+Die Gründe werden in RFC 7934 genannt: DHCP bietet nur eine Adresse und erlaubt keine temporären Adressen, was die Rückverfolgung erleichtert.
+Nur eine Adresse zu haben, verhindert auch das Angebot von Tethering/gemeinsamen Verbindungen im WLAN.
+
+Der Bedarf an DHCPv6 ist jedoch vorhanden, die genannten Einschränkungen sind in einem Unternehmensnetz mit Wifi nicht anwendbar.
+Das Problem der gemeinsamen Nutzung von Verbindungen ist nur hinter einer 3GPP-Mobilfunkverbindung relevant.
+
+Aber wer hat dann diesen RFC geschrieben?
+Ingenieure von Google und Apple, angefangen mit Lorenzo Colitti.
+
+Das Problem ist seit vielen Jahren bekannt:
+
+https://www.techrepublic.com/article/androids-lack-of-dhcpv6-support-frustrates-enterprise-network-admins/
+
+https://www.reddit.com/r/ipv6/comments/3wfpn2/i_am_getting_sick_of_lorenzos_attitude_to_ipv6/
+
+https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/
+
+https://issuetracker.google.com/issues/36949094
+
+https://issuetracker.google.com/issues/36949085?pli=1
+
+Was ist zu tun? 
+Selbstverständlich sollten Sie in Ihren Ausschreibungen für Geräte nach DHCPv6-Unterstützung fragen.
+Ganz gleich, ob es sich um eine Unternehmens-Smartphones oder embedded Geräten handelt.
+
+Android wird von den Herstellern weit über das Open-Source-OS-Projekt (AOSP) hinaus angereichert, die OEMs integrieren manchmal einen DHCPv6-Client.
+Dies ist typischerweise bei Android-Druckern/Kopierern der Fall, aber selten bei Telefonen.
+
+//image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Maginalspalte?
+Wie lassen sich Android-basierte BYOD-Geräte verfolgen, wenn sie DHCPv6 nicht unterstützen?
+MDM (Mobile Device Management) Tracking-Tools könnten die Antwort liefern, indem sie alle verwendeten Adressen verfolgen, solange sie Teil einer konfigurierten Präfixliste sind.
+Zum Beispiel ein /32, das dem Unternehmen von einem RIR zugewiesen wurde.
+Auf diese Weise wird das Endgerät nur im beruflichen Netz verfolgt, ohne DHCPv6 zu verwenden.
+
+Dasselbe ist für iOS möglich, obwohl es für sie einfacher ist, sich mit einer SSID ohne SLAAC und nur mit DHCPv6 zu verbinden.
+Ganz zu schweigen davon, dass über MDM die Verwendung der echten MAC für diese SSID und nicht einer zufälligen MAC erzwungen wird.
+Mobile Betriebssysteme verwenden in letzter Zeit zufällige physische Adressen nicht nur bei der Suche nach SSIDs, sondern auch nach der Verbindung.
+
+Was Gastnetzwerke betrifft, so ist es schwierig, einem Gerät, das SLAAC verwendet und seine temporäre Adresse mehrmals ändert, ein funktionierendes Captive Portal zur Verfügung zu stellen.
+
+Ein zentralisiertes Captive Portal würde mit DHCPv6 funktionieren, was für Android schade ist.
+Die Implementierung eines NDPmon-Kollektors könnte es ermöglichen, einem Terminal in SLAAC zu folgen, aber diese Lösungen sind im Moment selten.
+
+Es ist daher heikel, aber nicht unmöglich, IPv6-SLAAC-Konnektivität für Gastnetzwerke in Hotels, Krankenhäusern, Flughäfen oder einfach innerhalb einer Organisation bereitzustellen.
+
+//[#_Toc88922569 .anchor]####Andere Betriebssysteme
+==== Andere Betriebssysteme
+
+iOS unterstützt beide Methoden der Adresszuweisung und stellt im Betrieb kein besonderes Problem dar.
+
+Für andere embedded Geräte ist es gut, DHCPv6-Unterstützung zu verlangen, aber auch die Möglichkeit zu haben, bei der Verwendung von SLAAC den Mechanismus der automatischen Adresszuweisung zu wählen.
+In der Regel verwenden viele Mikrocontroller-Geräte heute nur EUI-64-SLAAC.
+Dies hat den Nachteil, dass ein Angreifer die Marke über die MAC-Adresse identifizieren kann, da letztere in IPv6 enthalten ist.
+Denken Sie also darüber nach, nach einer stable IPv6-Unterstützung für Privacy zu fragen.
+
+== Transit
+
+=== • URPF
+
+Unicast Reverse Path Forwarding (RFC 3704) verhindert, dass ein Paket, dessen Quelladresse nicht mit einer bekannten Route in umgekehrter Richtung übereinstimmt, einen Router durchläuft, und begrenzt so das Risiko von IP-Spoofing.
+
+Es gibt mehrere Modi, je nachdem, ob wir uns auf die Übereinstimmung zwischen der Quellschnittstelle und der besten entsprechenden Route konzentrieren (strict), auf jede Route, die die Adresse umfasst (Feasible) oder ob wir einfach wissen wollen, ob der Router unabhängig von der Schnittstelle mindestens eine passende Route hat (loose).
+
+RFC 8704 bringt Verbesserungen auf der Grundlage von BGP-Informationen für den "feasible mode".
+
+Die Implementierung muss am Rand des Netzes erfolgen, wo keine Gefahr der Asymmetrie besteht.
+In der Regel sind dies Campus-Cores oder Internetrouter.
+Die Konfiguration von uRPF ist im Allgemeinen sowohl für IPv4 als auch für IPv6 gleich.
+
+Wenn Sie Multicast-Verkehr routen, sollten Sie auch Multicast-RPF berücksichtigen.
+
+=== • SCHUTZ DER CONTROL PLANE
+
+Pakete, die für den Router selbst bestimmt sind, sowie Pakete mit bestimmten Header-Optionen, die eine Ausnahme verursachen, müssen an die Kontrollebene weitergeleitet werden.
+
+RFC 6192 befasst sich mit dieser Problematik.
+Die Verwendung der QoS-Engine zur Begrenzung der Rate des betreffenden Verkehrs auf einige Mb/s ermöglicht es, den Router vor einem Denial-of-Service-Versuch zu schützen.
+Natürlich muss sofort untersucht werden, ob der Grenzwert erreicht wurde oder kurz davor steht.
+Diese Sicherheit unterscheidet nicht zwischen legitimem und illegitimem Verkehr.
+
+Außerdem hat der explizit für den Router selbst bestimmte Verkehr keinen Grund, fragmentiert zu werden, Sie können ihn blockieren, wenn er fragmentiert ist.
+
+=== • OSPF SICHERHEIT
+
+Die Einführung von OSPFv3 ist eine Gelegenheit, MD5 fallen zu lassen und IPsec zur Sicherung des Austauschs zu verwenden.
+ESP muss unterstützt werden, AH optional (RFC 4552).
+Alles im Transportmodus.
+
+Hinweis zu anderen Protokollen:
+
+RIPng bietet das Gleiche.
+
+BGP ist nicht spezifisch für v6 und folgt einem anderen Weg durch die BGPsec-Initiative, die darauf abzielt, die Signatur des Routenursprungs und die Pfadvalidierung (AS-Path) von Ende zu Ende zusammenzufassen. 
+Diese Initiative konzentriert sich auf das öffentliche Routing und scheint derzeit keine Verschlüsselungs- und Authentifizierungskomponente für Unternehmensnetze zu enthalten, die auf einer privaten PKI oder einer manuellen Implementierung der Schlüssel basiert.
+
+IS-IS sieht keine Entwicklung auf der Sicherheitsseite, außerdem ist es IP-agnostisch.
+
+== Filterung
+
+Einige Regeln können in Routern und nicht nur in Firewalls integriert werden, obwohl der zustandsbehaftete Aspekt für einige von ihnen weiterhin erforderlich ist.
+
+=== • ICMP
+
+Während es einen starken Trend zur Beschränkung des zulässigen ICMPv4-Verkehrs gibt, erfordert ICMPv6 einen detaillierteren Ansatz.
+
+RFC 4890 "Border Firewall Transit Policy" erinnert uns daran und schlägt ACLs zur Implementierung vor.
+Sie finden sie hier:
+
+Erforderlich Zulassen:
+* Destination Unreachable (Type 1) - Alle Codes;
+* Packet Too Big (Type 2) – erforderlich für PMTU-Ermittlung;
+* Time Exceeded (Type 3) - nur Code 0;
+* Parameter Problem (Type 4) - nur Codes 1 und 2.
+
+Fakultativ:
+
+* Time Exceeded (Type 3) - Code 1;
+* Parameter Problem (Type 4) - Code 0;
+
+Zur Kontrolle der Echo-Anfrage und -Antwort (in der Regel für das Internet gesperrt):
+
+* Echo Request (Type 128);
+* Echo Response (Type 129).
+
+Außer bei der Verwendung von IPv6-Mobilität ist es ratsam, diese zu blockieren:
+
+* Home Agent Address Discovery Request (Type 144);
+* Home Agent Address Discovery Reply (Type 145);
+* Mobile Prefix Solicitation (Type 146);
+* Mobile Prefix Advertisement (Type 147).
+
+ICMPv6-Fehler- und Informationscodes, die nicht von der IANA zugewiesen wurden, sollten bei externer Filterung (Internet, Partner usw.) gesperrt werden.
+Ihre interne Sperrung liegt im Ermessen der Administratoren.
+
+Fehlercode: Typen 5 bis 99 und 102 bis 126 sowie 150 (Seamoby).
+
+Informativer Code: Typen 154-199 und 202-254.
+
+ICMPv6 sah Mechanismen vor, die in der Praxis nicht verwendet werden und daher zu blockieren sind:
+
+* Node information :
+** Node Information Query (Type 139);
+** Node Information Response (Type 140).
+* Router Renumbering (Type 138) This message enables you to change the prefix of all configured interfaces of the router that receives it. 
+Not likely to be used. 
+Not to be confused with DHCPv6 and Prefix Delegation renumbering.
+* Experimental codes (Types 100 – 101 and 200 – 201);
+* Other unused types (Types 127 and 255).
+
+Im L3-Modus (Router) sollte die Firewall den Transit (über das Gateway hinaus) von Nachrichten blockieren, die nur innerhalb des Bereichs der link-local-Adresse existieren:
+
+* All NDP inkl. reverse.
+** Router Solicitation (Type 133);
+** Router Advertisement (Type 134);
+** Neighbor Solicitation (Type 135);
+** Neighbor Advertisement (Type 136);
+** Redirect (Type 137);
+** Inverse Neighbor Discovery Solicitation (Type 141);
+** Inverse Neighbor Discovery Advertisement (Type 142).
+* Multicast NDP tied to routers:
+** Multicast Router Advertisement (Type 151);
+** Multicast Router Solicitation (Type 152);
+** Multicast Router Termination (Type 153).
+* Messages related to the unusable SeND protocol:
+** Certificate Path Solicitation (Type 148);
+** Certificate Path Advertisement (Type 149).
+* MLDv1 and v2 messages (must arrive via link-local and have a hop-limit of 1):
+** Listener Query (Type 130);
+** Listener Report (Type 131);
+** Listener Done (Type 132);
+** Listener Report v2 (Type 143).
+
+Arbeitet er hingegen als Bridge (L2), muss er die oben genannten Nachrichten zulassen, mit Ausnahme von SeND (solange es nicht verwendet wird).
+
+Sollte erlaubt werden, obwohl es noch fakultativ ist:
+
+* Time Exceeded (Type 3) - Code 1;
+* Parameter Problem (Type 4) - Code 0.
+
+Selbst in L2 wird empfohlen, Redirect (Typ 137) aus Sicherheitsgründen zu blockieren.
+Es sei denn, er wird tatsächlich verwendet, z. B. wenn ein Segment zwei Router (einen eingehenden und einen ausgehenden) und einen Host hat, dessen Routing-Tabelle nicht angepasst ist.
+
+Schließlich muss DPI die Nutzdaten analysieren, um zu erkennen, ob ICMPv6 missgebildet ist oder zum Austausch von Nachrichten verwendet wird, indem eine Art Tunnel geschaffen wird.
+Dies sollte zumindest am Internetübergang geschehen.
+
+DPI wird auch in der Lage sein, eine PMTU-D-Rückgabe mit einem Wert unter 1280 zu blockieren.
+Dies ist unmöglich und würde einen schlecht entwickelten IPv6-Stack zum Absturz bringen.
+
+=== • TRANSITION MECHANISMEN
+
+Wenn das Deaktivieren von Transition Mechanismen auf Hosts eine gute Praxis ist, ist das Blockieren dieser Mechanismen auf Filtergeräten ebenso nützlich.
+
+Diese Regeln sind sowohl auf ein IPv4- als auch auf ein IPv6-Netz anzuwenden, abhängig von der Richtung der Verkapselung.
+Siehe RFC 7123.
+
+Es ist daher notwendig, die :
+
+* IPv4-Protokoll #41 (6in4, 6to4, 6over4, 6rd, ISATAP);
+* IPv4-Protokoll Nr. 47 (GRE), außer wenn verwendet;
+* Teredo:
+** UDPv4-Zielport 3544;
+** Wenn DPI läuft, filtere UDPv6-Pakete mit Teredo-Adresse (die zum Präfix 2001::/32 gehört) in der Payload;
+** DNS-Anfragen an teredo.ipv6.microsoft.com. (über DPI und/oder direkt auf DNS-Servern).
+* ISATAP:
+** Filterung von DNS-Anfragen vom Typ A für isatap.* (über DPI und/oder direkt auf DNS-Servern).
+* 6to4:
+** IPv4-Protokoll 41, das an 192.88.99.0/24 geht oder von dort kommt;
+** Enger mit DPI, IPv4-Protokollpaket #41 mit 6to4-Adresse (zum Präfix 2002::/16 gehörend) in der Payload.
+* 6over4:
+** Pakete mit Protokoll #41 und Ziel 239.0.0.0/8 (Block 6over4 NDP).
+* Tunnel Broker / TSP (Tunnel Setup Protocol):
+** TCPv4 und UDPv4 mit Zielport 3653;
+** Möglichkeit der Vorauswahl mit IP proto #41.
+* AYIYA:
+** TCPv4 und UDPv4 mit Zielport 5072.
+
+Verwenden Sie DPI, wenn möglich intelligent, filtern Sie zuerst nach der Protokollnummer, bevor Sie sie an das Analyseprogramm senden, um Ressourcen zu sparen.
+
+Wird eine dieser Regeln von einem Rechner innerhalb des Netzes ausgelöst, sollte eine Untersuchung durchgeführt werden, um die Ursache für die Fehlkonfiguration zu ermitteln.
+Dies gilt insbesondere für Host-gesteuerte Mechanismen wie Teredo und ISATAP.
+
+Bei IPv6 können Sie 4rd, 4over6, usw. blockieren.
+
+=== • BOGON PRÄFIXE UND ROUTEN
+
+Bei IPv4 ist es abnormal, einige Adressen zu sehen, z. B. ein Paket mit einer Quelladresse von 127.0.0.5 oder eine IP RFC1918, die aus dem Internet kommt...
+Das Gleiche gilt für IPv6.
+
+Idealerweise sollten Sie die betreffenden Pakete auf den Front-End-Firewalls des Internets blockieren, aber auch jede BGP-Ankündigung mit diesen Präfixen aus dem Internet oder einem Partner filtern (außer in besonderen Fällen)
+
+* Größte nicht zugewiesene Blöcke :
+** 2d00::/8
+** 2e00::/7
+** 3000::/4
+** 4000::/2
+** 8000::/1
+* 2001::/23 IETF reserviert;
+* 0::/96 Ehemaliges IPv4-Kompatibilitätspräfix;
+* ::ffff:0:0/96 Mapped IPv4 address;
+* 64:ff9b::/96 NAT64 Well known prefix;
+* 64:ff9b:1::/48 Block für lokale NAT64-Plattformen;
+* 100::/64 RTBH (Remote triggered black hole filtering);
+* 2001:2::/48 Benchmarking;
+* 2001:0DB8::/32 Dokumentation;
+* 5f00::/8 6bone, entfallen;
+* 2002::/16 6to4;
+* 3ffe::/16 früher TEREDO;
+* 2001::/32 TEREDO;
+* 2001:10::/28 ORCHID Overlay Routable Cryptographic Hash Identifiers RFC 4843;
+* 2001:20::/28 ORCHID v2 RFC 7343;
+* 2001:3::/32 AMT, wird verwendet, um einem Multicast durch einen Tunnel beizutreten RFC 7450;
+* 2001:1::1/128 PCP, ermöglicht einen Port dynamisch in der Firewall zu öffnen;
+* ff00::/8 Multicast;
+* fe00::/9 früher Multicast;
+* fc00::/7 Unique Local Address (ULA);
+* fec0::/10 früher Site Local, veraltet;
+* fe80::/10 Link-local (außer für L2-Bridge-Firewall);
+* ::1/128 Loopback (nicht auf einer Host-OS-Firewall blockieren);
+* ::/128 (0) unspecified address;
+* ::/8 Viele reservierte Adressen, darunter die letzten zwei;
+
+Neben den RFCs sollten Sie auch die IANA-Ressourcen nicht vergessen:
+
+https://www.iana.org/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.xhtml
+
+https://www.iana.org/assignments/ipv6-address-space/ipv6-address-space.xhtml
+
+https://www.iana.org/assignments/ipv6-unicast-address-assignments/ipv6-unicast-address-assignments.xhtml
+
+Es gibt automatisch erstellte Listen, die diese Präfixe enthalten, sowie Präfixe, die von keinem RIR zugewiesen wurden.
+Die bekannteste ist https://www.team-cymru.org/Services/Bogons/fullbogons-ipv6.txt.
+
+Sie können sie direkt verwenden (Bogon + unallocated) oder nur die Informationen über routbare Unicast-Adressen 2000::/3 behalten
+
+Beachten Sie, dass der 2001:4:112::/48 AS112-Block es ermöglicht, die zahlreichen Reverse-DNS-Anfragen (ptr), die mit privaten IPs verbunden sind, zu verbergen.
+Das AS112-Projekt zielt darauf ab, DNS-Root zu entlasten, und wird von der ICANN durchgeführt, die aus den Anfragen Statistiken erstellt.
+Sie sollten dieses Präfix also nur dann sperren, wenn Ihre DNS-Infrastruktur das Blackholeing selbst durchführt.
+
+=== • HEADER EXTENSION
+
+IPv6 bringt Header-Extensions (EHs) mit sich.
+Sie können kombiniert werden und müssen bei einem vom Absender-Host fragmentierten Paket immer auf im ersten Fragment erscheinen.
+Daher muss jedes 1. Fragment, das nicht den vollständigen IPv6-Header enthält, zerstört werden.
+
+Eine davon ist der HopByHop (proto 0), der von jedem zwischengeschalteten Router behandelt werden muss.
+Dies macht de facto einen DDoS möglich, insbesondere wenn das Gerät die Bearbeitung an die Steuerungsebene weiterleiten muss.
+Anstatt das Paket zu zerstören, ist es besser, dieses Feld an der Organisationsgrenze zu ignorieren.
+Es ist immer noch notwendig, es zu aktivieren, um intern Multicast oder Jumbogram zu betreiben.
+
+Eine weitere besondere Extension ist der Routing Header (proto 43), der dem von IPv4 ähnlich zu sein scheint.
+Es ist jedoch nur angebracht, seine Unterelemente RHT 0 und RHT1 zu blockieren, die dem veralteten Source Routing und Nimrod entsprechen.
+Andere sind relevant wie der SRH (Segment Routing Header) von SRv6.
+
+Blockieren Sie nicht die Extension, die anzeigt, dass das Paket fragmentiert ist (Proto 44), und die zwei Extensions in Bezug auf IPsec : Encapsulation/ESP (Proto 50) und Authentication/AH (Proto 51).
+
+Der folgende RFC-Entwurf beschreibt die empfohlene Politik (ab Abschnitt 3.3) https://datatracker.ietf.org/doc/html/draft-ietf-opsec-ipv6-eh-filtering
+
+Sie sollten Pakete nicht einfach ablehnen, weil sie Header Extension enthalten.
+Idealerweise sollten Sie nur bestimmte Typen zwischen dem Internet und dem internen Netz filtern.
+
+Stellen Sie sicher, dass Ihre ISPs keine Pakete mit Extensions verwerfen, und überprüfen Sie Ihre Router und Firewalls intern, um zu erkennen, wenn ein Paket aufgrund von Extensions in die Steuerebene eskaliert.
+
+Überprüfen Sie diese Regeln alle 2 Jahre, einige Extensions können verschwinden, andere können hinzukommen.
+Im Moment gibt es noch Geräte, die versuchen, Extensions zu verarbeiten, auch wenn sie nicht in Ordnung sind oder sich wiederholen, was zu Abstürzen führen kann, siehe https://datatracker.ietf.org/doc/html/draft-kampanakis-6man-ipv6-eh-parsing-01
+
+Schließlich sollten Sie sich die Zeit nehmen, RFC 7112 zu lesen, um zu verstehen, was passiert, wenn Extensions aneinandergereiht und fragmentiert werden. Daher die Entscheidung, sie alle in das erste Fragment zu zwingen.
+
+=== • Policies
+
+Da IPv6 eine große Anzahl von Adressen bietet, ist es notwendig, die Art und Weise zu ändern, wie vorübergehende Sperren gehandhabt werden.
+
+Viele Mechanismen werden ausgelöst, um einen Benutzer nach einer bestimmten Anzahl erfolgloser Authentifizierungsversuche vorübergehend zu sperren oder um eine Website nach starkem Datenverkehr von einer einzelnen IP-Adresse mit einem Captcha zu versehen.
+Dies ist typischerweise das Prinzip eines Tools wie Fail2Ban oder eines ähnlichen.
+
+Ein infizierter Rechner, der Mitglied eines Botnetzes ist, hat immer dieselbe IPv4, bis sein ISP beschließt, sie zu ändern.
+Er kann jedoch die 2^64 IPv6Adressen, die von der /64, zu der er gehört, angeboten werden, nach dem Zufallsprinzip und mit sehr häufigen Änderungen verwenden.
+
+Auf diese Weise können die Sperrlisten schnell gesättigt werden, oder sie können im Gegenteil umgangen werden, indem die IPv6-Adresse zwischen den einzelnen Versuchen geändert wird.
+
+Aus diesen Gründen ist es wichtig, dass Sie Ihre Blockierungsmechanismen immer auf dem /64 aufbauen.
+Und idealerweise sollten Sie auch einen Malus auf dem übergeordneten /56 auslösen, um Zeit zu sparen, falls ein bösartiger Versuch von einem benachbarten /64 ausgeht.
+Letzterer gehört wahrscheinlich zum selben Haushalt.
+
+NOTE: Dies gilt natürlich auch für den umgekehrten Fall, d. h. einen Benutzer zu bitten, sich nach 20 Minuten erneut zu authentifizieren, weil sich seine temporäre IPv6 geändert hat, macht keinen Sinn, solange er sich immer noch im selben /64 befindet.
+
+//#### Ende des Kapitels ####

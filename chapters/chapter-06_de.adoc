@@ -1,0 +1,471 @@
+image::images/image06_01_tartan.jpeg[Tartan,width=609,height=729,align="center"]
+
+<<<
+
+[big]#*Anhang*#    
+
+Der Anhang enthält technische Ergänzungen und spezifische Informationen für den Heimgebrauch.
+
+=== • URL UND LINK-LOCAL IP
+
+Die link-local-Adresse im Bereich FE80::/10 weist die Besonderheit auf, dass sie eine Schnittstellenkennung enthält.
+Dieser Bezeichner verwendet je nach System den Namen oder die Nummer der Schnittstelle.
+
+Linux fügt den Namen der Schnittstelle hinzu, zum Beispiel %eth0, macOS typischerweise mit %en0.
+
+Windows hingegen fügt die Schnittstellennummer, %1 usw. hinzu.
+
+image::images/image06_02_netsh.png[netsh,width=513,height=174,title="netsh interface ipv6 show address"]
+
+[.blue]#Unter Windows zeigt der Befehl `netsh interface ipv6 show address` alle zugewiesenen IPv6-Adressen an.
+In powershell zeigen `Get-NetAdapter` und `Get-NetIPAddress` ebenfalls Informationen an.#
+
+image::images/image06_03_powershell.png[powershell,width=279,height=311,title="Get-NetIPv6Protocol"]
+
+[.blue]#Der Powershell-Befehl `Get-NetIPv6Protocol` gibt die globale Host-IPv6-Konfiguration zurück.#
+
+Für Entwicklungszwecke oder einfach für den Heimgebrauch werden URLs üblicherweise mit IP gebildet.
+
+In IPv6 hat eine http-URL zum Beispiel die Form http://[2001:db8:AAAA:BBBB::H]:8080
+
+Derzeit ist es nicht möglich, link-lokale Adressen innerhalb einer URL in einem gängigen Webbrowser zu verwenden.
+RFC 6874 erzwingt die Verwendung des %-Zeichens vor der Schnittstellenkennung in einer URL (%2, %eth0, usw.)
+
+Die Verwendung von % ist jedoch der HTML-Gemeinschaft vorbehalten, WHATWG https://github.com/whatwg/url/issues/392
+
+Man sollte also immer globale oder lokale Adressen in einem Browser verwenden. Ihre Unterstützung funktioniert normalerweise in anderen Kontexten, wie einem SCP-Client.
+
+Hier ist das Ticket für die Neuimplementierung des Link-Local in Firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=700999
+
+Und Chrom https://bugs.chromium.org/p/chromium/issues/detail?id=70762
+
+Denken Sie daran, dass eine rein lokale Anwendung (z. B. eine Industriesteuerungsschnittstelle) niemals benötigt, dass sich ein Benutzer über die lokale Link-Adresse in einem Browser mit ihr verbindet.
+
+=== • MEHRERE PRÄFIXE
+
+IPv6 ermöglicht die gleichzeitige Verwendung mehrerer Präfixe in einem Netz, doch obwohl dieser Mechanismus auf niedriger Ebene im Netz und bei den Hosts sehr gut funktioniert, wirft er einige Probleme auf.
+
+Die Datenströme verlassen den Host von einer standardmäßig gewählten Adresse oder von der Adresse, die das längste gemeinsame Präfix mit dem Ziel hat.
+Dieser unkontrollierte Aspekt macht die Konfiguration komplexer.
+
+Welche Adresse sollte automatisch im lokalen DNS registriert werden?
+
+Sicherheitssysteme, sei es auf der Zugangsebene (L2-NDP) oder auf der Verkehrsebene (FW, ACL usw.), müssen in der Lage sein, sich im laufenden Betrieb anzupassen.
+
+Multi-homing bis zu den Hosts kann in einer kleinen Struktur interessant bleiben, um einen Wechsel bei einem Providerwechsel zu ermöglichen.
+Für Netze mittlerer Größe ist die Kombination (PI oder ULA) + NPTv6 die bessere Wahl.
+Letzteres ist zustandslos und leicht zu konfigurieren.
+
+[NOTE]
+====
+Es wurde ein Mechanismus entwickelt, der es einem Client und einem Server ermöglicht, ihre unterschiedlichen Adressen über eine Header-Erweiterung auszutauschen und im Falle eines Fehlers zu wechseln, ohne die obere Schicht zu beeinträchtigen und daher ohne Zeitüberschreitung.
+Dies war Shim6. Sie konnten sich sogar über Adressen authentifizieren, die mit kryptografischen Mechanismen (CGA) erzeugt wurden.
+In der Praxis wurde Shim6 fallen gelassen, so dass wir im Bereich von Timeout + Aufbau einer neuen Sitzung bei Verlust eines Pfades bleiben, oder von einem Protokoll der oberen Schicht berücksichtigt werden.
+Was das OSI-Modell betrifft, so ist anzumerken, dass IP diese Art von Mechanismus ohnehin nie bereitstellen sollte; dies ist die Aufgabe von TCP und jetzt QUIC.
+====
+
+=== • CONTAINER
+
+//[#_Toc88922583 .anchor]##image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] Marignalspalte ??
+
+==== Docker
+
+Docker betreibt standardmäßig eine Bridge, eine Docker0-Schnittstelle, und fügt Ports zu NAT44-Regeln hinzu, die auf veröffentlichte Container-Ports verweisen. Es können zusätzliche Bridges erstellt werden, um Container voneinander zu isolieren.
+
+Der Overlay-Modus nutzt VxLAN und ermöglicht die Kommunikation zwischen Hosts, ohne sich um die Konfiguration des zugrunde liegenden Netzes kümmern zu müssen (zusätzlich zur Möglichkeit der Verschlüsselung, Vereinfachung der SWARM-Verwaltung usw.).
+
+Es ist daher schwierig, IPv6 zu verwenden, da Docker so konzipiert ist, dass es eine vollständige Abstraktion des Netzwerks (und auch des Rests) bietet.
+
+Es gibt mehrere Möglichkeiten, dieses Problem zu umgehen:
+
+* Verwenden Sie den "macvlan"-Modus, bei dem die Container auf Ebene 2 wie VMs behandelt werden.
+Jeder mit seiner eigenen MAC. Nicht sehr praktisch und vor allem schwierig in das Ökosystem zu integrieren und zu betreiben;
+* Der neuere IPvlan L2-Modus stellt die IPs der Container hinter derselben MAC wie der Host über einen leichteren Mechanismus als das klassische Bridging zur Verfügung;
+* In seiner L3-Version eliminiert IPvlan vollständig das Schleifenrisiko und stützt sich auf IPv4-Subnetze und IPv6-Präfixe.
+Die entsprechenden Routen müssen auf den Netzgeräten implementiert werden, wobei jeder Host über ein oder mehrere eindeutige Präfixe verfügt.
+
+Im Jahr 2016 initiierte ein Entwickler ein Projekt zu NAT66 im Bridge-Modus in Docker https://github.com/robbertkl/docker-ipv6nat
+
+Er weist auch darauf hin, dass durch das Fehlen von NAT alle Ports in IPv6 zugänglich sind und man sich daher Gedanken über die Sicherung des Zugangs im Vorfeld machen muss.
+
+Für große Installationen empfehlen wir den IPvlan L3-Modus.
+
+Brauchen wir wirklich IPv6 in Docker? Wie im Dokument angedeutet, ist es interessant, IPv6-Unterstützung auf dem Frontend bereitzustellen (zum Beispiel SLB-Container wie traefik, hap, envoy, caddy usw.). 
+Darüber hinaus kann das Backend in IPv4 bleiben.
+
+//[#_Toc88922584 .anchor]####Kubernetes
+==== Kubernetes
+
+Kubernetes stellt standardmäßig eine IP pro Pod (Gruppierung von Containern auf einem Host) zur Verfügung.
+Der Host wird als Node bezeichnet.
+Achten Sie auf die Bedeutung von Pod, die sich hier von anderen Lösungen unterscheidet.
+Die Adresse wird dem Block entnommen, der der Node zugewiesen ist.
+
+Die Adressierung ist somit flach und ohne Overlay, was die Kommunikation zwischen den einzelnen Pods erleichtert, unabhängig davon, ob sie sich im selben Node befinden oder nicht.
+Die Sicht auf die Adressierung ist daher identisch, egal ob man sich innerhalb oder außerhalb der Lösung befindet.
+
+Er ist daher dem IPvlan-3-Modus von Docker sehr ähnlich.
+
+Die Verwaltung des Netzes wird dann von einer der zahlreichen Lösungen von Drittanbietern übernommen, die es auf dem Markt gibt (Open Source oder nicht).
+
+Schließlich erfolgt der Zugriff von außen in der Regel über die Kubernetes-Services-Kombination in Verbindung mit einem Load-Balancer, wobei letzterer meist extern ist.
+
+IPv6 wurde vor kurzem von Docker als stabile Funktion markiert, Kubernetes folgte mit Beta-Unterstützung in 1.21 und stabil in 1.23. https://kubernetes.io/docs/concepts/services-networking/dual-stack/
+
+Seit diesen Veröffentlichungen Ende 2021 haben einige Cloud-Anbieter bereits damit begonnen, IPv6 für Containerdienste und andere verwaltete Dienste, die indirekt von Containern genutzt werden, einzuführen.
+
+Denken Sie daran, dass der Load Balancer immer eine Adressübersetzung durchführt, es sei denn, Sie verwenden Headless Services.
+
+Für den ausgehenden Datenverkehr ins Internet ist durch die Verwendung öffentlicher IPv6-Adressen kein Proxying oder NAT erforderlich.
+
+=== • SCADA
+
+Bei einem SCADA-Netz handelt es sich um ein geschlossenes Netz, wie es häufig in der Industrie anzutreffen ist. 
+Der Sinn einer Migration zu IPv6 ist hier relativ begrenzt.
+Die Kompatibilität von Industrielösungen mit dem Protokoll wird noch einige Zeit dauern, bis sie vollständig ausgereift ist.
+Zögern Sie jedoch nicht, diese Kompatibilität in den optionalen Fragen der Ausschreibungen zu erwähnen, und ziehen Sie IPv6 nur dann ernsthaft in Betracht, wenn das gesamte Ökosystem kompatibel und getestet ist.
+Wenn Ihr SCADA-Netz riesig ist, da Ihr Unternehmen viele Präsenzpunkte umfasst, kann IPv6 Ihnen immer noch die IPv4-Adressierung ersparen.
+Die Implementierung von 6LoWPAN auf eingebetteter Hardware kann ebenfalls eine wichtige Rolle spielen.
+Andernfalls können Sie immer noch mit IPv4-Adressüberlagerungen/Überschneidungen mit dem Rest der IT arbeiten, da das Prinzip der SCADA darin besteht, dass sie isoliert ist und nicht an andere Ressourcen weitergeleitet wird.
+Somit ist die Überlappung nur an den Schnittstellenelementen zwischen dem allgemeinen Informationssystem und dem SCADA-Informationssystem zu handhaben, und das sind aus Sicherheitsgründen nur wenige Elemente.
+
+//=== image:extracted-media/media/image30.svg[Smartphone Kontur,width=75,height=75]◗ Marginalspalte
+=== • NAT64 IN DEN NETZEN DER MOBILFUNKBETREIBER
+
+Schauen wir uns an, was bei der Einrichtung von NAT64 zwischen Smartphones und dem Internet zu beachten ist.
+
+//[#_Toc88922587 .anchor]####Dienstesuche
+==== Service Discovery
+
+Der Abschnitt NAT64 des Dokuments erläutert die Implementierung mit Workstations.
+Einige Methoden werden verwendet, um Hosts mit dem NAT64-Präfix zu versorgen, hauptsächlich auf mobilen Plattformen.
+Dadurch wird sichergestellt, dass die Endpunkte wissen, dass sie sich hinter einem NAT64 befinden.
+Die Hauptvorteile dieses Bewusstseins bestehen darin, dass der Host die DNSSEC-Validierung wiederherstellen kann und dass der Betrieb von Adressliteralen nicht nur in der IP-Schicht möglich ist, sondern auch dann, wenn eine Payload sie enthält (z. B. SIP ohne die Notwendigkeit eines ALG).
+
+RFC7051 behandelt dieses Thema, ebenso wie der folgende Entwurf:
+
+https://tools.ietf.org/id/draft-ietf-v6ops-nat64-deployment-08.html
+
+Eine Lösung ist der DNS-Eintrag ipv4only.arpa, der eine bekannte Antwort auf der Grundlage eines RFC liefern muss.
+In diesem Fall ein A-Eintrag 192.0.0.170 oder 192.0.0.171.
+
+Wenn die Antwort ein AAAA-Datensatz ist, z. B. 64:ff9b::192.0.0.170 (hier in Dezimalschreibweise, damit Sie es leichter lesen können, wenn Sie sich in den Anhang gewagt haben), dann ist eine NAT64-Plattform mit dem Präfix 64:ff9b::/96 in Produktion.
+Übrigens macht Android das Gleiche mit dem DNS-Eintrag ipv4.google.com.
+
+Das PCP-Protokoll (mit dem Sie einen Port auf Ihrem Heimrouter öffnen können) bietet auch die Möglichkeit, das Vorhandensein eines NAT64-Präfixes abzufragen.
+
+Im RFC werden andere Möglichkeiten genannt, nämlich die Bereitstellung der Informationen im Router Advertisement oder über eine DHCPv6-Option.
+
+Schließlich ermöglicht die gute alte APN-Konfiguration des Netzbetreibers auf dem Handy auch die Weitergabe des Präfixes an Smartphones.
+
+PC-Betriebssysteme unterstützen leider keine dieser Methoden auf ihren LAN-Schnittstellen.
+DNS64 wird also noch lange Zeit im Unternehmen bleiben.
+
+//[#_Toc108476738 .anchor]####Bedienung auf mobilen Betriebssystemen
+==== Betrieb auf mobilen Betriebssystemen
+
+Um die Kompatibilität mit der Verwendung von IPv4-Adressen sowie die Unterstützung von DNSsec-Signaturen usw. zu gewährleisten, müssen mobile Betriebssysteme IPv4 verwenden können.
+
+Obwohl die beiden wichtigsten mobilen Betriebssysteme Mechanismen zur Gewährleistung der IPV4-Kompatibilität implementieren, unterscheidet sich die Umsetzung grundlegend.
+
+Google Android stützt sich auf das Netzwerk und 464 XLAT.
+
+Die Datei clatd.conf enthält Anweisungen für die CLAT-Konfiguration des Endpunkts. Eine IPv6-Adresse, die Teil des dem Endpunkt zugewiesenen /64 ist, wird mit einer virtuellen privaten IPv4-Adresse abgebildet (SIIT). (Häufig 192.0.0.4).
+Der IP-Stack fängt alle IPv4-Pakete ab und übersetzt sie in IPv6.
+In der anderen Richtung wird ein Paket, sobald es an der für die CLAT reservierten Adresse ankommt, in IPv4 übersetzt.
+Die Entwicklung kann hier verfolgt werden https://android-review.googlesource.com/q/project:platform%252Fexternal%252Fandroid-clat
+
+Apple iOS macht sich die eher begrenzte Offenheit seines Systems zunutze, um das Problem auf den oberen Ebenen zu lösen.
+So wandeln die Frameworks (CFNetwork auf der unteren Ebene, das Cocoa-URL-Ladesystem auf der höheren Ebene) sowie die obligatorische Browsing-Rendering-Engine WebKit jede IPv4-Adresse direkt in die Adresse um, die durch die Synthese des NAT64-Präfixes mit dieser Adresse zurückgegeben wird.
+Auf diese Weise wird kein einziges IPv4-Paket wirklich erzeugt.
+Dieser Weg ist aus energetischer Sicht effizienter.
+
+//[#_Toc88922589 .anchor]####Freigabe von Verbindungen
+==== Hotspots und Teathering
+
+Bei der gemeinsamen Nutzung, die auch als Hotspot oder Tethering bezeichnet wird, wird Dual-Stack-WiFi für Hosts bereitgestellt, die nicht wissen, dass nur IPv6 an den Router geliefert wird, in diesem Fall ein Smartphone.
+
+Wenn 464 XLAT zur Rettung kommt, wird das Telefon als CLAT in Verbindung mit dem NAT64 (PLAT) des Betreibernetzes handeln.
+Gleicher Betrieb auf Android und iOS:
+
+Anstatt ein zustandsabhängiges NAT44 gefolgt von einem NAT46 durchzuführen, wird eine zustandslose Zuordnungsregel (SIIT) zwischen dem IPv4-Netz des Hotspots (meist /24) und einem Teil des /64-IPv6-Netzes, das ihm gehört, erstellt.
+Somit ist keine Zustandstabelle und kein Portwechsel auf der Telefonseite erforderlich.
+Der Verkehr durchläuft dann das Stateful NAT64 des Netzbetreibers, um im Internet wieder auf IPv4 umzuschalten.
+
+Denken Sie daran, dass der IPv6-Header länger ist und das erste Gateway den Datenverkehr möglicherweise fragmentieren muss. 
+Wundern Sie sich also nicht, wenn das Hochladen einer Datei durch CLAT verlangsamt wird. 
+Die derzeit auf dem Markt erhältlichen ARM-SoCs bieten Hardware-Unterstützung für alle 464 XLAT-Operationen, um solche Probleme zu vermeiden.
+
+//=== image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75]◗ IPV4 PORT SHARING Mariginalspalte
+=== • IPv4 PORT SHARING
+
+Die Address + Port-Techniken werden kurz in dem Abschnitt über die Übergangsmechanismen behandelt. (4rd und MAP-T/E für die neuesten Verfahren).
+Hosts hinter einem Heimrouter, die einen solchen Mechanismus verwenden, wissen nicht, dass nur ein Teil der 65.535 Ports ihrem WAN zugewiesen ist.
+
+Das ist nicht weiter besorgniserregend, es sei denn, ein Programm verlangt die Öffnung eines Ports (UPnP, NAT-PMP) und der Router vergisst, dass er nicht auf alle Ports Zugriff hat.
+Manchmal gibt er einen Port zurück, der außerhalb des dem Teilnehmer zugewiesenen Bereichs liegt.
+Das ist wie russisches Roulette bei einigen P2P-Börsen.
+
+In RFC 6269 werden die Probleme im Zusammenhang mit der gemeinsamen Nutzung erörtert, darunter auch das hier erwähnte Problem, das bei Betreibern auftritt, die die gemeinsame Nutzung zu schnell und zu locker umgesetzt haben.
+
+Ein ISP sollte IPs nicht mit mehr als 16 Kunden teilen.
+
+image::images/image06_04_map.png[MAP A+P,width=546,height=90,title="MAP A+P Simulation der gemeinsamen Nutzung von Ports"]
+
+[.blue]#In diesem Beispiel wird IPv4 zwischen vier Kunden geteilt http://map46.cisco.com/MAP.php#
+
+=== • RFC-ENTWÜRFE ZUR RETTUNG VON IPv4
+
+Einige Leute bemühen sich, die Lebensdauer von IPv4 zu verlängern, indem sie Wege finden, seine Adressierungsmöglichkeiten zu erweitern.
+
+Es gab mehrere Entwürfe, von denen die jüngsten zu sein scheinen:
+
+https://www.ietf.org/id/draft-schoen-intarea-unicast-0-00.html
+
+https://www.ietf.org/id/draft-schoen-intarea-unicast-127-00.html
+
+https://www.ietf.org/id/draft-schoen-intarea-unicast-240-00.html
+
+Es versteht sich von selbst, dass die Aktualisierung aller IP-Stacks von PC-Betriebssystemen, Smartphones, Routern usw. zur Unterstützung dieser Änderungen wesentlich mehr Aufwand erfordern würde als die Umstellung auf IPv6.
+
+Dennoch wird 240/4 offiziell von mindestens zwei großen Herstellern sowie von Google GCP unterstützt.
+
+Der EzIP-Vorschlag befindet sich in seiner neunten Auflage, wenn Sie NAT lesen möchten:
+
+https://datatracker.ietf.org/doc/html/draft-chen-ati-adaptive-ipv4-address-space-09
+
+=== • BEISPIELE FÜR IPV6-IMPLEMENTIERUNGSPROBLEME
+
+Hier sind einige Beispiele für Implementierungsfehler, die bei der Verwendung von IPv6 auftreten.
+
+//[#_Toc85149062 .anchor]####Nichtstilllegung von Strecken
+==== Nicht gelöschte Routen
+
+Bei IPv4 hat man entweder Konnektivität oder nicht.
+Wie können Sie sicher sein, dass die IPv6-Konnektivität verfügbar ist, sobald Sie auf Dual-Stack umstellen?
+Happy Eyeballs kann helfen, aber es erzeugt eine Verzögerung und ist nicht dafür ausgelegt, eine längere Abwesenheit von IPv6-Konnektivität zu kompensieren.
+
+Beispielsweise haben die ISP-Router mit LTE-Backup oft nur IPv4 auf dem Backup-Link.
+Wenn das Backup ausgelöst wird, senden einige Router weiterhin RAs, um sich als Standard-Router zu deklarieren und ein IPv6-Präfix anzukündigen, das nicht mehr nutzbar ist, da die IPv6-Konnektivität vollständig unterbrochen ist.
+
+Dieses Problem tritt auch bei der Umnummerierung auf.
+Bei IPv4 macht NAT44 das lokale Netz unabhängig von der WAN-Adressierung.
+Bei IPv6 ist dies nicht mehr der Fall (außer bei der Kombination von ULA und NPTv6).
+In den seltenen Fällen, in denen ein ISP sein Netz umnummeriert, kann es daher zu einem vorübergehenden Verlust der Konnektivität kommen, solange die alten RA-Informationen noch im Cache gespeichert sind.
+
+In Abschnitt 6.3.5 von RFC 4861 heißt es, dass Hosts das Präfix löschen müssen, wenn der Timer abläuft oder wenn der Router sich nicht mehr als Standard ankündigt.
+In unserem Fall existiert der Router jedoch noch und ist über seine lokale Link-Adresse erreichbar.
+Die Hosts werden warten, bis der Präfix-Timer abgelaufen ist, bevor sie die Schnittstellenadresse(n) mit dem alten Präfix löschen.
+Die Endpunkte werden also weiterhin Pakete an den Router senden, allerdings mit einer Quelladresse, die zum alten Präfix gehört...
+Sie werden vergeblich auf eine Antwort warten und ohne aggressive Timer-Einstellungen kann es leicht 1800 Sekunden oder eine halbe Stunde dauern.
+Wir können den Betreibern nur empfehlen, die Ablaufzeiten auf einen Wert unter einer Minute zu senken.
+
+Wer mit IPv6-Multihoming spielen will, wird schnell auf ähnliche Failover-Probleme stoßen.
+
+//[#_Toc85149063 .anchor]####Unerwartete Verwendung der IPv4-Präfix-Darstellung
+==== Unerwartete Verwendung der IPv4-Präfix-Darstellung
+
+Um Ihr Informationssystem zu vereinfachen, haben Sie beschlossen, in Ihrer CMDB nur die IPv6-Notation zu verwenden. 
+So verwenden Sie in Ihren Konfigurationsskripten usw. das Präfix ::ffff:0:0/96, um ein IPv4 anzugeben.
+
+Seltsamerweise erstellt Ihr Skript zwar eine ACL-Regel/Richtlinie, kann sie dann aber bei der Überprüfung nicht finden und beendet die Ausführung mit einem Fehler.
+Der betreffende Ablauf funktioniert jedoch.
+
+Tatsächlich hat das konfigurierte System einfach beschlossen, die Notation eines IPv4 mit ::ffff:0:0/96 zurück in die klassische IPv4-Notation zu übersetzen.
+
+Diese Art von Verhalten gab es schon bei einigen F5-Produkten, zum Beispiel: https://cdn.f5.com/product/bugtracker/ID669888.html
+
+Praktisch, aber bei Automatisierungen zu berücksichtigen.
+
+image::images/image06_05_ping.png[ping,width=477,height=76,title="Diese automatische Konvertierung können wir in gängigen Tools wie Windows ping finden"]
+
+//[#_Toc85149064 .anchor]####Inkompatible Eingabefelder
+==== Inkompatible Eingabefelder
+
+Bei der Eingabe einer IPv6 sind die Feldprüfungen manchmal unzureichend.
+Die folgenden Fehler können in grafischen Umgebungen und seltener in einer Befehlszeilenumgebung auftreten.
+
+Ein völlig inkompatibles Feld lehnt eine Adresse ab, die nicht in der IPv4-Form vorliegt, aber auch Feinheiten können die Prüfungen überlisten.
+Zum Beispiel wird manchmal das [ ], das die Adresse vom Port trennt, nicht beachtet.
+
+So kann die Eingabe von [2001:db8::2D5E]:8443 von der Software in 2001:db8::2D5E:8443 umgewandelt werden.
+
+=== • VERSCHWENDUNG VON ADRESSSRAUM
+
+Ja, es gibt viele IPv6-Adressen!
+Das Internet ist voll von klugen Berechnungen, die uns erklären, dass 2E128 gleich 3,4 * 10E38 Adressen sind, d.h. 667 Sextillionen pro m² terrestrischer Oberfläche.
+Die Zahl liegt außerdem nahe an der Avogadro-Konstante (~6,02*10E23).
+
+Mit Sätzen wie "wir könnten jedes Sandkorn bis zu 2 km tief adressieren" glauben wir natürlich, dass wir alles tun können.
+
+Eine IPv6-Adresse ist jedoch weder ein Nummernschild noch eine Telefonnummer.
+Sie ist meist auf der Grundlage eines /64-Präfixes aufgebaut.
+Außerdem gehören diese Präfixe zu einer Teilmenge, die für das globale Routing reserviert ist und vom RIR zugewiesen wird.
+
+Ein großes Unternehmen, das ein /29 erhält, kann also logischerweise 34 Milliarden Netze schaffen.
+Wenn wir nun die Anzahl der Einrichtungen in /48 zählen, sind es 524.288.
+
+Die indische Post mit ihren 160.000 Postämtern ist also beruhigt...
+Nun, es sei denn, jemand beschließt, dass das Gast-WiFi und das IoT-Projekt für intelligente Gebäude jeweils ihre eigenen /48 pro Standort benötigen, weil Sicherheit/Politik/Delegation/interne Organisation (streichen Sie das Unwichtige) dies erfordern.
+Das wird Sie zum Lachen bringen, aber schauen Sie sich IPv4 an, diese Art der Argumentation ist viel zu weit verbreitet.
+
+=== • UMWIDMUNG VON ADRESSEN FÜR ANDERE ZWECKE
+
+Die riesige Anzahl möglicher Adressen hat die Ingenieure auf Ideen gebracht, wie man sie auf der Grundlage der genauen Identifizierung des Benutzers und/oder der Ressource, auf die zugegriffen werden soll, manipulieren kann.
+
+Hier sind einige Beispiele:
+
+* Einem Server für jeden Client, der sich mit ihm verbindet, unterschiedliche IPv6-Adressen zuweisen?
+Im Falle eines DDoS können wir nur die betroffene Adresse blockieren, ohne die anderen Clients zu beeinträchtigen, die sich mit demselben Rechner verbinden.
+Der zukünftige Freund von RTBH?
+* Eine Authentifizierung direkt in die Adresse aufnehmen, die sich mit der Zeit weiterentwickelt?
+Dies ist das Prinzip des IPv6 TOTP, das von diesem SSH-Server-Projekt bereitgestellt wird, dessen IP sich alle 30 Sekunden ändert. https://github.com/mikroskeem/tosh
+* Direkte Zuweisung von Daten wie z. B. Streaming-Video-Chunks und nicht mehr der Server, der sie hostet; dies ist z. B. der Gegenstand des folgenden Patents https://patents.justia.com/patent/11134052
+
+Wenn jedem Server eine große Anzahl von Adressen zugewiesen wird, kann der NDP-Cache schnell überlastet werden.
+
+Diese Verwendungszwecke sind weiterhin möglich, wenn wir dem Server direkt ein /64-Präfix zuweisen, wie in RFC 8273 beschrieben.
+Dies ist, was wir bereits mit Containern tun, wie oben am Beispiel von Kubernetes-Knoten beschrieben.
+Diese /64 könnten auch von Load Balancern gehandhabt werden.
+
+Für Systeme mit regelmäßigem Adresswechsel bedeutet dies, dass jedes Mal eine Sitzung neu aufgebaut werden muss, aber schließlich wäre es nie mehr als eine neue Verwendung der 0-RTT von QUIC zum Beispiel.
+
+=== • SRv6
+
+Segment-Routing breitet sich bei Netzbetreibern und GAFAMs rasch aus.
+Derzeit ist SR-MPLS führend, aber Prognosen zeigen, dass sein Gegenstück, das auf einer einfachen IPV6-Datenebene basiert, in einigen Semestern die Führung übernehmen wird.
+
+Die Beherrschung des IPv6-Transports und dieses sektordominanten IGP, IS-IS, wird schnell zu einem Muss für jedes große Netz.
+
+Zusätzlich zu den Beiträgen der SR in Bezug auf die dynamische und adaptive Topologie, die Telemetrie und die Möglichkeit, dienstorientierte Felder (Sicherheitsgruppe, Anwendungskennung...) in den SRH-Header aufzunehmen, wird sie zweifellos die erste sein, die die Gesamtheit der bestehenden Stacks von Schichtenprotokollen ersetzt.
+
+So wird es über das Backbone hinaus wahrscheinlich das Paar VxLAN + EVPN im Rechenzentrum sowie die geschlossenen SDN-Campus-Lösungen ersetzen.
+Sie bietet einen echten End-to-End-Service ohne Kompromisse.
+
+Die Dienstfelder werden dann eine echte dynamische Anwendung von Richtlinien ermöglichen, die nicht mehr auf Adressbereichen usw., sondern auf zusätzlichen Informationen basieren.
+All dies geschieht ohne proprietäre Technologie, sondern kann sowohl von physischen als auch von virtuellen Dienstgeräten (VNF) genutzt werden.
+
+Später werden diese Felder wahrscheinlich vom Host selbst eingefügt, so dass Informationen, die direkt von der Anwendung bereitgestellt werden, an ihn weitergegeben werden können.
+Der 1st-Hop-Router wird weiterhin für das Hinzufügen des ausgewählten Pfads zuständig sein.
+Auf der Serverseite haben wir die Integration der VTEP-Terminierung (VxLAN und manchmal GENEVE) gesehen, die von den Top-of-Rack-Switches zu den Servern selbst herunterkommt.
+Auf die gleiche Weise werden wir wahrscheinlich eine vollständige SRv6-Verarbeitung auf Servern erleben, einschließlich der Topologieverwaltung, insbesondere dank der Ankunft von Netzwerkprozessoreinheiten (NPUs, nicht zu verwechseln mit Neural Processor Units) und IPUs (Infrastructure Processing Units).
+
+Die Hersteller drängen die Unternehmen derzeit zur Umstellung auf SR-MPLS, um dann später mit SRv6 zurückzukommen.
+Möglicherweise werden wir jedoch bald damit beginnen, den Übergang zu SRv6 direkt im Unternehmensnetz und nicht mehr nur in den Netzen der Netzbetreiber zu unterstützen.
+
+=== • THREAD
+
+Thread ist ein IoT-orientiertes Netzwerkprotokoll, das von der Thread Group https://www.threadgroup.org/ vorangetrieben wird.
+
+image::images/image06_06_thread-logo.png[Logo von Thread,width=125,height=23,title="Logo von Thread"] 
+
+Sein Zweck ist die Bereitstellung eines Mesh-Kommunikationsnetzes zwischen Hausautomatisierungsgeräten auf der Grundlage von 6LoWPAN.
+Es nutzt IPv6 mit den Begriffen "Scope", "Routerknoten" und "Children".
+Besuchen Sie die OpenThread Open Source Projektseite https://openthread.io/guides/thread-primer/ipv6-addressing .
+
+Der Smart-Home-Konnektivitätsstandard *Matter* ist mit ihm aufgebaut.
+
+=== • SELF-HOSTING UND HEIMANWENDER
+
+Anhand der Erfahrungen mit der Implementierung von IPv6 in einem einfachen Heimnetzwerk lassen sich einige der Unterschiede zu IPv4 leicht nachvollziehen.
+Insbesondere werden wir hier die Exposition der Dienste gegenüber der Außenwelt sehen.
+
+Obwohl diese Beispiele in einer kleinen Struktur verwendet werden können, erinnern wir Sie daran, dass es unerlässlich ist, eine echte Filter- und Analyseschicht am Eingang des Internets auf einem Produktionssystem zu haben, selbst wenn es klein ist.
+
+//[#_Toc85149302 .anchor]####Adressierung und DNS-Veröffentlichung
+==== Adressierung und DNS-Veröffentlichung
+
+Meistens stellen die Netzbetreiber nur ein /64 zur Verfügung, ohne die Möglichkeit, die anderen dem Router zugewiesenen Präfixe zu verwenden (oft in Form eines /56).
+
+Es ist auch unmöglich, die Stabilität des Praifixes im Laufe der Zeit zu gewährleisten (es sei denn, es besteht eine vertragliche Verpflichtung).
+
+Die Adresse jedes auszustellenden Rechners muss daher unabhängig veröffentlicht werden, während wir früher die WAN-IPv4-Adresse veröffentlicht und mit den NAT44-Ports gespielt haben.
+
+Wir beginnen damit, dass wir sicherstellen, dass die Rechner eine stable Adresse verwenden (in der Regel basierend auf MAC oder stable Privacy, was wünschenswert ist).
+
+Wir werden dann einen dynamischen IPv6-DNS-Dienst verwenden, z. B. Dynu, DuckDNS usw.
+
+Es gibt mehrere Methoden, um das IP/AAAA-DNS-Eintragspaar direkt auf einem Rechner zu verfolgen:
+
+* Abfrageskript mit automatischer Erkennung der Adresse durch den API-Server des DNS-Dienstes;
+* Skript, das die öffentliche IP-Adresse über eine Drittanbieter-API abruft (z. B. api6.ipify.org) und dann an den DNS-Dienst weiterleitet;
+* Skript, das die IP von der Systemschnittstelle abruft (achten Sie darauf, die öffentliche stabile IP zu verwenden);
+* Software-Agent des Dienstes.
+
+Es ist auch möglich, sich auf einen Router und seine NDP-Informationen zu verlassen, aber dann verlassen wir die einfache Verwendung des Heimrouters.
+
+//[#_Toc108476752 .anchor]####Durchflussöffnung
+===== Flow openening
+
+Die Bereitstellung einer Firewall in IPv6 wird von den Betreibern uneinheitlich gehandhabt.
+Einige haben sie sehr spät im Alles-oder-Nichts-Modus implementiert, andere bieten eine ähnliche Granularität wie bei IPv4.
+
+//sehr spezifisch für Frankreich ... vielleicht gibt es andere Beispiele, z.B. Speedport Germany Telekom und FritzBox
+Nehmen wir das Beispiel einer Orange ISP LiveBox 4.
+Bei IPv4 wird die Öffnung im Netzwerkbereich vorgenommen.
+
+image::images/image06_07_orange-router.png[Webinterface organge ISP router,width=520,height=380,title="IPv4 Orange ISP LiveBox 4 (Frankreich)"]
+
+Bei IPv4 sind wir daran gewöhnt, unterschiedliche Ports für intern und extern zu haben, was eine Änderung der Ports auf den Servern vermeidet, aber verhindert, dass mehrere Rechner auf demselben externen Port veröffentlicht werden (es sei denn, Sie gehen über einen zwischengeschalteten Reverse Proxy)
+
+Bei IPv6 ist die Situation genau umgekehrt: Jeder Rechner hat seine IP und damit seine 65535 Ports, aber man muss zwangsläufig intern und extern die gleiche Portnummer verwenden, weil es keine Übersetzung (PAT) gibt.
+
+Bei Orange ISP befindet sich die Konfiguration im Bereich der Firewall.
+
+image::images/image06_08_orangeIPv6.png[Webinterface IPv6width=483,height=230,title="IPv4 Orange ISP LiveBox 4 (Frankreich)"]
+
+//[#_Toc85149304 .anchor]####Erreichbarkeitstest
+==== Erreichbarkeitstest
+
+Der Test kann über einen Online-Port-Scanner wie http://www.ipv6scanner.com/ durchgeführt werden.
+
+image::images/image06_09_ipscan.png[Port-Scan-Ergebnis,width=566,height=90,title=Ergebnis des Port-Scans"]
+
+Hier ist alles in Ordnung, ansonsten denken Sie daran, dass Happy-Eyeballs V2 die Verbindung auf IPv4 zurückschaltet, wenn keine v6-Antwort kommt.
+
+Einige Anbieter bieten keine guten Firewalls an. Dies ist der Fall bei Iliad Free, das sich lange hinter der Tatsache versteckt hat, dass der RFC zu CPE zwar eine zustandsabhängige Filterung empfiehlt, aber nicht vorschreibt.
+Free bietet erst seit 2020 eine IPv6-Firewall an und die ist sehr schwach.
+Viele Kunden fordern auf dem Bugtracker https://dev.freebox.fr/bugs/index.php?string=ipv6&project=9&type%5B%5D=&sev%5B%5D=&pri%5B%5D=&due%5B%5D=&reported%5B%5D=&cat%5B%5D=&status%5B%5D=open&opened=&dev=&closed=&duedatefrom=&duedateto=&changedfrom=&changedto=&openedfrom=&openedto=&closedfrom=&closedto=&do=index die Implementierung einer echten Firewall.
+
+=== • AUTOMATISCHE PORTFREIGABE
+
+Wie bereits erwähnt, ermöglicht PCP V2 die Öffnung eines Ports durch den Router auf Anfrage einer Anwendung.
+Im Allgemeinen für P2P-Anwendungen.
+
+image::images/image06_10_PCP.png[Wireshark,width=542,height=272,title="Wireshark PCP v2 IPv6"]
+
+[.blue]#Beispiel einer Wireshark-Aufnahme von PCP V2 mit dem Filter "udp.port eq 5351".
+Wir stellen fest, dass sowohl in IPv4 als auch in IPv6 Anfragen geöffnet werden.#
+
+image::images/image06_11_wirehark.png[Wireshark,width=548,height=226,title="Wireshark PCP v2 IPv4"]
+
+[.blue]#Beachten Sie, dass bei der IPv4-Version der Anfrage die interne IP als IPv6-Darstellung von IPv4 geschrieben ist und dass die WAN-Adresse auf 0.0.0.0 gesetzt ist, da es sich ohnehin um das IPv4-WAN des Routers handelt (wiederum in derselben Form mit ::ffff: )#
+
+Dies ist weit entfernt von dem schweren XML von UPnP-IGD, das den Austausch vieler Pakete erfordert.
+
+//image:extracted-media/media/image32.svg[Conception web contour,width=75,height=75]◗ Marginalspalte ??
+=== • ENTWICKLUNG DER ONLINE-SPIELE
+
+Derzeit integriert die Spieleindustrie IPv6 nicht in ihre Kommunikation zwischen Spielern und Servern.
+Die Auswirkungen von IPv4 CG-NAT und anderen IPv4aaS-Mechanismen könnten mit einer Anstrengung der Studios vermieden werden.
+
+Spiele, bei denen die Partei von einem eigenen Server verwaltet wird, sollten ihren Server auf Dual Stack umstellen und IPv6 bevorzugen, wenn es verfügbar ist.
+
+Bei P2P-Spielen, bei denen einer der Spieler der Gastgeber des Spiels ist, wäre es sinnvoll, in den Algorithmus für die Gastgeberwahl ein gewichtetes Element aufzunehmen, das auf der Verfügbarkeit des Dual-Stacks basiert, wenn beispielsweise mindestens 40 % der Spieler im Spiel über aktives IPv6 verfügen.
+
+=== • WAS IST VON DEN INTERNETPROVIDERN ZU ERWARTEN?
+
+Die Regulierungsbehörden sollten die Betreiber auffordern, zusätzlich zu IPv6 bei Festnetzanschlüssen (xDSL, FTTh, 4/5G-Festnetz, Low Orbit SAT usw.) die folgenden Mechanismen zu implementieren:
+
+* Eine fein abstimmbare Firewall, die dynamisch auf dem Adressensatz-Tracking für jeden Host und der Übereinstimmung mit der MAC-Adresse in der NDP-Tabelle basiert;
+* Bereitstellung von mindestens zwei /60-Präfixen zusätzlich zum Standard-Präfix auf eine einfache DHCPv6-PD-Anfrage von einem anderen Router.
+Es wäre praktisch, wenn die Netzbetreiber auch die Möglichkeit hätten, statische Routen auf mindestens einem dokumentierten IPv4-RFC1918-Block auf ihrer Seite zu implementieren;
+* IPv6-Renumbering-Management zur Vermeidung von Blackouts, typischerweise durch Anpassung der RA-Timer;
+* Klare Informationen in der Modemschnittstelle über den IPv4- und IPv6-Zugangsmodus sowie den gemappten Portbereich im Falle eines IPv4-A+P-Sharing-Ansatzes (4rd, MAP-x, etc.);
+* Die Option, einen Router eines Drittanbieters zu verwenden, wenn die IPv4-A+P-Sharing-Mechanismen den Router des Providers noch exklusiver machen.
+
+Bei der mobilen Konnektivität wäre es wichtig, PCP v2 auf den Endpunkten zu unterstützen, insbesondere bei der gemeinsamen Nutzung von APN.
+Dies würde es den Kunden ermöglichen, bei der Nutzung von Hotspots die Vorteile von IPv6 durchgängig zu nutzen.
+Die Unterstützung von DHCP-PD wäre auch sehr praktisch für spezielle Fälle der gemeinsamen Nutzung mehrerer Netze mit mehreren /64.
+
+//#### Ende des Kapitels ####

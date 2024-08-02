@@ -1,0 +1,458 @@
+image::images/image02_01_black-white.jpeg[Schwarz und Weiß,width=876,height=609]
+
+<<<
+
+[big]#*Transition Techniken*#
+
+Die Internet Engineering Task Force (IETF) arbeitet mit Anbietern und Softwareherstellern zusammen, um Mechanismen für den Übergang zu IPv6 bereitzustellen.
+Diese Mechanismen sind für Netzbetreiber und/oder Unternehmen gedacht.
+
+Zunächst müssen wir die Mechanismen in zwei Verwendungsgruppen unterteilen:
+
+* Diejenigen, die den Transport eines Datenpaketes in ein IP-Netz einer anderen IP-Version ermöglichen. 
+Sie werden in der Regel verwendet, um IPv6-Inseln über IPv4-Transportnetze zu verbinden (oder umgekehrt). 
+Es gibt Systeme, die auf Kapselung und andere, die auf Übersetzung basieren.
+* Diejenigen, die es ermöglichen, dass IPv4-Hosts mit IPv6-Hosts kommunizieren oder umgekehrt. 
+Sie beruhen notwendigerweise auf Übersetzung.
+
+Beide ergänzen sich in den meisten Anwendungsfällen.
+
+== Dual-Stack
+
+IP-Dual-Stack ist die gleichzeitige Nutzung von IPv4 und IPv6, deren Kooexistenz.
+
+Die parallele Ausführung von IPv4 und IPv6 verursacht jedoch nicht nur für das Netz mit doppelten Routing-Konfigurationsaspekten oder Firewall-Regeln einen Zusatzaufwand. 
+So müssen beispielsweise alle Systembereitstellungsprozesse parallel in v4 und v6 ablaufen. 
+Die Überwachung der Dienstqualität erfordert, dass jeder Dienst sowohl in IPv4 als auch in IPv6 überwacht wird, usw.
+
+Dual-Stack ist daher in einer großen Organisation außerhalb der Netze, in denen die Client-Terminals untergebracht sind, und damit typischerweise auf dem Campus, auf Dauer kaum tragfähig.
+
+Während der Übergangsphase wird IP-Dualstack IPv4-only-Systeme nicht stören, so dass es zu keinen Unterbrechungen oder Störungen bei den Diensten kommt.
+
+== Transportmechanismen
+
+In der Anfangszeit von IPv6 wurden Mechanismen entwickelt, um IPv6-Inseln von anderen IPv6-Inseln oder einfach von einem IPv4-Arbeitsplatz aus zu erreichen.
+
+Zu diesen Methoden gehören ISATAP (RFC 5214), Teredo (Microsoft - RFC 4380), 6over4 (RFC 2529), 6to4 (RFC 3056), 6in4 + TB/TSB (RFC 5572), 6rd (RFC 5969), IPv6 GRE (RFC 2473 / 2784), und viele mehr...
+
+Die meisten dieser auf Tunneln basierenden Lösungen verwenden das IP-Protokoll 41 und/oder die UDP-Kapselung, wie es auch bei einem VPN der Fall wäre.
+
+Diese Mechanismen sind nützlich für Strukturen, bei denen die Migration einiger oder aller Teile des Netzes aus technischen Gründen unmöglich ist. 
+Die Netzbetreiber haben sie genutzt, um Fälle zu überwinden, die IPv6 nicht unterstützen, wie z. B. Kabelbetreiber vor DOCSIS 3.1.
+
+Wie bei jeder Tunneltechnik ist der größte Nachteil die mangelnde Sichtbarkeit des Datenverkehrs aufgrund der Kapselung. 
+In Unternehmen erschweren die Anforderungen an die Filterung und die Verwaltung des QoS den Einsatz von Tunneln aufgrund der Komplexität und der geringen Anzahl kompatibler Lösungen, insbesondere von Firewalls.
+
+Die meisten dieser Methoden bergen Sicherheitsrisiken für das Unternehmen und sind auf den Internetprovider ausgerichtet.
+
+In Transportnetzen werden häufig mehrere Technologien übereinander geschichtet, wie dies bei MPLS oder VxLAN der Fall ist. 
+Der Einsatz von Dual-Stack auf allen Transportschichten ist selten sinnvoll. 
+Es ist jedoch wichtig, dies in der höchsten Transportschicht zu implementieren, derjenigen, die für die Netznutzer sichtbar ist, dem Overlay.
+
+//save sign: ◗
+=== • INTEGRATION IN EINEM IPV4 UNDERLAY
+
+Das Unternehmensnetz ermöglicht häufig die Isolierung von End-to-End-Kundenkontexten innerhalb des Unternehmens, sowohl im Backbone als auch im Rechenzentrum.
+
+Während _VRFs lite_ auf dem Campus noch vorherrschend sind, werden in den anderen Umgebungen massiv Underlay-basierte Technologien eingesetzt. 
+Es ist dann relativ einfach, IPv6 im Overlay zu übertragen.
+
+//[#_Toc88922626 .anchor]####MPLS
+==== MPLS
+
+MPLS ist eine Schlüsselkomponente, die häufig in Unternehmen vorhanden ist, entweder direkt oder in ausgelagerter Form über die Standortzusammenschaltung professioneller Netzbetreiber.
+
+MPLS ermöglicht die Übertragung von IPv6 auf zwei Wegen:
+
+* 6PE (Provider Edge RFC 4798), das v6 in der nativen Tabelle (GRT) der Geräte bereitstellt, nützlich nur, wenn man Dienste über die GRT anbietet (wie Internetzugang oder TV für einen Kunden-ISP);
+* 6VPE (RFC 4659), V macht den Unterschied, hier wird einfach VPNv6 neben VPNv4 transitiert, es ist also das Äquivalent eines L3VPN, die einfachste Methode, die die meisten Anwendungsfälle erfüllt.
+
+Es ist in der Tat möglich, einen IPv6-IGP und LDPv6 zu verwenden, um ein IPv6-Underlay-basiertes MPLS aufzubauen, aber es gibt wenig Nutzen, abgesehen von einer Gelegenheit, die ein weiteres großes Projekt bietet. 
+Vor allem bietet dies kein v6 im L3VPN des Overlay, was das Hauptthema ist, um den Benutzern v6-Zugang zu ermöglichen.
+
+Die 6VPE-Implementierung ist der richtige Weg, denn sie lässt sich leicht auf den aktuellen Geräten einrichten und erfordert nur wenig Konfiguration.
+
+Wenn Ihr MPLS das neue MP-BGP EVPN als Steuerebene anstelle von MP-BGP L3VPN verwendet, ist die IPv6-Unterstützung auch dort kein Problem.
+
+Beachten Sie, dass Sie dank RFC 8950 einen IPv6 Next Hop für IPv4 VPN-Routen haben können, wenn Sie sich für ein IPv6 Underlay entscheiden.
+
+//[#_Toc88922627 .anchor]####VXLAN
+==== VXLAN
+
+VxLAN wird meist in Verbindung mit EVPN verwendet und löst die Probleme älterer DataCenter Layer-2 _SPB Fabrics_ und hat sich zum Industriestandard entwickelt. 
+Seltener findet man es in Backbones, die MPLS aufgegeben haben, um die Vorteile von EVPN zu nutzen, das vor MPLS als _Controlplane_ für VxLAN verfügbar war.
+
+Wie MPLS kapselt auch VxLAN. 
+Daher stellt sich die Frage nach der IPv6-Kompatibilität in dem Overlay, das für die Bereitstellung von Kundendiensten vorgesehen ist. 
+Die Konfiguration eines IPv6-Overlays ist bei den großen Anbietern ausgereift, dennoch ist zu prüfen, ob die Multicast-Mechanismen vollständig unterstützt werden (PIM Snooping, BiDir usw.).
+
+Während das Underlay in IPv4 bleiben kann, ist zu beachten, dass die IETF an der Implementierung von RIFT (Routing in Fat Tree) arbeitet, um den Einsatz von _CLOS Fabrics_ im Sinne von Zero Touch Provisioning zu erleichtern. 
+Es zielt auf Fabrics mit iBGP Underlay ab und sieht vor, dass Loopback-Adressen und _Route Reflectors_ in IPv6 sein sollten. 
+Es ist schwer zu sagen, ob dies abgeschlossen sein wird, bevor die Fabrics auf SRv6 migrieren (RIFT bietet auch einen Mechanismus für den Austausch von Node-SIDs und SRGB Global Segment Routing Prefixes, um den Einsatz zu erleichtern). Siehe https://datatracker.ietf.org/wg/rift/documents/.
+
+//[#_Toc88922628 .anchor]####SD-WAN
+==== SD-WAN
+
+SD-WAN-Produkte arbeiten in der Regel mit DPI und Klassifizierung _ingress_, um QoS anzuwenden und einen Pfad (Internet/MPLS usw.) auszuwählen. 
+Der Datenverkehr wird dann häufig in einem IPSEC-Tunnel verschlüsselt, der für den Client-Kontext spezifisch ist, und an den Zielrouter gekapselt (es sei denn, eine Analyse erfordert beispielsweise die Entkapselung am Hub).
+
+Das Underlay ist so konzipiert, dass es ein bestehendes IPv4-basiertes Netz nutzt, um den Aufwand für die Implementierung dieser Art von Produkt zu begrenzen.
+
+Diese Produkte zielen hauptsächlich auf große Netze ab, die aus kleinen und mittelgroßen Standorten bestehen, mit einer dedizierten Gerätelinie und/oder Integration in bekannte Produktlinien. 
+Auf der Seite der Rechenzentrumskonzentratoren finden wir große Chassis, ebenfalls aus dedizierten oder bekannten Produktlinien.
+
+Wenn man einige der marktführenden Lösungen auf einem Campus mit mehr als 2000 Nutzern einsetzen will, stößt man oft an die Grenzen dedizierter Produkte, obwohl die Hersteller Fortschritte machen und versuchen, auch das letzte Perzentil der fehlenden Nutzungen abzudecken.
+
+Tatsache ist, dass IPv6 von den Kunden nur selten benötigt wird, da diese Lösungen für ihr internes Netz bestimmt sind. 
+Daher variiert die Kompatibilität der auf dem Markt befindlichen SD-WAN-Lösungen stark von einem Anbieter zum anderen und zwischen den verschiedenen Versionen. 
+Daher ist es wichtig, die Roadmap des Anbieters zu befolgen und die Lösung vor einer v6-Einführung zu testen, aber auch bei jeder neuen Hauptversion, da der Code angesichts der schnellen Entwicklung dieser Lösungen und der Konkurrenz stark verändert werden kann.
+
+Schließlich ist der Local-Internet-Breakout-Aspekt dieser Lösungen ein weiteres Element, das ebenfalls schrittweise IPv6 integriert. 
+Oft mit einer ganzen Schicht von lokalen Sicherheitsdiensten, die gemeinhin als "SASE" bezeichnet werden.
+
+=== • TUNNELLÖSUNGEN
+
+Es ist nicht immer möglich, IPv6 an einer Transportgrenze durchzulassen, und wie bereits erwähnt, sind nur wenige technische Lösungen auf beiden Seiten der Unternehmens-Hardwareserie nutzbar.
+
+Es bleibt also die Möglichkeit, den IPv6-Verkehr zu tunneln. 
+Dies kann über bekannte Lösungen wie GRE/mGRE oder IPsec erfolgen (letzteres ist jedoch aufgrund der erforderlichen Verschlüsselungsressourcen weniger effizient).
+
+Schließlich können Sie 6in4 auf einem Großteil der auf dem Markt befindlichen Router konfigurieren, wenn Sie mit keiner der oben genannten Lösungen zufrieden sind. 
+6rd ist ebenfalls häufig verfügbar, zielt aber hauptsächlich auf Nord-Süd-Topologien ab.
+
+Wir raten davon ab, 6to4 (nicht konfigurierbarer Endpunkt), 6over4 (IPv4-Multicast-basiert), ISATAP (basiert auf DNS) und Teredo (UDP-Kapselung) zu berücksichtigen, die nur noch sehr selten verwendet werden.
+
+Die Verfügbarkeit einer bestimmten Methode auf Ihren Geräten in Verbindung mit der Integration mit Ihrem Routing wird Ihre Wahl bestimmen.
+
+=== • UND IPv6-ONLY?
+
+Wie zu Beginn dieses Kapitels erwähnt, gibt es auch Möglichkeiten, auf IPv4 in Ihrem Backbone zu verzichten. 
+Es beschränkt sich dann auf Nutzernetze, IPv4-as-a-Service, IPv4aaS.
+
+Einige Betreiber gehen bereits dazu über, IPv4 in ihrem Backbone wegzulassen, um IPv4-Adressen einzusparen und sogar IPv4-Adressen zwischen Teilnehmern zu teilen, indem sie Ports aufteilen. 
+Die so genannten Address+Port (AP)-Ansätze sind inzwischen weit verbreitet. 
+Zuerst DS-Lite, dann _Lightweight 4over6_ (lw4o6) und in letzter Zeit MAP T/E und 4rd. 
+Die beiden letztgenannten überwiegen bei den heutigen Installationen dank ihrer Aggregationskapazität, die es vermeidet, eine astronomische Anzahl von Tunneln und ebenso viele Routen im Kernnetz des Internetproviders anschließen zu müssen.
+
+Diejenigen, die noch nicht zu einem IPv6-Backbone übergegangen sind und denen es an verfügbaren IPv4-Adressen mangelt, verwenden einfaches NAT44 auf einer CGN-Kernplattform und nutzen den berühmten 100.64/10-Bereich von RFC 6598.
+
+Diejenigen, die IPv6-only im Backbone nutzen, stellen IPv4 in der Regel über eine der folgenden Methoden bereit:
+
+* 4rd (RFC 7600), das im Gegensatz zu 6rd funktioniert und eine effiziente zustandslose Methode bietet. 
+Es kann im Mesh- oder Hub&Spoke-Modus arbeiten
+* MAP (T oder E) (RFC 7599), verfügbar im Übersetzungs- und Kapselungsmodus, ist ebenfalls zustandslos;
+* Ältere Implementierungen verwenden DS-Lite und Lw4o6.
+
+Die ersten beiden sind recht ähnlich und verwenden gemeinsame Regeln für eine Domäne, Edge-Router (BR), EA-Bits zur Festlegung der IP-Sharing-Ebene und die Bekanntgabe von Zuordnungsregeln über DHCP an die Endgeräte (CPE).
+
+Die Implementierung dieser Techniken auf der Client-Router-Seite erfolgt in Software, sie sind in unseren Heimroutern zu finden. 
+Es ist jedoch unwahrscheinlich, ein Gerät zu finden, das MAP oder 4rd über seinen ASIC auf der Client-Seite handhaben kann, da High-End-Geräte sich nur mit dem Border-Router-Aspekt befassen.
+
+Was MPLS und VxLAN betrifft, so ist es möglich, IPv4 durch IPv6 auf dem Transport-Underlay zu ersetzen. 
+Sie sollten dies bei der Einführung nur auf der grünen Wiese in Betracht ziehen und erst nach Rücksprache mit Ihrem(n) Anbieter(n).
+
+In besonderen Situationen, in denen der Transport von IPv4 unmöglich ist, gilt das Gleiche wie zuvor. Spezielle Tunnel, um IPv4-Inseln miteinander zu verbinden. So können wir GRE/mGRE und 4in6 einsetzen. 4in6 scheint in Unternehmensroutern noch nicht sehr präsent zu sein.
+
+//TO REMIND
+//image:extracted-media/media/image370.svg[extracted-media/media/image370,width=41,height=94]
+
+NOTE: Sie können IPv6 oft problemlos auf einem IPv4-Underlay transportieren und sollten vielleicht auf ein großes Backbone-Projekt, eine Erneuerung,... warten, um Ihr Underlay auszutauschen. W
+enn Sie auf der grünen Wiese starten, sollten Sie ein IPv6-Underlay in Betracht ziehen. 
+Außerdem sollten Sie Ihre Topologie und Ihren Adressierungsplan so gestalten, dass Sie für eine SRv6-Einführung gerüstet sind. 
+Das spart Ihnen später Zeit, wenn Sie nicht jetzt damit starten.
+
+== Übersetzungsmechanismen
+
+Der Zweck der IP-Übersetzung besteht darin, den Austausch zwischen Clients und Servern zu ermöglichen, die unterschiedliche Versionen von IP verwenden.
+
+Wenn wir uns an die Dual-Stack-Logik halten, müssen wir überall IPv6 einsetzen. Dies führt jedoch zu einer Menge doppelter Arbeit und funktioniert nur, wenn alle Systeme Dual-Stack-kompatibel sind. 
+Wie kann man IPv6-Clients mit IPv4-Servern kommunizieren lassen? (oder in umgekehrter Richtung)
+
+NAT64 und DNS64 bieten eine gemeinsame Lösung, die bereits weit verbreitet ist und IPv6-Clients den Kontakt zu IPv4-Servern ermöglicht. 
+Umgekehrt ermöglicht SIIT (Stateless IP/ICMP Translation Algorithm) IPv4-Clients den Zugang zu einem reinen IPv6-Netz.
+
+Da der IPv6-Header länger ist, ist es technisch einfacher, die Header-Informationen beim Senden von IPv4-Clients an einen IPv6-Server beizubehalten als umgekehrt. 
+Die Richtung der Einführung ist jedoch eine Frage des Bedarfs, der Strategie, der Zeitplanung und der Konsistenz.
+
+=== • NAT64 + DNS64
+
+NAT64 (RFC 6146) in Verbindung mit DNS64 (RFC 6147) nutzt das Prinzip des "lügenden" DNS in Verbindung mit einem Übersetzer, um IPv6-Endgeräten den Zugang zu IPv4-Ressourcen zu ermöglichen. 
+Die IETF veröffentlicht einen Leitfaden für den Einsatz (RFC 7269).
+
+Wenn eine Ressource keinen DNS-AAAA-Eintrag hat, synthetisiert der DNS-Server einen aus einem IPv6 /96-Präfix und der im DNS-A-Eintrag zurückgegebenen IPv4 /32-Adresse.
+
+Der Anfragende stellt dann eine Verbindung zu einem synthetischen IPv6-Ziel her.
+
+Irgendwo im Netz (wir werden später sehen, wo) wird ein Gerät, das das Präfix /96 verwaltet, die Verbindung empfangen. 
+Diese NAT64-Plattform entfernt das IPv6/96-Präfix aus dem Ziel und ersetzt den IPv6-Header durch einen IPv4-Header. 
+Dabei wird das Paket mit NAT versehen, eine Quelladresse aus dem NAT-Pool ausgewählt (zusammen mit einem Quellport für den PAT) und das Paket gesendet. 
+Durch das Führen einer Sitzungstabelle führt er die umgekehrte Operation für das zurückkehrende Paket durch.
+
+Beachten Sie, dass der Endpunkt zu keiner Zeit von dem Trick weiß. 
+Dies führt zu Problemen bei P2P-Protokollen sowie bei Protokollen, die die Adresse in die Payload einbetten, wie z. B. SIP, H323, IPSEC AH, SCCP, NFS älter Version 4 usw. 
+Funktionen können als ALG auf NAT64-Plattformen implementiert werden, um das Problem zu lösen, allerdings möglicherweise auf Kosten einer schlechteren Performance.
+
+Die DNSSEC-Validierung durch den Host wird durch dieses Szenario ebenfalls verhindert. 
+Dieses Problem könnte gelöst werden, wenn der Host von NAT64 wüsste (was bei Mobiltelefonen mit APN-Konfiguration der Fall ist oder wenn RFC 7050 verwendet wird, aber letzteres ist bei Desktop-Betriebssystemen nicht sehr nützlich, da sie es noch nicht unterstützen. 
+Es besteht auch der Wunsch, Hosts über DHCPv6 und PCP über das NAT64-Präfix zu informieren).
+
+Auf der Seite der Anwendung funktioniert NAT64, solange sie IPv6-Sockets öffnen kann und einen Hostnamen und nicht eine dirkte IP-Adresse aufruft.
+
+//[#_Toc88922633 .anchor]####Addressing
+==== Adressierung
+
+In einem kleinen Netz reicht eine einzige Plattform aus, die in der Regel das WKP-Präfix (RFC 6052 Well Known Prefix) oder ein anderes Präfix (Network Specific Prefix) verwendet, das im Rahmen der Adressierung des Unternehmens mit einem /96 definiert wird.
+
+//image:extracted-media/media/image20.svg[Combiné contour,width=75,height=75] marginalspalte ??
+IMPORTANT: *Beachten Sie, dass bei Verwendung eines ULA-Präfixes NAT64 im Vergleich zu IPv4 immer benachteiligt wird.*
+
+Vergessen Sie bei Ihrem Projekt nicht, dass 99% der Verbindungen vom Client-Endpunkt initiiert werden, aber es gibt auch Sonderfälle wie die Fernsteuerung durch den Support. 
+Und natürlich die P2P-Telefonie. 
+Diese erfordern volle IPv6-Kompatibilität.
+
+In einem großen Netz ist es vorteilhaft, mehrere NAT64-Instanzen zu haben, von denen jede ihr eigenes NAT64-Präfix hat. 
+Zu diesem Zweck ist ein Bereich reserviert, der jedoch nicht zwingend erforderlich ist: 
+64:ff9b:1::/48 (RFC 8215).
+
+//[#_Toc88922634 .anchor]####Topology
+==== Topologie
+
+Die Platzierung dieser NAT64-Instanzen hängt von den jeweiligen Gegebenheiten ab.
+
+Wenn Sie sie direkt an Ihren Standorten einrichten, vermeiden Sie das die Kommunikationsstrecken ins Rechenzentrum. 
+Dazu müssen jedoch so viele NSP-Präfixe verwendet werden, wie Sie Standorte haben, und die DNS64-Konfiguration muss jedes Mal angepasst werden. 
+Über einen entsprechend konfigurierten DNS-Proxy an jedem Standort. (Dies kann _Bind9, Unbound_ oder eine andere Lösung sein.)
+
+Es ist auch möglich, an jedem Standort dasselbe Präfix zu verwenden, solange es sich um Sackgassen handelt und die Routenanzeigen zum Backbone den NSP filtern. 
+Dies macht die DNS64-Konfiguration einfacher.
+
+Die Einrichtung von NAT64 an den Standorten erfordert in jedem Fall die Beibehaltung eines IPv4-Transits im Backbone. 
+Es ist zu beachten, dass es ohnehin schwierig sein wird, diesen schnell wieder loszuwerden, da die Standorte selten nur Endgeräte enthalten. 
+Die Einrichtung von NAT-Sitzungen an X Standorten bedeutet auch, dass an allen Standorten Sitzungen protokolliert werden müssen. 
+Schließlich müssen zahlreiche NAT-IPv4-Pools eingerichtet und die ACLs zur Filterung angepasst werden.
+
+Andererseits erleichtert die Zentralisierung die Umsetzung auf allen Ebenen, ist aber nicht wünschenswert, wenn sie zu einer Verlangsamung von Datenströmen führt, die innerhalb der Standorte hätten bleiben können.
+
+Ein guter Kompromiss besteht darin, NAT64-Gateways an den größten Standorten einzusetzen, insbesondere an solchen, die Dienste lokal hosten und diese Dienste auch bei einem WAN-Ausfall funktionieren müssen. 
+In anderen Fällen sollte es im Rechenzentrum oder am Backbone-Edge zentralisiert werden.
+
+image::images/image02_48_DNS64.svg[extracted-media/media/image48,width=566,height=318,title="Die Verwendung von NAT64"]
+
+//[#_Toc108476610 .anchor]####MTU ist wichtig
+==== MTU ist wichtig
+
+Der IPv6-Header ist 20 Byte länger als der IPv4-Header, was bedeutet, dass ein großes IPv4-Paket, das zur NAT64-Plattform zurückkehrt, möglicherweise verworfen wird, wenn die Plattform die Fragmentierung nicht richtig handhabt. 
+Da Fragmentierung nur auf der IPv4-Seite auftreten kann, muss man vor der Rückübersetzung oft eine spezielle NAT64-MTU-Einstellung vornehmen, die nicht die reale Schnittstellen-MTU ist, sondern nur die interne Bearbeitung der IP-Pakete beeinflusst.
+
+Die Plattform kann auch eine ICMP-Antwort "Fragmentation Needed" an den IPv4-Server zurücksenden.
+
+Sie müssen möglicherweise die zweite Option für einige Kommunikationen verwenden, und natürlich für solche, die keine IPv4-Fragmentierung unterstützen, wie TFTP. 
+Siehe RFC 7915.
+
+In umgekehrter Richtung müssen Sie sicherstellen, dass PMTU-D mindestens 1280 Bytes lang ist. 
+Stellen Sie also die IPv4-seitige Schnittstelle Ihres NAT64 immer mit einer MTU größer als 1260 ein (1260 + 20 Overhead IPv6 = 1280). 
+Siehe RFC 7269.
+
+//[#_Toc108476611 .anchor]####Hinweis zur Filterung
+==== Hinweis zur Filterung
+
+Wie lassen sich die Ströme filtern, sobald NAT64 durchlaufen wurde? 
+Wenn NAT64 in der Nähe des Nutzers erfolgt, ist die Identifizierung einer Gruppe einfach. 
+Wenn es zentralisiert ist, erfordert es eine Menge granularer ACLs.
+
+Die Lösung liegt in der Segmentierung von IPv4-NAT-Pools, der Erstellung entsprechender Regeln, so dass Maschinen hinter einem IPv6-Präfix X mit einem dedizierten IPv4-NAT-Pool Y auftauchen, und so weiter. 
+Auch hier gilt: 
+Je mehr Segmentierung es gibt, desto komplexer wird die Umsetzung an den Standorten sein.
+
+== Welcher Bereich welche Technologie?
+
+Nachdem Sie nun wissen, was einem Client ermöglicht, mit einem Server zu interagieren, der nicht dieselbe IP-Version spricht, und wie man mit dem Transport umgeht, wollen wir uns die Relevanz der einzelnen Lösungen ansehen.
+
+Ideal ist es, sich zu fragen, was am einfachsten zu migrieren ist.
+
+Welche Arten von Netzteilnehmern sind im Netz vorhanden?
+
+=== • CAMPUS
+
+Auf der Benutzerseite finden wir in der Regel homogene Workstations mit einem identischen Ökosystem, das pro Standort/geografischer Zone und anderen zentralisierten Bausteinen reproduziert wird. 
+Dieses Ökosystem umfasst Dateispeicher, Authentifizierungsverzeichnis, Messaging und andere Tools für die Zusammenarbeit wie Telefonie, Drucken, Proxy, Workstation Management Agent, Protection Agent und natürlich Geschäftsanwendungen. 
+Letztere sind inzwischen fast systematisch Webanwendungen und stützen sich daher häufig auf den Browser auf der Client-Seite.
+
+Auch die Netzwerkausrüstung folgt häufig wiederkehrenden Architekturmustern, wobei zwei bis drei Generationen auf Organisationsebene nebeneinander bestehen. 
+Leider ist die Campus-Ausrüstung diejenige, die am meisten hinterherhinkt, wenn es um IPv6-Kompatibilität geht, vor allem in Bezug auf die Sicherheitsfunktionen.
+
+Es ist jedoch schwierig, nicht zu erkennen, dass dieser Bereich zwar groß, aber auch relativ homogen ist. 
+Diese Homogenität ist eine Stärke. 
+Durch den Einsatz von IPv6 im Dual-Stack-Verfahren an einem Standort jedes Typs im Pilotbetrieb und durch die Implementierung in den Geräten des Ökosystems "Büro/Arbeitsplatz" wird es möglich, die Einführung zu automatisieren.
+
+Dies kann beim Austausch von Netzkomponenten, bei Umzügen usw. der Fall sein.
+
+Letztendlich ist es sogar möglich, IPv4 aus dem Campus zu entfernen, um die Dual-Stack-Verwaltung loszuwerden. 
+Dies ist das bevorzugte Szenario, wenn Ihre Organisation nicht über ausreichenden privaten IPv4-Adressraum verfügt.
+
+//[#_Toc88922638 .anchor]####NAT64 + DNS64
+==== NAT64 + DNS64
+
+Wenn dieser Weg Ihren Bedürfnissen entspricht, müssen Sie die NAT64 und DNS64 genau betrachten. 
+Wir wiederholen die Elemente des Abschnitts über die Topologie:
+
+Wenn Ihre Standorte keine IPv4-kompatiblen Dienste anbieten und/oder nur auf Rechenzentrums- oder Cloud-Server angewiesen sind, besteht keine Notwendigkeit für NAT64 vor Ort, wie dies beispielsweise bei Banken der Fall ist.
+
+Andererseits gibt es an einem großen Industriestandort oft Geschäftsserver vor Ort, so dass die Produktion nicht vollständig von der Zuverlässigkeit des WAN abhängt. 
+Einige dieser Systeme funktionieren nur in IPv4. 
+Dann ist es notwendig, den lokalen Austausch in IPv4 zu ermöglichen.
+
+Wenn nur wenige Clients die betroffenen Anwendungen ausführen müssen und diese auf bestimmte Netze beschränkt sind, erscheint es sinnvoll, den Dual-Stack zu erhalten. 
+Dies kann physisch oder logisch geschehen, z. B. mit Hilfe eines Radius-Servers.
+
+Wenn andererseits viele Arbeitsstationen eine lokale IPv4-Ressource erreichen können müssen, wird die Implementierung eines lokalen NAT64+DNS64 interessant und wird sogar empfohlen, wenn es an privatem IPv4 mangelt.
+
+//image:extracted-media/media/image20.svg[Combiné contour,width=75,height=75] Marginalspalte ??
+Dieses NAT64 wird im zustandsabhängigen Modus (mit Sitzungstabellen und Portzuweisung) eingesetzt.
+
+Obwohl es möglich ist, IPv4 mit NAT64 bei jeder Migration eines Standorts auszuschalten, ist eine Komponente problematisch: 
+Die Telefonie. 
+Während die überwiegende Mehrheit der Datenströme an einen Server gesendet wird, besteht bei der Telefonie die Besonderheit, dass direkter P2P-UDP-Verkehr zwischen zwei Benutzern erzeugt wird. 
+Wenn Ihr Gerätehersteller keine Möglichkeit anbietet, der die IPv4- und IPv6-Geräte automatisch zu trennen, um die Übersetzung über einen Dual-Stack-Media-Relay-Server zu erzwingen, wenn ein Anruf zwischen den beiden Domänen aufgebaut wird, müssen Sie IPv6 an allen Standorten einführen, bevor Sie damit beginnen, IPv4 von einigen der Telefone zu entfernen, einschließlich derjenigen mit Fernzugriff (VPN oder andere).
+
+Vergessen Sie nicht, dass einige Dienste möglicherweise eine IPv6-Sitzung zu einer Workstation initiieren müssen, z. B. der Helpdesk, um eine Verbindung zu einer Workstation herzustellen und Fehler zu beheben. 
+Der Helpdesk benötigt daher ebenfalls IPv6-Konnektivität. 
+Und wenn dieser Helpdesk ausgelagert ist, müssen Sie Ihre Verträge überprüfen.
+
+Diese Einschränkung in Verbindung mit SIP- und RTP-Verkehr erzwingt eine Antwort, bevor IPv4 abgeschaltet wird.
+
+=== • RECHENZENTRUM
+
+Die Ressourcen eines Rechenzentrums, ob vor Ort oder in der Cloud, können sehr unterschiedlich oder relativ homogen sein. 
+Es hängt alles von Ihrem Unternehmen und Ihrer Geschichte ab.
+
+GAFAM (Google-Amazon-Facebook-Apple-Microsoft) haben zwar Möglichkeiten für die Umstellung auf IPv6-only veröffentlicht, doch sind diese in einem Unternehmen nur selten umsetzbar. 
+Um dies zu verstehen, müssen Sie sich nur die Dienste in Bezug auf Volumen und Umfang der Bereitstellung ansehen. 
+Wenn Sie fünfzig oder mehr Dienste auf Hunderttausenden von Servern betreiben, sind Sie zwangsläufig automatisiert und verfügen über einen Orchestrator, der eine Automatisierung erfordert. 
+Es ist dann möglich, eine Pilotmigration zu IPv6 durchzuführen, Dienst für Dienst, und diesen als Basis für Rollout zu nutzen. 
+Ein ähnlicher Ansatz wie der oben erwähnte für Campus, viele Maschinen, aber mit einer ähnlichen Konfiguration. 
+Nehmen wir an, einer der großen Akteur hat ein Verhältnis von 100 000 Maschinen pro Dienst, wie ist das Verhältnis bei Ihnen?
+
+Zählen Sie Ihre Server, VMs und Container auf und teilen Sie sie durch die Anzahl der Anwendungen, die Ihre IT-Abteilung hat. 
+Das Ergebnis wird wahrscheinlich zwischen 3 und 10 liegen. 
+Das ist nicht wirklich etwas, das man als skalierbar bezeichnen kann. 
+Aber lassen Sie sich nicht entmutigen, denn auf diesen Servern läuft oft eine viel geringere Anzahl von Middlewares, etwa zehn. 
+Ihre IPv6-Kompatibilität ist gut, aber Sie müssen trotzdem überprüfen, ob jede Anwendung ordnungsgemäß funktioniert. 
+Der Abschnitt "Anwendungen" wird Ihnen dabei helfen.
+
+// Marginalspalte?? [#_Toc88922640 .anchor]##image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75]
+=== Dual-Stack-Server und Anwendungen
+
+Wie im Abschnitt "Dual-Stack" der Übergangstechnologien erläutert, führt die Beibehaltung von Dualstack auf lange Sicht zu zusätzlichen Kosten. 
+Es ist ideal, IPv6-Konnektivität auf Ihren Server bereitzustellen, um für jedes Szenario auf der Systemseite gerüstet zu sein. 
+Diese Aspekte werden im weiteren Verlauf des Dokuments erörtert. 
+Dual-Stack wird weiterhin für kritische und stark belastete Infrastrukturdienste empfohlen (DNS, Verzeichnis, Proxy, NAS usw.)
+
+//[#_Toc108476617 .anchor]####6/4 Übersetzung
+==== 6/4 Übersetzung
+
+Die Lebenszyklen von Anwendungen können 2zwei, drei Jahre oder sogar noch länger sein. 
+Es ist schwierig, so lange zu warten, um Kunden, die nicht über natives IPv4 verfügen, Zugang zu diesen Anwendungen zu bieten.
+
+Wenn Ihre Anwendung dem Internet ausgesetzt ist, können Sie NAT64 auf der Seite des Betreibers für die Clients, die nicht mehr über natives IPv4 verfügen, in den meisten Fällen einfach die Arbeit erledigen lassen. 
+Dies macht jedoch die Fehlerbehebung auf Ihrer Seite komplexer, da Sie keine Kontrolle darüber haben und der Dienst mit einem vom Betreiber abhängigen Leistungsniveau bereitgestellt wird. 
+Wenn es zu langen Latenzzeiten oder Sitzungsabbrüchen kommt, wird der Nutzer Ihnen die Schuld geben, und Ihr Ruf wird in Mitleidenschaft gezogen. 
+Er hat keine Ahnung vom CG-NAT durch seinen Internetanbieter.
+
+Sie haben zwei Möglichkeiten, IPv6 freizugeben: 
+NAT64 oder einen Reverse-Proxy.
+
+Um den Arbeitsaufwand zu begrenzen, können Sie auf vorhandene Geräte zurückgreifen, um die Dinge zu erleichtern. 
+Wenn sich Ihre Präsentationsschicht einfach hinter einer Firewall befindet und keine weiteren Zwischenstationen vorhanden sind, dann scheint statisches NAT64 eine gute Idee zu sein. 
+Sie würden dann jedem Server-IPv4 statisch ein NAT-IPv6 zuordnen und den entsprechenden AAAA DNS-Eintrag veröffentlichen. 
+Sie können sogar IPv6-Präfixe in /120 mit IPv4 /24-Netzen abgleichen, was noch weniger Regeln erfordert. 
+Die Firewall führt NAT+PAT durch und verfolgt die Sitzungen.
+
+//image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
+IPv4-Server müssen neben der IP auch den Sitzungsport speichern, damit sie die Firewall-Protokolle korrelieren können (siehe RFC 7768).
+
+Für weniger verbreitete Server reicht klassisches NAT64 stateful aus. 
+Denken Sie immer daran, dass dies die Implementierung von DNS64 auf dem Auflösungspfad und die Wahl eines netzwerkspezifischen Präfixes in /96 erfordert, das Sie im Internet offenlegen werden. 
+Dasselbe gilt für das interne Netzwerk.
+
+Hybridisierung ist eine gute Option, statisches NAT64 mit manuell erstelltem AAAA für jeden stark genutzten Front-End-Server und dynamisches NAT64 für alles andere.
+
+Diese NAT64-Verarbeitung erfolgt low level, mit hoher Leistung auf aktueller Hardware. 
+Andererseits erfordert sie eine Synchronisierung der Sitzungstabellen, um die Hochverfügbarkeit des state zu gewährleisten. 
+Dieser Modus eignet sich nicht für Anycast-Server, da eine - wenn auch geringe - Chance besteht, dass der Client während der Dauer der Sitzung von einer NAT64-Plattform zu einer anderen wechselt. 
+In diesem Fall käme es zu einer Unterbrechung (siehe SIIT unten).
+
+//image:extracted-media/media/image22.svg[Verrou contour,width=75,height=75] Marginalspalte?
+Für granularen Datenverkehr, z. B. wenn der intern zu erreichende IPv4-Server in einem anderen Rechenzentrum steht als die NAT64-Eingangsplattform, können Sie dedizierte IPv4-SNAT-Pools verwenden, um die Grundsätze der granularen Filterung zu beachten (ähnlich wie bei der oben beschriebenen ACL-Problematik).
+
+Mit einem SLB (Load Balancer) auf Layer 4 wird auch NAT64 empfohlen, aber wenn es auf höheren Layern funktioniert (L7 mit oder ohne WAF Application Firewall, z.B. HTTP), dann ist auch bei einer Unterbrechung beim Anwendungsprotokoll die Rekonstruktion der Kommunikation möglich. 
+Dennoch ist es oft nützlich, die IPv6-Adresse des Clients in ein "X-Forwarded-For"-HTTP-Feld zu kopieren, wenn letzteres verwendet wird. 
+Dadurch kann die Sichtbarkeit des Clients bis zum Server zurückverfolgt werden.
+
+Da der öffentliche Zugang zum Rechenzentrum in der Regel aus mehreren dieser Komponenten besteht, sollten Sie zumindest die Geräte mit granularen Regeln auf IPv6 umstellen.
+
+Nehmen wir das Beispiel des Internetverkehrs, der durch eine L4-Firewall und dann durch eine Reverse-Http-Proxy-Anwendungsfirewall (WAF) läuft, bevor er den Server erreicht. 
+Wären wir versucht, IPv6 an der Netzwerk-Firewall abzuschaffen und NAT64 zu verwenden, aber infolgedessen würden bestimmte Erkennungsregeln für Reverse-Proxys nicht mehr funktionieren, da sie immer nur denselben Pool von SNAT-IPs von der Netzwerk-Firewall sehen würden und nicht die IPs der Clients.
+
+Für den internen Zugang zu einer IPv6-inkompatiblen Anwendung können auch NAT64 oder Reverse-Proxy-Methoden verwendet werden. 
+Schließlich ist es für eine interne Anwendung, die mit diesen Ansätzen immer noch nicht funktioniert, immer noch möglich, ein internes VPN zu verwenden, um die IPv4-Insel von einer IPv6-Station aus zu erreichen. 
+Die Verlagerung aller betroffenen Kunden auf eine Virtual Desktop Infrastruktur (VDI) in einem Rechenzentrum ist eine weitere praktikable, aber teure Alternative.
+
+//[#_Toc108476618 .anchor]####Native IPv6-Bereitstellung
+==== Native IPv6-Bereitstellung
+
+Warum sollte man angesichts des zunehmenden Anteils von IPv6-Kunden nicht in Erwägung ziehen, seine internetbezogenen Dienste nativ in IPv6 anzubieten und eine Übersetzung für IPv4-Kunden zu implementieren?
+
+Dies ist das Prinzip der zustandslosen IP/ICMP-Übersetzung (SIIT), die in ihrer ursprünglichen Version auf eine 1:1-Zwei-Wege-Übersetzung zwischen IPv4 und IPv6 beschränkt ist. Dies erfordert natürlich ebenso viel IPv4- wie IPv6-Adressen auf beiden Seiten und ist daher aufgrund der damit verbundenen Einschränkungen nur in sehr kleinen und spezifischen Umkreisen verwendbar. 
+Zum Beispiel zwischen einigen Server.
+
+In seiner DC-Variante ermöglicht SIIT-DC den Zugriff auf IPv6-Server von IPv4-Clients aus, ohne eine zustandsabhängige Tabelle zu führen.
+
+Zu diesem Zweck wird ein IPv6/96-Präfix reserviert, um das IPv4 in den letzten 32 Bits abzubilden. 
+So kann das System ohne Einschränkung multipliziert werden und unterstützt Anycast und Dissymmetrie (da es nicht auf Stateful angewiesen ist). 
+Standardmäßig liegt das Präfix im Bereich 64:ff9b:1::/48 (RFC 8215).
+
+Es ist natürlich möglich, mehrere Präfixe zu verwenden, um z. B. die gemappten Pakete mit dem IPv4-Interneteintrag zu verknüpfen, wo sie angekommen sind. 
+Dies ist sehr nützlich, wenn die Internet-Sicherheit zuständsabhängige Systeme hat (IPS usw.).
+
+Man muss jedoch immer so viel IPv4 zur Verfügung stellen, wie es IPv6-Server zu exponieren gibt.
+
+Und wenn auf einem Server irgendwo tief im Rechenzentrum immer noch Bedarf an IPv4 besteht, kann SIIT (Dual Translation) verwendet werden. 
+Der IPv4-Internetverkehr wird in IPv6 übersetzt, durchläuft das Rechenzentrum und wird dann von einem Gerät in der Nähe des Servers erneut übersetzt.
+
+Obwohl wir hier über das Internet sprechen, kann die gleiche Topologie für interne IPv4-Clients implementiert werden.
+
+//[#_Toc88922643 .anchor]####Doppelter Mono-Stapel
+==== Singlestack
+
+Eine selten angewandte, aber praktikable Methode in großen Clustern ist die Bereitstellung von Servern, die ihre Dienste nur in IPv6-only parallel zu anderen bestehenden IPv4-only-Servern anbieten. 
+Diese Technik geht zwar nicht in Richtung Homogenisierung der Konfiguration, hat aber den Vorteil, dass sie die bestehenden nicht berührt. 
+Für IPv4-Clients in der Produktion besteht somit kein Risiko einer Unterbrechung oder eines Rückschritts.
+
+//[#_Toc108476620 .anchor]####Cloud-Anbieter
+==== Cloud-Anbieter
+
+Während IPv6 in den IaaS-Angeboten der Marktführer nahtlos zur Verfügung steht, ist es bei PaaS-Lösungen noch ein weiter Weg bis dahin.
+
+Zum Beispiel sind die meisten Loadbalancer Services noch nicht kompatibel, und wenn sie es sind (wie AWS NLB ab Ende 2020), dann nur für den Kundenteil und noch nicht für den Backend-Teil. 
+(Was zugegebenermaßen weniger dringend ist).
+
+//[#_Toc108476621 .anchor]####Externe Übersetzung
+==== Externe Übersetzung
+
+Bei Internetdiensten können Sie sich auch auf CDN- und andere Dienste verlassen, die in der Lage sind, im Dual-Stack-Verfahren zu arbeiten, während das Backend nur in einer der IP-Protokollversionen vorliegt.
+
+=== • WAN
+
+Das WAN selbst bietet den Nutzern keine direkten Dienste an, sondern ist dazu da, den Datenverkehr zwischen den Standorten zu transportieren. 
+Sie können im Abschnitt Transportmechanismen lesen, wie man IPv6-Datenverkehr transportiert.
+
+//[#_Toc108476623 .anchor]####Regionale NAT-Plattform
+==== Regionale NAT-Plattform
+
+Abhängig von der Größe Ihrer Standorte und Ihrer typischen Flow Map können Sie die Einrichtung regionaler NAT64-Plattformen auf Ihrem Backbone in Betracht ziehen. 
+Denken Sie daran, dass dadurch ein zustandsbehafteter Dienst hinzugefügt wird, der die Notwendigkeit symmetrischer Ströme erzwingt.
+
+Ein solcher Dienst kann auch von Ihrem üblichen Netzanbieter über Ihr verwaltetes MPLS bereitgestellt werden, solange Sie den Datenverkehr zwischen den Standorten auf Ihrer Seite nicht verschlüsseln.
+
+//#### Ende des Kapitels ####

@@ -1,5 +1,9 @@
 image::images/image05_01_arrows.jpeg[Arrows,width=609,height=812,align="center"]
 
+<<<
+
+[big]#*Security and best practises*#
+
 With the introduction of a new version of IP protocol comes the requirement to implement security rules at various level. 
 Many of these rules are close to IPv4 best practices, others are specific to IPv6.
 
@@ -12,11 +16,11 @@ To ease the assignments of rule transposition studies on your devices, they are 
 * HOST relate to endpoints, mainly computers and servers;
 * FILTERING for Firewalls.
 
-=== Access layer
+== Access layer
 
 //image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75]◗ 
 
-==== DYNAMIC ADDRESSES ASSIGNMENT
+=== • DYNAMIC ADDRESSES ASSIGNMENT
 
 Endpoint tracking within an organization leads to prefer DHCPv6 stateful for its device tracking ability rather than SLAAC based auto-assignment. 
 Servers may use static addressing. Some devices, mainly Android based, do not support DHCP, sometime leading to exceptions. 
@@ -27,14 +31,17 @@ This RA will provide at least gateway link-local address and timers.
 Only a fully and not recommended manual setup allows to do without RA.
 
 //[#_Toc88922526 .anchor]####Mechanisms
-===== Mechanisms
+==== Mechanisms
 
 Several bits are used to indicate hosts how to behave:
 
 * A – “Autonomous Address Autoconfiguration” tells the host to auto configure (SLAAC RFC 4862) ;
 * M – “Managed Address Config” indicates on the opposite to use DHCPv6 stateful (RFC 3315) to obtain its address ;
 * O – “Other Config” announces that other options can be fetched from a stateless DHCPv6 (RFC 3736), these options may include DNS servers, NTP, domain suffix, etc. ;
-* L – “On-Link” notifies that the RA and the announced prefix are on the same L2 link. This bit gets reset to 0 if the advertisement crosses a router, to avoid side effects of misconfigured L2 extension or unintentional relaying. Unlike IPv4, an IPv6 host does not natively consider that a host located in the same prefix as it can be reached directly in L2 (except for link-local addresses). See RFC 5942.
+* L – “On-Link” notifies that the RA and the announced prefix are on the same L2 link. 
+This bit gets reset to 0 if the advertisement crosses a router, to avoid side effects of misconfigured L2 extension or unintentional relaying. 
+Unlike IPv4, an IPv6 host does not natively consider that a host located in the same prefix as it can be reached directly in L2 (except for link-local addresses). 
+See RFC 5942.
 
 Note that the A and L bits are sent within the prefix, not in the RA core.
 
@@ -71,13 +78,13 @@ RFC 6106
 
 -Link-Local
 
-|DCHPv6
+|DHCPv6
 |Stateful DHCPv6 |0 |1 |Redundant with M a|
 -DHCPv6
 
 -Link-Local
 
-|DCHPv6
+|DHCPv6
 a|
 DHCPv6 Stateful + SLAAC
 
@@ -88,7 +95,7 @@ DHCPv6 Stateful + SLAAC
 
 -Link-Local
 
-|DCHPv6 or RDNSS depending on OS
+|DHCPv6 or RDNSS depending on OS
 |===
 
 The 3rd method (Stateful DHCP) is ideal thanks to its device tracking ability.
@@ -107,7 +114,7 @@ Interesting point, if you ever deploy a specific infrastructure with the 2nd cas
 Note that some OS like Windows will send a DHCP request even if the RA indicates to do SLAAC without flag option.
 
 //[#_Toc88922527 .anchor]##image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
-===== DHCP Identification
+==== DHCP Identification
 
 DHCPv6 does not rely on MAC address as in IPv6, instead the host provides an identifier named DUID. A section details this identifier later in the Hosts section of the security chapter.
 
@@ -125,7 +132,7 @@ It is possible to put the MAC of the client in the Remote-ID option with access 
 
 Other recommendations relating to DHCPv6 to facilitate terminal identification can be found in the Hosts section.
 
-==== ICMP REDIRECT BLOCKING
+=== • ICMP REDIRECT BLOCKING
 
 _Neighbor Dicovery Protocol_ features 5 message types:
 
@@ -138,7 +145,7 @@ This latest message type allows the gateway to indicate that another router is b
 ICMP redirect (Type 137) should be blocked, as it may allow an attacker to redirect traffic. 
 This option should only be used when a network segment has two routers that reach different resources; a very rare case.
 
-==== IPV6 SNOOPING
+=== • IPv6 SNOOPING
 
 Let's start by briefly recalling the purpose of the two most frequent message types within NDP.
 
@@ -165,7 +172,7 @@ It will then initiate a router solicitation and will switch to any other availab
 Before we even talk about Router Solicitation and Advertisement, you'll have already noticed what an attacker can do with the NDP neighbor information. 
 It is therefore highly recommended to implement appropriate anti-spoofing mechanisms at least on campus/user site access layer infrastructure.
 
-[CAUTION]
+[NOTE]
 ====
 NDP operates multicast groups called Solicited-Node Multicast, each host will create a multicast group for each address assigned using a standardized prefix FF02:0:0:0:1:FF00::/104 and the last 24 bits of the address to represent. 
 These multicast addresses are used for DAD, but also to perform MAC/IP matching without disturbing everyone like the ARP broadcast does in IPv4.
@@ -174,7 +181,7 @@ The first contact between two IPv6 nodes in the same network is therefore always
 ====
 
 //[#_Toc108476675 .anchor]####
-===== ND Fragmentation
+==== ND Fragmentation
 
 RA messages can be large if they contain many prefixes and thus, require fragmentation, RFC 6980 states that it is then better to send several messages rather than fragmenting the packet. 
 In any case, except for a particular configuration, there is no reason to have that many prefixes and options in an RA leading to 1280 bytes, the IPv6 minimum.
@@ -182,7 +189,7 @@ In any case, except for a particular configuration, there is no reason to have t
 This leads to the recommendation to block NDP protocol fragments.
 
 //[#_Toc88922531 .anchor]####Binding
-===== Binding
+==== Binding
 
 Security mechanisms are based on the constitution of a relationship table relation among IP, MAC and physical location, typically the switch port.
 
@@ -200,10 +207,11 @@ Therefore, check the manufacturer's documentation carefully and test with a pack
 Every alert/security event related to this set of rules should raise an alert in your SIEM.
 
 Remember to setup binding table recovery so that it is immediately refilled when the switch is restarted. 
-It is usually possible to export it periodically and/or fetch active leases from the DHCP server (if you rely on DCHP stateful obviously).
+It is usually possible to export it periodically and/or fetch active leases from the DHCP server (if you rely on DHCP stateful obviously).
 
 It is possible to use part of these security features without DHCP, however loss of a secure learning source affects the level of protection (RFC 6620). 
-Nowadays we are seeing organizations where DHCP is used in conjunction with static leased within the datacenter to provide this level of security on server hosting access layer. No more manual host configuration to do.
+Nowadays we are seeing organizations where DHCP is used in conjunction with static leased within the datacenter to provide this level of security on server hosting access layer. 
+No more manual host configuration to do.
 
 Without DHCP the device will build the table based on the exchanged DAD messages during the SLAAC auto-assignment.
 
@@ -213,7 +221,7 @@ For example, on an EVPN+VxLAN infrastructure, EVPN type 2 routes already adverti
 Various controls can then be derived from this table, here are the main ones:
 
 //[#_Toc108476677 .anchor]####Source
-===== Source
+==== Source
 
 A packet with an unknown, unallocated source address will be dropped. 
 The switch can try to ask the DHCP server and/or its neighbor via NDP if the address is known before discarding the traffic.
@@ -223,14 +231,14 @@ This check requires the presence of a binding table, it does not perform ND insp
 Don't forget to allow traffic on local link address, sometimes via an additional command and to flag trust ports for static resources like manually addressed servers.
 
 //[#_Toc88922533 .anchor]####Destination
-===== Destination
+==== Destination
 
 When a packet arrives, the device will transmit it and perform ND resolution, if necessary, only if the recipient is known in the binding table. Otherwise, the packet will be discarded.
 
 This mechanism allows to counter traffic to a malformed or non-existent address, for example for local denial of service purposes.
 
 //[#_Toc88922534 .anchor]####Move
-===== Move
+==== Move
 
 When a host moves to a different port, physical location tracking can initiate an ND solicitation to the host on the previously known position in the binding table. 
 If a response is obtained, then the newcomer is a spoofer.
@@ -238,7 +246,7 @@ If a response is obtained, then the newcomer is a spoofer.
 This makes the attack ineffective to the extent that the original host is online and able to reply.
 
 //[#_Toc88922535 .anchor]####ND suppress
-===== ND suppress
+==== ND suppress
 
 To optimize traffic and limit multicast, it is possible to let the access device respond to NS Neighbor Solicitation requests instead of the concerned host. 
 This feature can be enabled at least for multicast requests, but also for unicast. 
@@ -253,7 +261,7 @@ A possible exception is wifi, where the monitoring of the radio link with the st
 Priority being given to a less than possible chatty underlying media, the radio channel.
 
 //[#_Toc88922536 .anchor]####Prefix
-===== Prefix
+==== Prefix
 
 Based on information obtained from the following sources:
 
@@ -265,7 +273,7 @@ Prefix control allows you to block a packet whose source routable address does n
 Thus, address spoofing is blocked at the access layer, even before using URPF later during routing, for example.
 
 //[#_Toc88922537 .anchor]####Cache poisoning
-===== Cache poisoning
+==== Cache poisoning
 
 Like its predecessor ARP cache poisoning, it is possible to fulfill the ND cache of hosts leading to saturation. 
 Especially with 2^64 possible addresses in a network, an attacker has plenty to do.
@@ -280,10 +288,10 @@ Modern OS usually have acceptable defaults values.
 
 For more information, see RFC 6583.
 
-==== DHCP ROGUE
+=== • DHCP ROGUE
 
 //[#_Toc88922539 .anchor]####Physical
-===== Physical
+==== Physical
 
 Described in RFC 7610, the DHCPShield mechanism involves defining the physical ports that can receive DHCP server traffic. 
 Generally, uplink ports. 
@@ -295,7 +303,7 @@ Again, be careful depending on the ASIC and implementation.
 If the device doesn’t support the feature, it is still possible to use an ACL blocking traffic matching source port UDP 547 / destination UDP 546, but it won’t work with a forged fragmented packet.
 
 //[#_Toc88922540 .anchor]####Logical
-===== Logical
+==== Logical
 
 The extensive RFC 8415 that covers DHCPv6 includes a section about securing exchanges between the server and clients and/or relays.
 
@@ -327,7 +335,7 @@ In short, implement IPsec between your relays and the server, and let the DHCPSh
 
 Lastly, always remember that DHCPv6 can provide multiple IPv6s to the same client (DUID).
 
-==== RA GUARD
+=== • RA GUARD
 
 Router Advertisement messages are a key point of IPv6, it is necessary to ensure that they are issued by an authorized router.
 
@@ -352,7 +360,7 @@ Note that if the router switches to a twin using an NHRP type protocol, it will 
 
 If the equipment does not support RA guard you can at least block RA ingress with an ACL on the access ports.
 
-==== RA HOP LIMIT
+=== • RA HOP LIMIT
 
 To prevent a Router Advertisement from jumping out of the segment, section 6.1 of RFC 4861 reminds us of the basic controls to do on ND messages. 
 Such checks as RA destruction with a hop-limit lower than 255 should work automatically, without any specific security configuration. 
@@ -366,7 +374,7 @@ Don't forget to adapt the configuration of intermediate devices so that they don
 Be careful, some manufacturers' documentations mention editing the value of the RA hop-limit and often give a value of 64 by default. 
 This is in fact the _current hop-limit_ (CHL) field which indicates to hosts receiving the RA the hop-limit value to configure on their side.
 
-==== OTHER RA SETTINGS
+=== • OTHER RA SETTINGS
 
 After having seen the specific points on security and address assignment modes, let's see some of the other settings of the router advertisement. 
 These parameters must be configured on each interface.
@@ -403,7 +411,7 @@ Other fields exist in the RFC but they are not used and not configurable on most
 
 Good to know, vendors implement a status command to display all prefixes issued with the associated interface.
 
-==== seND (NOT USABLE)
+=== • seND (NOT USABLE)
 
 _Secure Neighbor Discovery_ is designed to authenticate NDP messages within an organization and was originally described in RFC 3971.
 
@@ -425,12 +433,12 @@ The host must have pre-configured at least one trust anchor.
 
 [IMPORTANT]
 ====
-Network devices are starting to implement SeND, but there is still no support for SeND in operating systems outside of a few academic projects.
+*Network devices are starting to implement SeND, but there is still no support for SeND in operating systems outside of a few academic projects.*
 
-SeND is therefore unfortunately not usable at this time, and can only be used within an organization with managed workstations, like 802.1x.
+*SeND is therefore unfortunately not usable at this time, and can only be used within an organization with managed workstations, like 802.1x.*
 ====
 
-==== MLD
+=== • MLD
 
 IPv6 runs naturally in multicast, whereas it is rarely used in an IPv4 network. 
 It is often limited to discovery protocols such as mDNS, SSDP, LLMNR or even when implementing OSPF.
@@ -475,29 +483,29 @@ This practice can also prevail on other overlay/underlay based topologies.
 In summary, although MLDv2 is technically only required when using SSM, its ability to tolerate the loss of at least 1 packet is an advantage over V1 (see robustness value). 
 Snooping is an optimization requirement that also avoids an attack via unknown multicast addresses or without client hosts.
 
-[CAUTION]
+[IMPORTANT]
 ====
-When talking about IPv6 and multicast, we immediately think about Well-Know Multicast groups, like “all routers” (ff02::2) or “all DHCP servers” (ff02::1:2). We however forget Solicited-Node Multicast which we’ve already dealed with.
+*When talking about IPv6 and multicast, we immediately think about Well-Know Multicast groups, like “all routers” (ff02::2) or “all DHCP servers” (ff02::1:2). We however forget Solicited-Node Multicast which we’ve already dealed with.*
 
-To refresh your memory, each host will create a multicast group address based upon the last 24 bits of each configured address and the F02:0:0:0:0:1:FF00::/104 prefixe. 
-Thoses addresses must not be processed by MLD snooping, as they could fastly overload tables (with at least one group per host). 
-This bypass is sometime enabled by default, sometime needing to apply a command such as nd-workaround on MLD snooping configuration. 
-Check with your vendor and have a glance to the content of MLD snooping content while hosts communicate.
+*To refresh your memory, each host will create a multicast group address based upon the last 24 bits of each configured address and the F02:0:0:0:0:1:FF00::/104 prefixe.* 
+*Thoses addresses must not be processed by MLD snooping, as they could fastly overload tables (with at least one group per host).*
+*This bypass is sometime enabled by default, sometime needing to apply a command such as nd-workaround on MLD snooping configuration.*
+*Check with your vendor and have a glance to the content of MLD snooping content while hosts communicate.*
 ====
 
-==== STORM CONTROL
+=== • STORM CONTROL
 
 More classical and simple security, implement storm control for multicast and unknown traffic at least on access devices uplinks. 
 The 3rd about broadcast only concerns IPv4.
 
 Be aware that it is still better to have a high value like 30% of the link than no configuration at all, while waiting to refine it after studying the traffic.
 
-==== MULTICAST GROUPS TO BLOCK
+=== • MULTICAST GROUPS TO BLOCK
 
 There are some multicast addresses to block directly on access devices. 
 You can find them in the section "Disabling auto-discovery protocols" of the Host part.
 
-=== Host
+== Host
 
 //image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] marginalspalte ??
 
@@ -509,10 +517,10 @@ For example, a user with a laptop at home will have a hard time doing anything i
 
 On the other hand, you can harden the servers as much as possible.
 
-==== DHCP
+=== • DHCP
 
 //[#_Toc88922550 .anchor]####DHCP DUID
-===== DHCP DUID
+==== DHCP DUID
 
 //image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
 
@@ -544,26 +552,26 @@ The UUID can be tracked consistently if the whole chain is based on the same inf
 Most OS use DUID-LLT by default, there is no reason to change it.
 
 //[#_Toc108476696 .anchor]####DHCP Identity Associations
-===== DHCP Identity Associations
+==== DHCP Identity Associations
 
 While a DUID is unique for a system, the Identity Association is unique for a given interface. No particular configuration here.
 
 //[#_Toc88922552 .anchor]####DHCP without RA
-===== DHCP without RA
+==== DHCP without RA
 
 If the _Router Advertisement_ indicates whether or not to use DHCPv6, what to do when there is no RA?
 
-RFC 4862 states that in the absence of RA, a system can do DCHP. This is implemented in most OS. Good to know too that some OS send DHCPv6 requests even when told to do only SLAAC by the router.
+RFC 4862 states that in the absence of RA, a system can do DHCP. This is implemented in most OS. Good to know too that some OS send DHCPv6 requests even when told to do only SLAAC by the router.
 
 //[#_Toc88922553 .anchor]####DHCP options support in Dual-Stack
-===== DHCP options support in Dual-Stack
+==== DHCP options support in Dual-Stack
 
-In the series of non-predictive behaviors, what happens if a dual-stack host receives specific options in both DCHPv4 and v6 and those options differ in content?
+In the series of non-predictive behaviors, what happens if a dual-stack host receives specific options in both DHCPv4 and v6 and those options differ in content?
 
 Is it precedence that prevails - the first one providing the option? 
 It might be interesting to check this.
 
-==== SLAAC ADDRESS GENERATION METHOD
+=== • SLAAC ADDRESS GENERATION METHOD
 
 Originally it was planned that the SLAAC address would be formed from the system MAC address in the form of EUI-64. 
 However, this raises many problems:
@@ -579,7 +587,7 @@ However, this raises many problems:
 * RFC 7217 _A Method for Generating Semantically Opaque Interface Identifiers with IPv6 Stateless Address Autoconfiguration_ (SLAAC).
 
 //[#_Toc88922555 .anchor]####Temporary address
-===== Temporary address
+==== Temporary address
 
 The temporary address is an addition to the stable address (RFC 4941). 
 It changes more or less frequently depending on the OS settings while respecting the lifetimes announced by the Router Advertisement SLAAC.
@@ -617,13 +625,13 @@ The RFC still does not impose a mechanism to exclude prefixes from the use of te
 Microsoft's answer might not change https://social.technet.microsoft.com/Forums/azure/en-US/e36e82e9-1911-4f4d-91a2-c62f6e04c9c1/ipv6-turn-off-privacy-extensions-temporary-addresses-for-certain-prefixes-ie-ula-in-win-10?forum=win10itpronetworking
 
 //[#_Toc88922556 .anchor]####Randomized interface ID
-===== Randomized interface ID
+==== Randomized interface ID
 
 Rather than use its MAC in EUI-64, host will generate its address based on a pseudo-random identifier. 
 This identifier changes on reboot, so systems that support storage persistence will base their address on the previous address in addition to the pseudorandom number.
 
 //[#_Toc88922557 .anchor]####Stable privacy address
-===== Stable privacy address
+==== Stable privacy address
 
 This mechanism allows you to always get the same IPv6 address as long as you are on the same network, without keeping it when connecting to other networks. 
 This is achieved thanks to the fact that it is derived from intrinsic constants of the host alongside the received prefix.
@@ -640,7 +648,7 @@ Thus, it is impossible to follow the machine when it moves on different networks
 On the other hand, the stable aspect within each frequented network will facilitate the work of the administrator who wishes to avoid DHCPv6 stateful.
 
 //[#_Toc88922558 .anchor]####SLAAC synthesis
-===== SLAAC synthesis
+==== SLAAC synthesis
 
 Here is a summary of the trackability by type of address. 
 Don't forget that the global address is routable and therefore potentially visible absolutely everywhere on the internet.
@@ -651,7 +659,7 @@ Don't forget that the global address is routable and therefore potentially visib
 |EUI-64 (MAC) |YES |YES |YES (vendor) |YES
 |Randomized (change on reboot) |NO |NO |NO |Over several hours/day depending on standby VS reboot
 |Stable Privacy (derivated from prefix) |YES |NO |NO |YES
-|Supplement Temporary |NO (For host-initiated session) |NO (For host-initiated session) |NO (For host-initiated session) |Usually less than a day (For host-initiated session)
+|Supplement Temporary |NO (For host-initiated session) |NO (For host-initiated session) |NO (For host-initiated session) |Usually less than a day (For host-initiated session)|
 |===
 
 Ideally you should keep the default OS behavior for machines that may connect outside the company. 
@@ -661,7 +669,7 @@ For other machines, it is possible to completely disable SLAAC, as the use of DH
 We then follow the logic of reducing the protocol attack surface and close the door.
 
 //[#_Toc88922559 .anchor]####Link-Local address generation method
-===== Link-Local address generation method
+==== Link-Local address generation method
 
 Although only local in scope, the local link address also benefits from the 3 different automatic configuration modes mentioned above.
 
@@ -669,7 +677,7 @@ The configuration generally follows that of the global address on consumer OSes,
 
 However, server and network-oriented systems’ ones are generally based on EUI-64.
 
-==== DON’T DISABLE IPV6 STACK
+=== • DON’T DISABLE IPv6 STACK
 
 If for some reason you want to avoid a host to communicate in IPv6, do not disable its IPv6 stack. 
 Instead, use the following options:
@@ -683,7 +691,7 @@ For example, Windows has required for several years not to disable IPv6 complete
 Under Linux the simple absence of the loopback ::1 can also bring its share of surprises. 
 Usually recent kernel let you use ::1 loopback even with disabled stack.
 
-==== DISABLING TRANSITION MECHANISMS
+=== • DISABLING TRANSITION MECHANISMS
 
 Some mechanisms allow hosts to exchange in IPv6 through IPv4 networks, notably:
 
@@ -694,7 +702,7 @@ Some mechanisms allow hosts to exchange in IPv6 through IPv4 networks, notably:
 These mechanisms are no longer of interest and the first two have even disappeared. 
 It is therefore advisable to turn them off.
 
-==== DISABLING AUTO-DISCOVERY PROTOCOLS
+=== • DISABLING AUTO-DISCOVERY PROTOCOLS
 
 It is advisable to disable auto-discovery protocols embedded in the OS. 
 If they are useful in a domestic environment, they represent a real risk in a corporation.
@@ -723,7 +731,7 @@ For example, it is enough to have an SMTP relay between 2 Microsoft Exchange ser
 If the above protocols are not disabled, you will see in the mail headers a delivery via FE80. 
 Fortunately SMTP still indicates the hostname.
 
-==== BLOCKING LINK-LOCAL TRAFFIC
+=== • BLOCKING LINK-LOCAL TRAFFIC
 
 At home the local link address can be used to talk to your NAS, printer, chromecast/airplay receiver... after discovery via the above-mentioned protocols. 
 The DNS auto-registration on its domestic router will make prefer the global address.
@@ -747,7 +755,7 @@ So, we will keep UDP 5350 and 5351 in listening and 5351 in destination.
 
 For less constraint you can also choose to block only the traffic in the incoming direction.
 
-==== VPN
+=== • VPN
 
 The introduction of IPv6 in home networks can present a risk for misconfigured VPN sessions. 
 A company not practicing split tunneling and advertising the route 0.0.0.0/0 will be able to let the host communicate directly with the outside world if it can resolve AAAA DNS resources and the firewall does not block it.
@@ -761,12 +769,12 @@ Many sites allow you to do an IPv6 VPN leak test.
 Note for "consumer" VPNs, they rarely support IPv6 but still announce a default IPv6 route to send traffic to a blackhole and avoid a leak. 
 You can do the same thing and advertise ::/0 on your VPN even if you don't provide real connectivity.
 
-==== DESKTOP OS CONFIGURATION
+=== • DESKTOP OS CONFIGURATION
 
 This section gives some configuration examples.
 
 //[#_Toc108476711 .anchor]####Windows
-===== Windows
+==== Windows
 
 Under Windows, even if _netsh_ commands still exist, it is now advised to use _powershell cmdlets_.
 
@@ -785,7 +793,7 @@ Some of the configurations might be done directly in the registry, such as DHCP 
 Persistent DUID is shown under the same key.
 
 //[#_Toc88922566 .anchor]####Linux
-===== Linux
+==== Linux
 
 Here are some configurations for GNU/Linux.
 
@@ -811,7 +819,7 @@ https://github.com/torvalds/linux/blob/master/net/ipv6/Kconfig
 
 A more readable resume https://sysctl-explorer.net/net/ipv6/
 
-===== Network Manager
+==== Network Manager
 
 Network Manager is a fairly common tool from the Gnome project used to manage networking.
 
@@ -827,7 +835,7 @@ CLI nmcli https://developer.gnome.org/NetworkManager/stable/nmcli.html
 
 Pseudographic nmtui https://developer.gnome.org/NetworkManager/stable/nmtui.html
 
-===== Systemd Networkd
+==== Systemd Networkd
 
 systemd-networkd (network) and systemd-resolved (DNS) are omnipresent but not necessarily enabled. 
 Be sure to disable global management (or management of certain interfaces) by another daemon such as Network-Manager to avoid conflicts with Networkd. 
@@ -839,9 +847,9 @@ https://www.freedesktop.org/software/systemd/man/resolvconf.html[https://www.fre
 
 https://www.freedesktop.org/software/systemd/man/systemd-networkd.service.html[https://www.freedesktop.org/software/systemd/man/systemd-networkd.service.html#]
 
-https://www.freedesktop.org/software/systemd/man/systemd.network.html[https://www.freedesktop.org/software/systemd/man/systemd.network.html#] (le plus important)
+https://www.freedesktop.org/software/systemd/man/systemd.network.html[https://www.freedesktop.org/software/systemd/man/systemd.network.html#] (the most important)
 
-===== NETPLAN
+==== netplan
 
 Netplan is not a direct management daemon, but an abstraction tool present at canonical (Ubuntu). 
 It then configures Network Manager or Networkd.
@@ -855,11 +863,43 @@ In the meantime, you can use it with a systemd override on this element.
 
 [.underline]#https://bugs.launchpad.net/netplan/+bug/1771886#
 
-// suse Linux uses wicked as network manager ?? describe here
-===== By distribution
+==== wickedd
+wickedd provides a service for managing network interfaces. 
+It monitors the system's interfaces by retrieving relevant information from the kernel via netlink, sysfs and other interfaces.
+
+It can be accessed via a DBus service, which can be used to reconfigure interfaces, bring them up or take them down.
+
+*Components*
+
+Additionally to the main wickedd daemon, wicked framework provides several helper daemons and supplicants:
+
+|===
+|Component	
+|Description
+
+|wickedd-nanny
+|Event driven policy daemon responsible for hotplugging.
+
+|wickedd-dhcp6	
+|DHCPv6 client supplicant
+
+|wickedd-dhcp4	
+|DHCPv4 client supplicant
+
+|wickedd-auto4	
+|IPv4 autoip supplicant
+|===
+
+Further, it communicates also with external wpa-supplicant for Wireless (WPA) support.
+wickedd is used by suse distribution.
+
+https://manpages.opensuse.org/Tumbleweed/wicked/wickedd.8.en.html
+
+==== By distribution
 
 Each distribution's documentation will instruct you which tool is in place by default. 
-In most cases, the choice lies between systemd-networkd and Network-Manager. Conman and WICD, for example, have disappeared from the landscape.
+In most cases, the choice lies between systemd-networkd and Network-Manager. 
+Conman and WICD, for example, have disappeared from the landscape.
 
 As often, the ArchLinux documentation is very complete. 
 Here is a link to the configuration elements for each type of network manager https://wiki.archlinux.org/title/Network_configuration#Network_managers
@@ -873,7 +913,7 @@ Lots of elements here http://mirrors.deepspace6.net/Linux+IPv6-HOWTO/
 and http://www.bieringer.de/linux/IPv6/.
 
 //==== image:extracted-media/media/image30.svg[Smartphone contour,width=75,height=75] Marginalspalte ??
-==== MOBILE AND EMBEDDED
+=== • MOBILE AND EMBEDDED
 
 Mobile OSes can be found within an enterprise network in different forms:
 
@@ -883,7 +923,7 @@ Mobile OSes can be found within an enterprise network in different forms:
 * Unmanaged devices on a guest network.
 
 //[#_Toc88922568 .anchor]####Android
-===== Android
+==== Android
 
 Android is now the leading player in these segments, and it has one annoying problem, it does not support DHCPv6.
 
@@ -935,7 +975,7 @@ The implementation of an NDPmon collector could allow to follow a terminal in SL
 It is therefore delicate but not impossible to provide IPv6 SLAAC connectivity to guest networks in hotels, hospitals, airports or simply within an organization.
 
 //[#_Toc88922569 .anchor]####Other OSes
-===== Other OSes
+==== Other OSes
 
 iOS supports both address assignment methods and does not present any particular problem in operation.
 
@@ -944,9 +984,9 @@ Typically, many microcontroller devices today use EUI-64 only SLAAC.
 This has the disadvantage of allowing an attacker to identify the brand via the MAC address, since the latter is included in IPv6. 
 So think about asking for stable privacy IPv6 support.
 
-=== Transit
+== Transit
 
-==== URPF
+=== • URPF
 
 Unicast Reverse Path Forwarding (RFC 3704) prevents a packet whose source address does not match a known route in the reverse direction from traversing a router, thus limiting the risk of IP spoofing.
 
@@ -960,7 +1000,7 @@ The configuration of uRPF is generally common to both IPv4 and IPv6.
 
 If you are routing multicast traffic, consider multicast RPF as well.
 
-==== CONTROL PLANE PROTECTION
+=== • CONTROL PLANE PROTECTION
 
 Packets destined to the router itself, as well as those with certain header options that cause an exception, must be forwarded to the control plane.
 
@@ -971,7 +1011,7 @@ This security does not distinguish between legitimate and illegitimate traffic.
 
 Additionally, traffic explicitly destined to the router itself has no reason to be fragmented, you can block it if fragmented.
 
-==== OSPF SECURITY
+=== • OSPF SECURITY
 
 The arrival of OSPFv3 is an opportunity to drop MD5 and use IPsec to secure exchanges. 
 ESP must be supported, AH optionally (RFC 4552). 
@@ -981,15 +1021,16 @@ Note about other protocols:
 
 RIPng offers the same thing.
 
-BGP is not specific to v6 and follows a different path through the BGPsec initiative which aims to group route origin signature and path validation (AS-Path) from end to end. This initiative focuses on public routing and does not seem to include at the moment an encryption and authentication component for corporate networks, based on a private PKI or on a manual implementation of the keys.
+BGP is not specific to v6 and follows a different path through the BGPsec initiative which aims to group route origin signature and path validation (AS-Path) from end to end. 
+This initiative focuses on public routing and does not seem to include at the moment an encryption and authentication component for corporate networks, based on a private PKI or on a manual implementation of the keys.
 
 IS-IS sees no evolution on security side, moreover it is IP agnostic.
 
-=== Filtering
+== Filtering
 
 Filtering recommendations are to be applied at least at the network edge, some rules can be integrated in routers and not just in firewalls, although the stateful aspect is still necessary for some of them.
 
-==== ICMP
+=== • ICMP
 
 While there is a strong trend towards restricting the ICMPv4 traffic allowed, ICMPv6 requires a more granular approach.
 
@@ -1077,7 +1118,7 @@ This should be done at least at the edge of the Internet.
 DPI will also be able to block a PMTU-D return with a value below 1280. 
 This is impossible and would risk making a poorly developed IP stack crash.
 
-==== TRANSITION MECHANISMS
+=== • TRANSITION MECHANISMS
 
 If disabling transition mechanisms on hosts is a good practice, blocking them on filtering devices is as useful.
 
@@ -1112,7 +1153,7 @@ Especially for host-initiated mechanisms like Teredo and ISATAP.
 
 On IPv6 you can block 4rd, 4over6, etc.
 
-==== BOGON PREFIXES AND ROUTES
+=== • BOGON PREFIXES AND ROUTES
 
 In IPv4 it is abnormal to see some addresses, for example a packet with a source address of 127.0.0.5, or an IP RFC1918 coming from the internet... 
 Same thing in IPv6.
@@ -1167,7 +1208,7 @@ Note that the 2001:4:112::/48 AS112 block allows to blackhole the numerous rever
 The AS112 project aims to relieve DNS root, conducted by ICANN it generates statistics from the requests. 
 So you should only block this prefix if your DNS infrastructure does the blackholing itself.
 
-==== HEADER EXTENSION
+=== • HEADER EXTENSION
 
 IPv6 brings with it header extensions (EHs). 
 They can be combined and must always appear on the first fragment in the case of a packet fragmented by the sender host. 
@@ -1196,7 +1237,7 @@ At the moment there are still devices that try to process extensions even if the
 
 Finally, take the time to read RFC 7112 to understand what happens when extensions are chained together and fragmented. Hence the decision to force them all into the first fragment.
 
-==== BAN POLICY
+=== • BAN POLICY
 
 Since IPv6 offers a lot of addresses, it is necessary to change the way temporary bans are handled.
 

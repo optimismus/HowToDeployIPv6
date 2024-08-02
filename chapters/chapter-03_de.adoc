@@ -1,0 +1,549 @@
+image::images/image03_01_citrus.jpeg[Zitrusfrüchte von klein bis groß,width=913,height=609]
+
+<<<
+
+[big]#*Einzelteile*#
+
+Die Einführung von IPv6 muss logischerweise auf der Infrastrukturebene, dem Netzwerk, beginnen.
+Und vor jeder Einführung ist es sinnvoll, das Verhalten jeder Komponente zu testen.
+Nur sehr wenige Unternehmen verfügen über eine durchgängige Labor- und Qualifizierungsumgebung, sowohl horizontal innerhalb derselben Schicht als auch vertikal zwischen den Betriebsschichten.
+Beispielsweise werden die Prototypen Ihres Campus, Ihres Rechenzentrums und Ihres Sicherheitsnetzes möglicherweise von verschiedenen Teams verwaltet und sind nicht in einer Topologie verbunden, die der Produktionsumgebung nahe kommt.
+Wenn beispielsweise ein Testserver in einem Netz mit Produktionsroutern läuft, ist das eine vertikale Trennung.
+Das ist sinnvoll, denn wie soll man sonst ein Problem beheben, wenn alle Stack-Schichten in der Testphase sind - das wäre unbeherrschbar.
+
+Jede Schicht wird ihre eigenen Testumgebungen behalten und auf einer produktiven Netzinfrastrukur basieren.
+Kurz gesagt, jede Qualifikation läuft selbst auf einer zugrunde liegenden Produktionsumgebung (mit Ausnahme der Grundlage, die die Netzwerkinfrastruktur ist).
+Dies kann wie folgt dargestellt werden:
+
+image::images/image03_02_blocks.svg[IPv6 workflow,width=566,height=185,title="Test Stack"]
+
+== Warm up
+
+Bevor Sie sich überhaupt entscheiden, wo Sie anfangen sollen, sollten Sie zunächst sicherstellen, dass alle Ihre aktuellen und künftigen Architekturfestlegungen / Ausschreibungen / Anfragen von Unterauftragnehmern die IPv6-Kompatibilität festlegen und ihr ordnungsgemäßes Funktionieren gewährleisten. Die Umstellung dieser Prozesse nimmt oft viel Zeit in Anspruch, so dass es ratsam ist, sofort mit der Arbeit daran zu beginnen.
+
+Dazu gehören auch Build-, Run- und Lifecycle-Prozesse und alles, was damit zusammenhängt.
+
+== Netzwerk
+
+Das Netzwerk ist die erste Säule, mit der wir uns befassen müssen. Beginnen wir mit einigen Fragen zu den Geräten:
+
+* Funktioniert ein Gerät mit IPv6? (Fragen Sie den Gerätehersteller, Integrator, Tester usw.);
+* Gibt es Funktionslücken/Einschränkungen bei IPv6 im Vergleich zu IPv4? 
+(z. B.: Verfügt eine Probe über dieselben Erkennungsfähigkeiten, dieselben Regeln und Signaturen, die für die Ausführung von Richtlinien gelten);
+* Gibt es eine Leistungslücke zu IPv4? 
+(z. B.: Liegt die Anzahl der pro Sekunde gefilterten Pakete auf einer Firewall in der gleichen Größenordnung? 
+Sind die ASIC-Hardwarefunktionen, wie IPSEC oder TCP-Offloading auf der OS-VM/Hypervisor/Treiber-NIC-Kette oder TLS auf einem Load Balancer gleichwertig?)
+* Ist die Geräteverwaltung über IPv6 möglich? 
+Steuerung, Überwachung usw. oder wird IPv6 nur in der Dataplane und nicht auf der Controlplane verwendet?
+
+Die Schwierigkeit der Implementierung steigt mit der Fähigkeit des Geräts, höhere Schichten im OSI-Modell zu nutzen, da immer mehr Funktionen getestet werden müssen und das Risiko der Auslassung/Konfigurationsabweichung ebenfalls steigt.
+
+Es ist daher einfach, mit Routern zu starten, sobald die erforderlichen Routing-Protokolle beherrscht werden. Gleichzeitig vermeiden Sie in den Endnutzernetzen sofort einen dualen Stack zur Verfügung zu stellen, um Zeit für die Herstellung der IPv6-spezifischen Sicherheitsmechanismen in Host-Netzen zu implementieren.
+
+Dann wird die Infrastruktur vernetzt, ohne jedoch den Endanwender zu erreichen.
+
+Im nächsten Schritt schauen wir auf die Geräten für die Filterung und WAN-Optimizer, wo das objektbasierte Modell es ermöglicht, die meisten Richtlinien/ACLs zu doppeln, indem die Objekte bearbeitet werden, um die IPv6-Subnetze/Adressen in Korrelation mit IPv4 widerzuspiegeln.
+
+Der Benutzerzugriff sollte erst aktiviert werden, nachdem die Sicherheitskomponente sowohl für Netzwerkgeräte als auch für Hosts ausgerollt sind.
+
+Der Rest erfordert mehr Arbeit und betrifft die fortgeschrittenen Netzwerkdienste im Rechenzentrum wie Load Balancer, WAF, Probes usw.
+
+//Speicherzeichen: ◗
+=== • Bereit?
+
+Der Reifegrad der IPv6-Kompatibilität variiert je nach Gerätetyp. 
+Im Allgemeinen sind Routing-Geräte der Carrier-Klasse seit Jahren problemlos. 
+Im Gegensatz dazu treten bei Campus-Geräten manchmal noch einige Fehler auf, insbesondere bei den Sicherheitsfunktionen.
+
+image::images/image03_03_ipv6-evolution.svg[IPv6-Entwicklung,width=561,height=287, title="Die IPv6-Evolution"]
+
+Der Reifegrad der Lösungen scheint dem obigen Diagramm zu folgen. 
+Achten Sie auf SD-WAN- und Campus-SDN-Lösungen und lesen Sie den Abschnitt SD-WAN im Abschnitt Transportmechanismen, dessen Punkte auch für Campus-SDN gelten.
+
+Anhand von Versionshinweisen und bekannten Fehlern können Sie erkennen, wann die IPv6-Unterstützung ausgereift ist, wobei der Schwerpunkt auf IPv6-spezifischen Fehlern liegt.
+Die Entwicklung folgt im Allgemeinen der Normalverteilung und damit einer Gaußschen Kurve.
+
+=== • Hardware
+
+Überprüfen Sie den Speicherplatz Ihres Routers. 
+Einige Systeme haben nur wenig Platz für die Speicherung von IPv6-Routen.
+Einige ASICs auf dem Markt speichern IPv6 /48-Routen (und manchmal andere häufige Größen) anders als andere Präfixgrößen.
+
+Die vollständige IPv6-Routingtabelle (BGP Full View) wächst exponentiell, daher sollten Sie bei der Auswahl der Geräte für Internetübergänge etwas Spielraum haben.
+Wenn Sie wenig Speicherplatz haben, aber dennoch BGP Full View benötigen, können Sie einige Router für IPv6-Peerings und andere für IPv4 einsetzen, wenn die technische und wirtschaftliche Prüfung zufriedenstellend ausfällt.
+
+Da die IPv6-Adressen länger sind, benötigen sie viermal mehr Platz im Speicher.
+Denken Sie an Routing-Tabellen, ACL, zustandsabhängige Tabellen und Protokolle.
+Hoffentlich verbrauchen sie oft nur zweimal so viel Platz wie IPv4, solange /64 berücksichtigt werden.
+Das ist bei Routing-Tabellen und Routing-Entscheidungen häufig.
+
+//image:extracted-media/media/image16.svg[Connexions contour,width=75,height=75] Marginalspalte ??
+=== • LAB
+
+Das Ausprobieren von Funktionen, von den einfachsten wie Routing bis zu den fortschrittlichsten wie Sicherheitsmechanismen, kann in einer Vielzahl von Umgebungen durchgeführt werden.
+Ob im einzeln oder nicht.
+Einige Tests, wie z. B. die QoS-Validierung, erfordern ein physisches Chassis und einen Traffic-Generator, während ein OSPFv3-Test höchstwahrscheinlich auf einer virtuellen Instanz durchgeführt werden kann.
+Seine Abhängigkeit von ASICs ist begrenzt.
+
+Sie können die Tests wie folgt durchzuführen, wobei die Tests von den linken Spalten auf die rechten Spalten verschoben werden können.
+Dadurch wird ihre Ausführung jedoch komplexer, was das Risiko erhöht, die letzte Spalte ist für die Produktionstests vorgesehen.
+
+[width="100%",cols="15%,32%,32%,21%",options="header",]
+|===
+a|
+Umgebung
+
+Gerät
+
+|Virtuelles Labor (Herstellerumgebung oder eveNG,...) |Unabhängiges physisches Labor |Pilotphase in der Produktion
+|L2 Switch a|
+- Konfigurationsvalidierung ohne realen Test
+
+- Einige virtuelle L2-Tests sind je nach Anbieter möglicherweise nicht sehr genau.
+
+a|
+- Zugangssicherheit (z. B. RA-Guard)
+
+- MLD-Snooping
+
+- 802.1x
+
+- QoS
+
+- ACL
+
+- IP-Stacks
+
+a|- Verhalten des Produktionshosts
+|Wifi AP |N/A a|
+- Vorherige Elemente (außer IP-Stack...)
+
+- Erreichbarkeit des Controllers
+
+- Lokales Routing außerhalb des Tunnels
+
+- ACL
+
+a|- In der Produktion Host-Verhalten
+|Router a|
+- Protokolle (OSPFv3, IS-IS, MP-BGP)
+
+- FHRP (HSRP, VRRP)
+
+- Multicast (PIM, MLD,...)
+
+- DHCPv6-Relay
+
+- ACL, Route-Map
+
+- Router / Firewall auch im Zusammenspiel
+
+- DCI
+
+- PMTU-Discovery
+
+a|
+- Vorherige Elemente
+
+- Zugangssicherheit (RA-Guard usw.)
+
+- QoS
+
+- BFD
+
+- ARP/ND-Inspektion
+
+- Dual-Stack-Bereitstellung für Zugangsnetze
+
+- Performance
+
+a|
+- Verhalten des Produktionshosts
+
+- Skalierung
+
+|FW _(zusätzlich zu Router-Funktionen)_ a|
+- Vorherige Elemente
+
+- Bearbeiten von Objekten/Regeln in IPv6
+
+- NAT64
+
+- IPv6 Transit-Filterregeln
+
+- L7 Nicht-Regressionstests
+
+a|
+- Vorherige Elemente
+
+- Firewall Hochverfügbarkeit
+
+- Transit IPv6-Filterregeln
+
+- Controller des Anbieters
+
+- IPsec
+
+- IPv6-Protokolle + NAT64-Protokolle
+
+a|
+- Integration der ACL-Orchestrierung
+
+- Integration von IPv6-Protokollen + NAT64-Protokollen
+
+- Verhalten des Hosts in der Produktion
+
+|Load Balancer (SLB) a|
+- Objekt-/Regelbearbeitung in IPv6
+
+- L7 Nicht-Regressionstests
+
+- NAT64
+
+a|
+- TLS-Offloading
+
+- Leistung
+
+- IPv6-Protokolle
+
+|
+|IPS/IDS a| - Objekt-/Regelbearbeitung in IPv6 a| - Frühere Elemente a| - Prod SIEM-Verarbeitung
+|WAN Optimierung a|
+- Objekt/Regel-Bearbeitung in IPv6
+
+- L7 Nicht-Regressionstests
+
+a|- Vorherige Elemente |
+|Proxy a|
+- Objekt/Regel und PAC-Bearbeitung in IPv6
+
+- Gäste
+
+a|- Vorherige Elemente |
+a|
+DNS
+
+IPAM
+
+DHCP
+
+a|
+- DNS64
+
+- AAAA-Records
+
+- reverse PTR 
+
+- IPAM IPv6-Blöcke
+
+- DHCPv6 mit Optionen
+
+a|
+- Vorherige Elemente
+
+- Selbstregistrierung der Hosts
+
+- Dienst in IPv6 bereitgestellt
+
+|
+|===
+
+Um Sie zu unterstützen, hat die RIPE unter https://www.ripe.net/publications/docs/ripe-772[RIPE-772] eine Liste von Kompatibilitätspunkten veröffentlicht, die Sie bei der Erstellung einer Ausschreibung überprüfen und anfragen sollten.
+
+Das US-amerikanische NIST hat im Jahr 2020 die Überarbeitung ihres https://www.nist.gov/programs-projects/usgv6-program/usgv6-revision-1[USGv6-rev1] Testprogramms veröffentlicht.
+
+=== • INTERNES ROUTING
+
+Je nach dem Aufbau Ihres Netzes erfordert die Einführung von IPv6 tiefgreifende Änderungen bei der Konfiguration der Routing-Protokolle.
+
+//[#_Toc88922652 .anchor]####BGP
+==== BGP
+
+Auch wenn die Implementierung der Adressfamilie IPv6 in MP-BGP die Arbeit in BGP vereinfacht, müssen die Regeln für die Klassifizierung des Typs Access/Präfixlisten/Sets analysiert werden, dass die IPv6-Adressen berücksichtigt werden, um die Route Map/Policy korrekt und vergleichbar zu IPv4 anzuwenden.
+Um Inkonsistenzen zu vermeiden, sollten Sie Ihre Regeln nach Möglichkeit auf Communities stützen und diese Communities in den Accessnetzen markieren, anstatt überall Listen mit IPv4- und IPv6-Präfixen zu führen.
+Die Strenge einer IPv4/IPv6-Zuordnungstabelle und Automatisierung ist eine weitere mögliche Strategie, die entweder auf den Routern verteilt oder auf einem Routenserver wie FreeRangeRouting, Bird oder Quagga zentralisiert ist (was wahrscheinlich auch andere Aspekte Ihrer Routingtechnik erleichtert, wenn Sie denen gehören, die häufig BGP optimieren).
+
+//[#_Toc88922653 .anchor]####IGP
+==== IGP
+
+Für IGP kommen zwei Lösungen in Frage. 
+Entweder man verwendet IS-IS von ISO, das IP-unabhängig und flexibler als OSPFv3 ist, aber in Unternehmen nur selten eingesetzt wird. 
+Es ist das IGP, was heute in großen Carrier-Netzen dominiert, vor allem wegen seiner Konvergenz und seiner Fähigkeit zur teilweisen Neuberechnung von Routen.
+
+Darüber hinaus erfordert die Einführung von IPv6 SRv6-basiertem Segment Routing mit IS-IS und seine TLVs, auch wenn OSPF LSAs erstellt wurden, um eine Funktionsäquivalenz zu bieten, aber der Markt und die Hersteller scheinen in erster Linie IS-IS zuzuwenden (erkundigen Sie sich bei Ihren Anbietern).
+
+Die andere Lösung besteht darin, zu OSPFv3 zu wechseln und, sobald es stabil funktioniert, AddressFamilyIPv4 einzubeziehen, um OSPFv2 zu entfernen, Perimeter für Perimeter, wenn die Geräte mit der Bereitstellung von IPv4-Routen in OSPFv3 RFC 5838 kompatibel sind.
+
+Die parallele Beibehaltung der beiden OSPF-Versionen bringt die klassischen Probleme des Dual-Stack mit sich (Homogenität der Konfiguration zwischen IPv4 und IPv6, Konfigurations-Overhead, Gleichwertigkeit der Überwachung usw.).
+
+Für eine große Organisation ist eine IS-IS-Schulung wahrscheinlich den Aufwand wert, vor allem, um Sie auf SRv6 vorzubereiten.
+
+Vergessen Sie nicht, dass nur die IGPs betroffen sind, die Client-Netze übertragen, im Allgemeinen die Accessnetze.
+Es ist sinnlos, das Underlay-IGP Ihres MPLS oder Ihres VxLAN-EVPN zu ändern, da BGP für IPv6 in der Overlay-Schicht zuständig ist.
+
+image::images/image03_04_6vpe-topology.svg[6VPE Topology,width=564,height=279,title="6VPE Topologie"]
+
+=== • FILTERN UND VERFOLGEN
+
+Vor der IPv6-Nutzung muss das gleiche Sicherheitsniveau wie bei IPv4 erreicht werden.
+Der Abschnitt Sicherheit enthält viele Elemente zu diesem Thema.
+Außerdem finden Sie im Kapitel "IPv4/ IPv6-Mapping" des Abschnitts "Adressplanung" einige Hinweise, die die Umschreibung der Regeln erleichtern können.
+
+== Infrastrukturdienste
+
+Viele kritische Dienste gehen Hand in Hand mit dem ordnungsgemäßen Betrieb der Infrastruktur.
+Einige ermöglichen Konnektivität, andere zielen auf Sicherheitsaspekte ab usw.
+
+Unabhängig davon, welches IPv6-Bereitstellungsszenario Sie für Ihr Unternehmen wählen, wird der Zeitplan für deren Implementierung ähnlich dem der Infrastruktur sein.
+
+//image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
+=== • SIEM
+
+Jedes Mal, wenn ein neuer Dienst migriert wird, müssen die Protokollierungen genauso effizient gesammelt und korreliert werden wie bei IPv4.
+Die Anpassung Ihres SIEM ist daher während des gesamten Projekts unabdingbar, weshalb Sie langfristig Ressourcen für dieses Thema einplanen sollten.
+Die Transkription von Log-Parsing-Regeln ist recht zeitaufwändig.
+Es wäre eine gute Idee, wenn die wichtigsten Hersteller fertige Konvertierungsmechanismen anbieten würden.
+
+Vergewissern Sie sich, dass die Protokollquellen die Adresse zwischen eckigen Klammern gefolgt vom Port [IP]:port senden.
+Ohne Klammern ist es schwierig, beides zu trennen. Sie können sich zwar darauf verlassen, dass die letzte Zahlengruppe der Port ist, aber einige Anwendungen senden ihn zur Vereinfachung nicht, wenn der Quell-Port derselbe ist wie der Server-Port, obwohl dies nicht der Fall sein sollte (selten, aber nicht unmöglich).
+
+Seien Sie vorsichtig mit der Speicherung von IPv6-Adressen, siehe den Abschnitt Anwendungen weiter unten.
+
+=== • DNS/IPAM/DHCP
+
+Diese Dienste werden häufig von einem System erbracht, mit Ausnahme spezifischer DNS-Zonen, die beispielsweise einer Microsoft Active Directory-Umgebung zugewiesen sind.
+
+In jedem Fall sollten die die für Kunden zugänglichen Service-Interfaces solcher Dienste vorrangig auf Dual-Stack umgestellt werden.
+
+Die Management-Schnittstellen der Geräte, müssen nicht sofort in IPv6 bereitgestellt werden.
+Dies gilt z. B. für NTP-, RADIUS-, TACACS-, SYSLOG-Server.
+Anders verhält es sich, wenn Ihr Szenario auf eine IPv6-Bereitstellung in den Management-Netzen abzielt.
+
+=== • VPN, PROXY UND REVERSE PROXY
+
+Diese Dienste haben die Besonderheit, dass sie sowohl interne als auch externe Schnittstellen haben.
+Die IPv6-Bereitstellung kann unabhängig auf jeder der beiden Seiten implementiert werden, da die Anwendungsfälle unterschiedlich sind.
+
+//[#_Toc88922659 .anchor]####External
+==== Externe Schnittstelle
+
+Die Möglichkeit, über das Internet zu kommunizieren, wird es Ihren Nutzern und Kunden ermöglichen, Sie mit einer nativen IPv6-Verbindung zu erreichen, und das in einer Zeit, in der CG-NAT weit verbreitet ist.
+Umgekehrt können IPv6-Sites problemlos über Proxy-Browsing erreicht werden.
+
+Daher sollten Ihr VPN-Gateway und Ihr Reverse-Proxy so schnell wie möglich im Dual-Stack-Modus betrieben werden, um zu vermeiden, dass Ihre Datenströme Carrier-Grade-NAT und andere lustige Dinge außerhalb Ihrer Kontrolle durchlaufen müssen.
+Wir erinnern daran, dass der Reverse-Proxy auch Internet-IPv6-Konnektivität zu IPv4-Servern anbieten kann.
+Dies ist eine weitere Möglichkeit, die Kontrolle über diese Übersetzung auf der Internet-Seite vom CG-NAT der Internetprovidern zurückzuerlangen.
+
+//[#_Toc88922660 .anchor]####Internal
+==== Interne Schnittstelle
+
+Der interne Aspekt geht einher mit der Einführung von IPv6 im LAN.
+Es wird notwendig sein, die korrekte Definition der PAC-Proxy-Dateien sicherzustellen, so dass die VPN-Regeln umgesetzt werden, insbesondere die für das Split-Tunneling.
+
+//image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] Marginalspalte ??
+=== • Betriebssysteme
+
+Während die TCP/IP-Stacks der Betriebssysteme IPv6 bereits seit einem Jahrzehnt unterstützen, gibt es die Unterstützung für einige RFCs wie DNS-Server-Informationen über Router-Advertisement (RDNSS) erst seit Kurzem.
+Beispielsweise beginnt diese Unterstützung in Windows 10 mit Build 1703.
+
+//[#_Toc88922662 .anchor]####Precedence
+==== IP-Precedence
+
+Das Konzept der IP-Precendence definiert die Priorität, die den verschiedenen IP-Adresstypen und damit insbesondere die Bevorzugung von IPv6 gegenüber IPv4 oder das Gegenteil.
+
+Die Reihenfolge ist standardisiert, RFC 6724 aus 2012 ersetzt 3484 durch aus 2003.
+Dies sind die Unterschiede der beiden RFC:
+
+[width="100%",cols="22%,19%,27%,32%",options="header",]
+|===
+|Adresse        |Präfix         a|Ehemalige Prio +
+(RFC 3484)
+                                        a|Neue Prio +
+(RFC 6724)
+
+|IPv6 Loopback  |::1/128        |50     |50
+|Natives IPv6   |::/0           |40     |40
+|IPv4           |::ffff:0:0/96  |10    a|_35_
+|6to4           |2002::/16      |30     |30
+|Teredo         |2001::/32      |05     |05
+|ULAs           |fc00::/7       |40    a|*03*
+|site-local     |fec0::/10      |40    a|*01*
+|6bone          |3ffe::/16      |40    a|*01*
+|IPv4compat     |::/96          |20    a|*01*
+|===
+
+Sie sehen, dass zwischen den beiden Versionen IPv4 gegenüber IPv6-Übergangsmechanismen (6to4, Teredo) bevorzugt wurde und dass Site-Local-Adressen jetzt veraltet sind.
+Natives IPv6 hat die höchste Priorität.
+
+Achten Sie auch auf private ULA-Adressen, die eine niedrigere Priorität als IPv4 haben, das kann wichtig sein, falls Sie planen ULA zu verwenden.
+
+image::images/image03_05_precedencetable.png[Windows netsh,width=383,height=195,title="IP-Precedence in Windows 10"]
+
+[.blue]#Ergebnis des Befehls `netsh interface ipv6 show prefixpolicies`.
+Dieses Verhalten kann mit dem folgenden Registrierungsschlüssel geändert werden: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\tcpip6\Parameters siehe http://support.microsoft.com/kb/929852[Link]#
+
+image::images/image03_06_linux.png[man page,width=546,height=244,title="Man-Eintrag Debian 10 (Buster) zur GAI.CONF"]
+
+[.blue]#Bei vielen GNU/Linux-Distributionen kann das Verhalten in der GetAddressInfo-Datei _/etc/gai.conf_ geregelt werden.
+Hier ein Beispiel der Debian 10 (Buster) Manpage, jedoch kein Hinweis auf den neuen RFC von 2012... https://man7.org/linux/man-pages/man5/gai.conf.5.html#
+
+Die Änderung der IPv4-Priorität (dargestellt durch ::ffff:0:0/96) kann Ihnen helfen, Fehlfunktionen auf einem Produktionssystem bei der Einführung von IPv6 zu vermeiden.
+Solange weder eine direkte Konfiguration einer IPv6-Adresse oder eines AAAA-DNS-Eintrag gibt, verwendet das System weiterhin IPv4 für all seine Anfragen.
+Denken Sie daran, den Normalzustand der IP-Precedence wiederherzustellen, sobald ein stabiler Zustand erreicht ist.
+
+Beachten Sie, dass einige Programme wie z. B. Browser ihre eigene Priorisierung zwischen IPv6 und IPv4 und unabhängig von der IP-Precendence des Betriebssystems vornehmen.
+Auch die Implementierung des Happy Eyeball-Mechanismus (RFC 8305) kann variieren.
+(Verzögerung zwischen DNS A- und AAAA-Anfragen, Wartezeit für die Antwort, Timeout des Sockets mit Failover...).
+Beispiel: Das Tool CURL unterstützt Happy Eyeballs im Vergleich zu seinen Konkurrenten sehr gut.
+
+//[#_Toc88922663 .anchor]####Software-Agenten
+==== Software-Agenten
+
+Betriebssystem-Images werden in der Regel intern mit vorkonfigurierten Agenten ausgeliefert, seltener werden diese Agenten beim ersten Start aufgespielt.
+In beiden Fällen sind sie ein Teil der Betriebssystembasis und ermöglichen es, die Konformität, Sicherheit usw. zu gewährleisten.
+
+Zu diesen Agenten gehören Backup, Antivirus, Telemetrie und Überwachung, Asset Management, Paket-/Softwaredepolyment usw.
+
+Solange Sie nicht vorhaben, IPv4 ganz aus dem Verkehr zu ziehen, brauchen Sie der Umstellung dieser Dienste auf Dual-Stack keine Priorität einzuräumen; sie kann gleichzeitig mit den Anwendungen erfolgen.
+
+Wichtig ist, dass diese Agenten fehlerfrei arbeiten, wenn eine routingfähigen IPv6-Adresse auf dem System existiert.
+
+Stellen Sie sich die Umstellung nicht wie eine Herkulesaufgabe vor, bei der Sie alles gleichzeitig machen müssen, ohne zu wissen, wo Sie anfangen sollen.
+
+Sobald die Betriebssysteme für den Dual-Stack-Betrieb bereit sind, können Sie sich mit der Umstellung auf IPv6 fortfahren, sobald sein Ökosystem bereit dazu ist. Sofern dies Ihr Umstellungsszenario ist.
+
+//=== image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] Marginalspalte ??
+=== • ARBEITSPLATZDIENSTE
+
+//[#_Toc108476643 .anchor]####Directory
+==== Directory
+
+Der Verzeichnisdienst verfügt über LDAP- und Kerberos-Funktionen und beherbergt darüber hinaus gelegentlich bestimmte DNS-Zonen und andere Zusatzdienste.
+Ihre Allgegenwart innerhalb Ihres Informationssystems macht seine Migration unerlässlich.
+Das führende Produkt auf dem Markt, Microsoft Active Directory, funktioniert gut im Dual-Stack, es wird sogar von seinem Hersteller seit mehreren Jahren firmenintern mit IPv6-only verwendet.
+
+//image:extracted-media/media/image58.png[extracted-media/media/image58,width=50,height=32]
+[NOTE]
+====
+*SPN (Kerberos Service Principal Name)*
+
+Im Bestreben, jeden Servers und seinen Dienst hinter einem einzigen Namen zu deklarieren, basieren einige Produkte auf einer reverse DNS-Abfrage. 
+Wenn der Benutzer also ein Service-Ticket für einen Server über einen CNAME und nicht über seinen ursprünglichen Hostnamen anfordert, ruft der Kerberos-Server den ursprünglichen FQDN über Reverse DNS ab. 
+Die alternive, aber mühsame Lösung besteht darin, alle möglichen SPNs jedes Servers zu deklarieren.
+
+Obwohl RFC 4120 von diesem Verhalten (kanonische Auflösung) abrät, wird es wegen seiner Einfachheit in Active Directory verwendet. 
+Daher muss sichergestellt werden, dass der Kerberos-Server (KDC) keine reverse DNS-Abfrage mit einer über einen DNS64 abgerufenen IP ausführt, oder zumindest, dass der DNS-Server weiß, wie er bei DNS64 lügt und eine angemessene Antwort auf diese speziellen Abfragen erzeugt.
+
+Zu guter Letzt gibt es immer noch einige IP-basierte SPNs anstelle von Hostnamen-basierten SPNs (in der Regel für alte Anwendungen mit, Sie haben es erraten, einer fest codierten Konfiguration oder einfach einer IP-basierten Konfiguration). 
+Dies ist ein seltener Fall, da Windows auf der Client-Seite diese Funktion zwischen Vista und Win 10 1507 nicht mehr unterstützt und ein Downgrade auf NTLM für solche Dienste erzwingt. 
+Dieser spezielle Fall erfordert die Verwendung von zwei SPN pro Maschine und Dienst (IPv4 und IPv6).
+====
+
+//[#_Toc108476644 .anchor]####Dateifreigaben und Paket-Repositories
+==== Dateifreigaben und Software-Repositories
+
+Unabhängig davon, ob sie für die Benutzer sichtbar sind oder nicht, erzeugen Server, die Dateien bereitstellen, eine hohe Verkehrslast.
+Wenn Ihr Projekt auf reine IPv6-Clients mit NAT64 abzielt, wäre es eine gute Idee, diese Server auf einen Dual-Stack zu migrieren (oder eine eigene Übersetzungsplattform einzurichten), was die zentralisierte Übersetzungsplattform erheblich entlasten würde.
+
+Dazu gehören SMB, NFS, WSUS, SCCM, Paket-Repositories, EDR-Signatur-Repositories, CMS, Sharepoint, usw.
+
+IMPORTANT: *NFS kleiner Version 4 verwendet den Portmapper-Dienst und unterstützt daher kein NAT64.*
+
+//[#_Toc88922666 .anchor]####Kommunikation
+==== Kommunikation
+
+Die E-Mail-Infrastruktur kann noch lange Zeit mit NAT64 auskommen, aber das große Verkehrsaufkommen, das dieses System erzeugt, macht es sinnvoll, zumindest die Client-Zugangsschicht auf IPv6 umzustellen. 
+Für den dem Internet zugewandten Teil, den MTA, besteht keine Eile, es ist nicht zu erwarten, dass SMTP-Server IPv6-only anbieten.
+Eine Migration erfordert die Überprüfung der Ihrer Lösungen für die Inhaltskontrolle und die Spam-Abwehr.
+
+//image:extracted-media/media/image20.svg[Combiné contour,width=75,height=75] Marginalspalte ??
+Auch bei der Telefonie ist es der Anwender Teil des Systems, der schnell migriert werden sollte und zwar viel dringender als das Messaging, um die IPv6-Kompatibilität für die P2P-Kommunikation zwischen Kunden oder zwischen Kunden und der zentraler Infrastruktur herzustellen.
+Die Dringlichkeit wird durch die bösen Überraschungen von NAT64 mit SIP verstärkt, es sei denn, Sie vertrauen hierfür auf ALGs.
+Da RTP-Flüsse immer häufiger verschlüsselt werden, sollte Sie sich nicht zu sehr auf ALGs verlassen.
+
+Sie sollten wissen, dass eine wachsende Zahl von SaaS-Anbietern IPv6 unterstützt, abgesehen von einigen wenigen Ausnahmen, wie z. B. ein vor Ort installierter SBC, der mit seinem SaaS-Gegenstück kommuniziert, was nicht sehr störend ist.
+
+//image:extracted-media/media/image32.svg[Konzeption Webkontur,width=75,height=75] Marginalspalte ??
+=== • ANWENDUNGEN
+
+Anstatt eine langwierige Qualifizierungskampagne speziell für IPv6 zu starten, ist es besser, die Gelegenheiten zu nutzen, die sich durch größere Upgrades von Anwendungen bieten, um sie für IPv6 zu qualifizieren, dann direkt IPv6-only.
+Die Rückmeldungen der wichtigsten Hersteller zeigen, dass es ausreicht, eine Anwendung für IPv6 zu qualifizieren. Es ist sinnlos, alles in IPv4 zu wiederholen, da die aktuellen Methoden und Befehlsaufrufe ohne weiteres Zutun rückwärtskompatibel sind.
+Dies gilt natürlich nicht für eine Anwendung, die eine alte Programmiersprache verwendet und/oder mit fest kodierten Adressen arbeitet.
+
+Hier finden Sie eine Liste von Fragen, die Sie sich zu jeder Anwendung stellen sollten:
+
+* *Gibt es Installationen der Lösung in IPv6?* (fragen Sie den Hersteller, den Integrator, den Tester...)
+* *Ist die verwendete Programmiersprache mit IPv6 kompatibel?* 
+Auf stabile und zuverlässige Weise? (Viele Implementierungsfehler wurden in verschiedenen Sprachen bis 2015 korrigiert);
+* *Ist der Code zum Öffnen von Sockets unabhängig von der IP-Protokollversion?* 
+Inet6Address und InetAddress in Java zum Beispiel;
+* *Läuft IPv4- und IPv6-Verkehr durch denselben Socket?* 
+Vorheriges Beispiel versus einer Verwendung von IPv4-mapped address (noch in Java);
+* *Verarbeitet eine Anwendung IPv6 auf der Client-Seite?* 
+Auf dem Server-Front-End? 
+Auf dem Server-Back-End im Falle einer n-tier-Anwendung? (auch wenn dieser letzte Punkt weniger kritisch ist);
+* *Erfolgt der Aufruf einer Anwendung über eine IP-Adresse und nicht über eine DNS-Anfrage?* 
+Nur IPv4-Konfigurationsfeld zum Beispiel;
+//image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
+* *Verwendet eine Anwendung ein Protokoll, das eine IP-Adresse in der Applikationsschicht einbettet?* 
+Wie SIP bei der Telefonie, oder aktives FTP;
+* *Initiiert eine Anwendung Verbindungen zu Client-Endpunkten?* 
+Beispiel für aktives FTP mit seinen zwei gleichzeitigen Steuer- und Datensessions, eine in jeder Richtung. 
+Oder Fernsteuerung, sowie SIP, DICOM, etc;
+* *Gibt es eine IP-Adressverarbeitung innerhalb Ihrer Anwendung?* 
+Zum Beispiel die Identifizierung des Clients anhand seiner IP-Adresse und nicht anhand seines Benutzernamens;
+* *Ist RFC 8305 "Happy Eyeballs v2" korrekt implementiert, um ein schnelles Umschalten zwischen den beiden Protokollen zu ermöglichen?* 
+(Die verwendete aufrufende Funktion und die Standardsprachkonfiguration sollten im Detail untersucht werden, da es leicht passieren kann, dies z.B. in Java nicht korrekt zu implementieren);
+* Wenn die Anwendung nicht IPv6-kompatibel ist, *wird dann in der Anwendungsprotokollierung neben der IPv4-Adresse auch der Port festgehalten?* 
+(Um die Verfolgung von NAT64 zu gewährleisten), siehe RFC 7768 von 2016, der seinerseits von RFC 6302 von 2011 inspiriert wurde, der dies ursprünglich für Front-End-Server im Internet empfahl.
+
+Es gibt verschiedene Audit-Tools, einige sind in Entwicklungsumgebungen integriert, andere sind eigenständig, wie z. B. Microsoft checkv4, PortToIPv6, IPv6 code checker, IPv6 care, usw.
+Diese Tools können entweder den Code prüfen oder Socket-Aufrufe erkennen, wenn der Code ausgeführt wird, und die verwendete Methode identifizieren.
+
+Mobile Anwendungen, die im Google Play Store und im Apple App Store veröffentlicht werden, müssen seit 2016 IPv6-konforme Netzwerkmethoden und -funktionen verwenden, was ein gutes Beispiel für eine schnelle Codeanpassung zeigt.
+
+Nehmen Sie IPv6 unverzüglich in Ihre Spezifikationen und Architekturanforderungen für neue Anwendungen auf.
+Legen Sie auch einen Termin fest, an dem Upgrades einer bestehenden Anwendung die IPv6-Implementierung enthalten sollten.
+
+image::images/image03_07_webapp.png[Web App,title="Beispiel für die Analyse einer Web App"]
+
+==== Wie geht man mit einem Dienst um, der über Webbrowser bereitgestellt wird?
+
+In n-Tier-Architekturen hat das Front-End, auf das die Clients zugreifen, Priorität.
+Das Backend der Anwendung kann viel länger in IPv4 bleiben.
+
+Idealerweise sollten Sie die Erneuerung von Anwendungen nutzen, um IPv6 zu implementieren.
+
+Das berühmte Dienstprogramm Curl unterstützt IPv6 bereits seit mehr als 20 Jahren.
+
+//[#_Toc108476647 .anchor]####Fall von Anwendungen, die IP verarbeiten
+==== Anwendungen, die IP verarbeiten
+
+Die IP-Adresse ist ein Schlüsselelement in Verzeichnissen; sie kann die folgenden Instrumente umfassen:
+
+* Asset / CMDB / IPAM;
+* Infrastruktur-Konfigurations-Orchestrator / Depolyment / Konfigurations-Backup;
+* Betriebsüberwachung/Messung/Vorfallverfolgung/Helpdesk;
+* Skripte zum Sammeln von Informationen;
+* Protokollkorrelation (SIEM) / Audit;
+* Zugriffsmanagement / Identität.
+
+Die Verwendung von IPv6 erfordert aus verschiedenen Gründen eine Überprüfung der Adressenspeicherung und -verarbeitung:
+
+* Die IPv6-Adresse wird manchmal zusätzlich zu IPv4 vergeben (Dual-Stack);
+* Sie ist länger;
+* Eine Schnittstelle kann mehrere IPv6-Adressen tragen (Link Local, temporäre GUA, stable GUA, usw.).
+
+Eine Vereinfachungsmethode kann darin bestehen, IPv4-Adressen wie IPv6-Adressen durch das Präfix ::ffff:0:0/96 darzustellen.
+Auf diese Weise wird der Zusammenhalt und die Vereinfachung des Anwendungscodes erleichtert.
+
+Im Anhang finden Sie im Abschnitt Beispiele ein Umsetzungsprobleme dieser Methode.
+
+In jedem Fall müssen die Adressen in ihrer kanonischen (verkürzten) Form gespeichert werden, um ihre Größe zu verringern.
+Der Code, der die Kanonisierung durchführt, muss den RFC 5952 genauestens einhalten, damit Sie am Ende immer genau eine Zeichenkette zum Parsen haben.
+Beachten Sie, dass Adressen auch mit Kleinbuchstaben gespeichert werden müssen (RFC Abschnitt 4.3).
+Beispiel: ab01::ffff und nicht AB01::FFFF.
+Die Nichteinhaltung dieser letzten Empfehlung kann sogar zu Problemen bei Anwendungsprotokollen führen, die die IP-Adresse in der Payload tragen, wie SIP.
+
+//#### Ende des Kapitels ####

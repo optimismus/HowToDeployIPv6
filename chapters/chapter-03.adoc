@@ -1,5 +1,9 @@
 image::images/image03_01_citrus.jpeg[Citrus fruits from small to big,width=913,height=609]
 
+<<<
+
+[big]#*Block sequencing*#
+
 IPv6 deployment is logically to be done starting with the bottom, the network layer. 
 And before any deployment it is coherent to prototype the behavior of each component. 
 Very few organizations have an end-to-end lab and qualification environment, both horizontally within the same layer and vertically between layers. 
@@ -11,16 +15,15 @@ We will retain that each layer has its own test environments, and that those run
 In short, every qualification runs itself on an underlying production environment (except for the foundation that is network). 
 This can be represented as follows:
 
-.IPv6 assbemly line
-image::images/image03_02_ipv6-workflow.png[IPv6 workflow,width=566,height=185]
+image::images/image03_02_blocks.svg[IPv6 workflow,width=566,height=185,title="Sequences"]
 
-=== Warm up
+== Warm up
 
 Before you even decide where to begin, start by making sure that all of your current and future specifications / RFPs / subcontractors requests include IPv6 compatibility and guarantee its proper functioning. These processes often take a long time to change, so it is advisable to start working on them right away.
 
 This also includes build, run, life cycle processes and everything related to them.
 
-=== Network
+== Network
 
 Network is the first pillar to deal with, let's start with some questions to consider about the devices:
 
@@ -41,10 +44,11 @@ User access can only be active after the security component is rolled out to bot
 
 The rest requires more work, and concerns the advanced network services present in datacenter like load balancers, waf, probes, etc.
 
-//save sign: ◗
-==== Readiness
+=== • Readiness
 
-The IPv6 compatibility maturity varies according to device types. In a general manner, carrier-grade routing appliances have been free of problems for years. On the contrary, campus devices still sometimes encounter a few bugs, especially regarding security features.
+The IPv6 compatibility maturity varies according to device types. 
+In a general manner, carrier-grade routing appliances have been free of problems for years. 
+On the contrary, campus devices still sometimes encounter a few bugs, especially regarding security features.
 
 .The IPv6 evolution
 image::images/image03_03_ipv6-evolution.svg[IPv6 evolution,width=561,height=287]
@@ -54,7 +58,7 @@ Solution maturity appears to follow the graph above, pay attention to SD-WAN and
 Tracking release notes and known bugs allows you to see when IPv6 support is maturing, focusing on v6 specific bugs. 
 The evolution generally follows the probability density of a normal distribution and thus a Gaussian curve.
 
-==== HARDWARE
+=== • HARDWARE
 
 Consider checking your routers' ternary memory allocation, some configurations have little room for IPv6 routes to be stored. 
 Some ASICs on the market store IPv6 /48 routes (and sometimes other frequent sizes) differently than other prefix sizes.
@@ -68,7 +72,7 @@ Hopefully they often consume only 2x more space as IPv4 as long as /64 are consi
 That’s often the case for routing tables and routing decisions.
 
 //image:extracted-media/media/image16.svg[Connexions contour,width=75,height=75] Marginalspalte ??
-==== LAB
+=== • LAB
 
 Trying out features, from the simplest ones like routing to the most advanced ones like security mechanisms, can be done on a variety of environments. 
 In stand-alone or not. 
@@ -208,7 +212,7 @@ a|
 |Proxy a|
 - Object/rule and PAC editing in v6
 
-- Comportement hôtes
+- Guest behavior
 
 |- Previous elements |
 a|
@@ -243,21 +247,23 @@ In an effort to help you, RIPE has published https://www.ripe.net/publications/d
 
 The US NIST published in 2020 the revision of its https://www.nist.gov/programs-projects/usgv6-program/usgv6-revision-1[USGv6-rev1] test program.
 
-==== INTERNAL ROUTING
+=== • INTERNAL ROUTING
 
 Depending on your network layout, the introduction of IPv6 will require deep changes in terms of routing protocols configuration.
 
 //[#_Toc88922652 .anchor]####BGP
-===== BGP
+==== BGP
 
 Even if the address family v6 implementation in MP-BGP simplifies the work in BGP, it will be necessary to analyze the route classification rules of type access/prefix lists/sets so that the IPv6 addresses are taken into account to apply the route map/policy correctly and in a coherent way to IPv4. 
 In order to limit inconsistencies, base your rules on communities when possible and mark these communities on the capillary networks rather than having to maintain lists of v4 and v6 prefixes everywhere. 
 The rigor of a v4/v6 mapping table and automation is another valid strategy, either distributed on routers or centralized on a route server such as FreeRangeRouting, Bird, Quagga (probably facilitating other aspects of your routing engineering if you are the type of person who often tweaks BGP).
 
 //[#_Toc88922653 .anchor]####IGP
-===== IGP
+==== IGP
 
-2 solutions are to be considered regarding IGP. Either use IS-IS from ISO which is IP agnostic, more flexible than OSPFv3 but rarely deployed in companies. It is the IGP that dominates today on large carrier networks, notably because of its convergence and its partial recalculation mechanism.
+2 solutions are to be considered regarding IGP. 
+Either use IS-IS from ISO which is IP agnostic, more flexible than OSPFv3 but rarely deployed in companies. 
+It is the IGP that dominates today on large carrier networks, notably because of its convergence and its partial recalculation mechanism.
 
 Moreover, the arrival of IPv6 SRv6-based Segment Routing requires IS-IS and its TLVs, even if OSPF LSAs have been created to offer an equivalence, the market and manufacturers seem to be primarily turning towards IS-IS (check with your vendors).
 
@@ -273,7 +279,7 @@ It is useless to modify the underlay IGP of your MPLS or your VxLAN EVPN since B
 .6VPE Topology
 image::images/image03_04_6vpe-topology.svg[6VPE Topology,width=564,height=279]
 
-==== FILTERING AND TRACKING
+=== • FILTERING AND TRACKING
 
 Before transmitting flows, it will be necessary to reach the same level of security than in IPv4. 
 The security section contains many elements on the topic. 
@@ -287,7 +293,7 @@ Some enable connectivity, others target security aspects, etc.
 Regardless of which IPv6 deployment scenario you choose for your organization, the implementation schedule within the infrastructure services will be similar.
 
 //image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
-==== SIEM
+=== • SIEM
 
 Each time a new service is migrated, logs must be collected and correlated as efficiently as with IPv4. 
 Adapting your SIEM is therefore essential throughout the project, so in the long term, plan to have resources on the subject. 
@@ -299,7 +305,7 @@ Without brackets it is difficult to separate both, you can bet on the fact that 
 
 Be careful with the storage of IPv6 addresses, see the applications section a few pages further.
 
-==== DNS/IPAM/DHCP
+=== • DNS/IPAM/DHCP
 
 This set of services is often entrusted to the same application solution, except for specific DNS zones such as those assigned to a Microsoft Active Directory environment.
 
@@ -309,13 +315,13 @@ The services that interact with the administration interface of the devices do n
 This is for example the case for NTP, RADIUS, TACACS, SYSLOG servers... which can wait. 
 It is different if your scenario targets a v6 deployment on the administration networks.
 
-==== VPN, PROXY AND REVERSE PROXY
+=== • VPN, PROXY AND REVERSE PROXY
 
 These services have the particularity of having both internal and external pointing interfaces. 
 IPv6 provisioning can be implemented regardless of the 2 sides, since the use cases are different.
 
 //[#_Toc88922659 .anchor]####External
-===== External
+==== External
 
 Probably the one to implement even if you are not aiming at an internal use of IPv6 at all, the possibility to communicate over the internet will allow your users and customers to reach you with a native IPv6 connectivity at a time when IPv4 sharing tinkering is becoming widespread. 
 Conversely, it will allow proxy browsing to reach IPv6 sites without problems.
@@ -325,19 +331,19 @@ We remind you that the reverse proxy can also offer public IPv6 connectivity to 
 This is another way to regain control over this translation on the Internet side.
 
 //[#_Toc88922660 .anchor]####Internal
-===== Internal
+==== Internal
 
 The internal aspect goes alongside the deployment of IPv6 on its LAN. 
 It will be necessary to focus on the correct definition of its PAC proxy files, as well as to ensure that the VPN rules are transposed, particularly those related to split tunneling.
 
 //image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] Marginalspalte ??
-==== OS image
+=== • OS image
 
 While OS TCP/IP stacks have been supporting IPv6 for a decade, support for some RFCs such as providing IP DNS via router advertisement (RDDNS) are more recent. 
 For example, support on Windows 10 starts with build 1703.
 
 //[#_Toc88922662 .anchor]####Precedence
-===== Precedence
+==== Precedence
 
 The precedence concept defines the priority given to the different types of addresses, and thus notably the prioritization of v6 over v4 or the opposite.
 
@@ -346,26 +352,22 @@ Here are the differences:
 
 [width="100%",cols="22%,19%,27%,32%",options="header",]
 |===
-|Address |Prefix a|
-Former Precedence
-
+|Address        |Prefix         a|Former Precedence +
 (RFC 3484)
-
-a|
-New Precedence
-
+                                        a|New Precedence +
 (RFC 6724)
 
-|IPv6 loopback |::1/128 |50 |50
-|Native IPv6 |::/0 |40 |40
-|IPv4 |::ffff:0:0/96 |10 |35
-|6to4 |2002::/16 |30 |30
-|Teredo |2001::/32 |05 |05
-|ULAs |fc00::/7 |40 |03
-|site-local |fec0::/10 |40 |01
-|6bone |3ffe::/16 |40 |01
-|IPv4compat |::/96 |20 |01
+|IPv6 Loopback  |::1/128        |50     |50
+|Natives IPv6   |::/0           |40     |40
+|IPv4           |::ffff:0:0/96  |10    a|_35_
+|6to4           |2002::/16      |30     |30
+|Teredo         |2001::/32      |05     |05
+|ULAs           |fc00::/7       |40    a|*03*
+|site-local     |fec0::/10      |40    a|*01*
+|6bone          |3ffe::/16      |40    a|*01*
+|IPv4compat     |::/96          |20    a|*01*
 |===
+
 
 It can be noted that between the 2 releases, IPv4 has become preferred over v6 transition mechanisms (6to4, Teredo) and that local site addresses are now deprecated. 
 Native IPv6 still has the lead.
@@ -375,13 +377,14 @@ Beware also of private ULA addresses which are getting lower priority than IPv4,
 .Precedence in Windows 10
 image::images/image03_05_precedencetable.png[Windows netsh,width=383,height=195]
 
-Result of netsh interface ipv6 show prefixpolicies command. This behavior can be changed using the following registry key documented http://support.microsoft.com/kb/929852 HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\tcpip6\Parameters [here]
+Result of `netsh interface ipv6 show prefixpolicies` command. 
+This behavior can be changed using the following registry key HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\tcpip6\Parameters documented http://support.microsoft.com/kb/929852[here]
 
 .Man page Debian 10 (Buster) of GAI.CONF
 image::images/image03_06_linux.png[man page,width=546,height=244]
 
 //==== image:extracted-media/media/image40.svg[extracted-media/media/image40,width=68,height=49] 
-On many GNU/Linux distributions it can be controller in the GetAddressInfo file _/etc/gai.conf_
+On many GNU/Linux distributions it can be controller in the GetAddressInfo file _/etc/gai.conf_ .
 
 Here an example of Debian 10 (Buster) man page, no clue of the new RFC from 2012… https://man7.org/linux/man-pages/man5/gai.conf.5.html
 
@@ -395,7 +398,7 @@ Also, the implementation of the Happy Eyeballs 2 mechanism (RFC 8305) may vary.
 Another example, the CURL tool nicely supports Happy Eyeballs compared to its competitors.
 
 //[#_Toc88922663 .anchor]####Software agents
-===== Software agents
+==== Software agents
 
 OS images are usually internally shipped with preconfigured agents, more rarely these agents are deployed at first launch. 
 In both cases, they are a part of the base and allow to ensure its compliance, security, etc.
@@ -411,10 +414,10 @@ So don't picture an Ouroboros where you must do everything at the same time with
 Once the OS bases are ready for dual-stack operation, you can work on moving to IPv6 only once the ecosystem is ready, if that is your scenario, and then you can tackle the upper layers, the middleware and applications.
 
 //=== image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] Marginalspalte ??
-==== WORKPLACE SERVICES
+=== • WORKPLACE SERVICES
 
 //[#_Toc108476643 .anchor]####Directory
-===== Directory
+==== Directory
 
 Directory Service carries LDAP and Kerberos functionalities, in addition to occasionally hosting specific DNS zones and other ancillary services. 
 Their omnipresence within the information system makes their migration essential. 
@@ -422,27 +425,35 @@ The leading product on the market, Active Directory, works well in dual-stack, i
 
 //image:extracted-media/media/image58.png[extracted-media/media/image58,width=50,height=32]
 [NOTE] 
-.regarding SPN (Kerberos Service Principal Name)
 ====
-In an effort to simplify the declaration of each server and its service behind a single name, some implementations by default rely on a reverse DNS query. Thus, when the user requests a service ticket for a server via a CNAME rather than its original hostname, the Kerberos server will retrieve the original FQDN via reverse DNS. The other tedious solution is to declare all possible SPNs of each server.
+*regarding SPN (Kerberos Service Principal Name)*
+
+In an effort to simplify the declaration of each server and its service behind a single name, some implementations by default rely on a reverse DNS query. 
+Thus, when the user requests a service ticket for a server via a CNAME rather than its original hostname, the Kerberos server will retrieve the original FQDN via reverse DNS. 
+The other tedious solution is to declare all possible SPNs of each server.
 
 This behavior (canonical resolution), although discouraged by RFC 4120, is used within Active Directory for its simplicity. It is therefore necessary to make sure that the Kerberos server (KDC) will not execute a reverse DNS query with an IP retrieved through a DNS64, or at least that the DNS server knows how to lie and formulate an appropriate response to these particular queries.
 
-Last but not least, there are still some IP-based SPNs rather than hostname-based SPNs (usually for old applications with, you have guessed, a hard-coded configuration, or simply an IP-based configuration). This is a rare case since Windows on the client side stopped to support this function between Vista and Win 10 1507, forcing to downgrade to NTLM for such services. This specific case will require the use of 2 SPN per machine and service (v4 and v6).
+Last but not least, there are still some IP-based SPNs rather than hostname-based SPNs (usually for old applications with, you have guessed, a hard-coded configuration, or simply an IP-based configuration). 
+This is a rare case since Windows on the client side stopped to support this function between Vista and Win 10 1507, forcing to downgrade to NTLM for such services. 
+This specific case will require the use of 2 SPN per machine and service (v4 and v6).
 ====
 
 //[#_Toc108476644 .anchor]####File shares and package repositories
-===== File shares and package repositories
+==== File shares and package repositories
 
 Whether they are visible to users or not, servers providing files generate a heavy traffic load. 
 If your project targets v6-only clients with NAT64 it would be a good idea to have these servers migrated to a dual-stack (or have dedicated translation platform) which would greatly relieve the centralized translation platform.
 
 This includes SMB, NFS, WSUS, SCCM, package repositories, EDR signature repositories, CMS, Sharepoint, etc.
 
-//[#_Toc88922666 .anchor]####Communication
-===== Communication
+IMPORTANT: *NFS older version 4 uses Portmapper and doesn't works with NAT64.*
 
-The e-mail infrastructure can cope with NAT64 for a long time, but the large amount of traffic this system generates makes it necessary to migrate at least the client access layer to IPv6. For the internet facing portion, the MTA, there is no rush, we are not about to see SMTP servers offering exclusively IPv6. 
+//[#_Toc88922666 .anchor]####Communication
+==== Communication
+
+The e-mail infrastructure can cope with NAT64 for a long time, but the large amount of traffic this system generates makes it necessary to migrate at least the client access layer to IPv6. 
+For the internet facing portion, the MTA, there is no rush, we are not about to see SMTP servers offering exclusively IPv6. 
 A migration will require checking the compatibility and efficiency of your content checking and antispam solutions.
 
 //image:extracted-media/media/image20.svg[Combiné contour,width=75,height=75] Marginalspalte ??
@@ -453,7 +464,7 @@ But RTP flows being more and more frequently encrypted, you should not rely too 
 You should know that a growing number of SaaS providers support IPv6, with some rare exceptions such as an on-premise SBC interfacing with its SaaS counterpart, which is not very annoying.
 
 //image:extracted-media/media/image32.svg[Conception web contour,width=75,height=75] Marginalspalte ??
-==== APPLICATIONS
+=== • APPLICATIONS
 
 Rather than specifically launching a tedious qualification campaign devoted to IPv6, it is preferable to use the opportunities offered by major upgrades of these applications to qualify them, this time in IPv6, and only in IPv6. 
 Feedback from major editors shows that qualifying an application in IPv6 is enough and that it is useless to re-cycle everything in IPv4, as recent methods and instruction calls are backwards compatible without additional work. 
@@ -461,18 +472,18 @@ This is obviously not true for an application using an old programming language 
 
 Here is a list of questions to ask yourself about each application:
 
-* Are there any users of the solution in v6 ? (ask the editor, integrator, test...);
-* Is the programming language used compatible with IPv6 ? And in a stable and reliable way? (Many implementation bugs have been corrected in different languages up to 2015);
-* Is the socket opening code agnostic of the IP protocol version? Inet6Address and InetAddress in Java for example;
-* Does IPv4 and v6 traffic pass through the same socket? Previous example vs use of IPv4-mapped address (still in Java);
-* Does an application handle IPv6 on the client side? on the server front-end? on the server back-end in the case of an n-tier application? (even if this last point is less critical);
-* Does an application make calls via literal address rather than via DNS lookup? IPv4 configuration field only for example;
+* *Are there any users of the solution in v6?* (ask the editor, integrator, test...);
+* *Is the programming language used compatible with IPv6?* And in a stable and reliable way? (Many implementation bugs have been corrected in different languages up to 2015);
+* *Is the socket opening code agnostic of the IP protocol version?* Inet6Address and InetAddress in Java for example;
+* *Does IPv4 and v6 traffic pass through the same socket?* Previous example vs use of IPv4-mapped address (still in Java);
+* *Does an application handle IPv6 on the client side?* on the server front-end? on the server back-end in the case of an n-tier application? (even if this last point is less critical);
+* *Does an application make calls via literal address rather than via DNS lookup?* IPv4 configuration field only for example;
 //image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75] Marginalspalte ??
-* Does an application use a protocol embedding the literal address? Like SIP with telephony, or active FTP;
-* Does an application initiate connections to client endpoints? Example of active FTP with its 2 concurrent control and data sessions, one in each direction. Or remote control, as well as SIP, DICOM, etc.;
-* Is there any IP address processing within your application? For example, identifying the client by its IP rather than by its username;
-* Is RFC 8305 "Happy Eyeballs v2" correctly implemented to allow fast switching between the 2 protocols. (The calling function used and the default language configuration should be looked at in detail, it is very easy to not implement it correctly in java for example);
-* Finally, if the application is not IPv6 compatible, will the logs retain the port in addition to the IP? (To ensure NAT64 tracking) cf RFC 7768 of 2016, itself inspired by RFC 6302 of 2011 which initially recommended this for front-end servers on the Internet.
+* *Does an application use a protocol embedding the literal address?* Like SIP with telephony, or active FTP;
+* *Does an application initiate connections to client endpoints?* Example of active FTP with its 2 concurrent control and data sessions, one in each direction. Or remote control, as well as SIP, DICOM, etc.;
+* *Is there any IP address processing within your application?* For example, identifying the client by its IP rather than by its username;
+* *Is RFC 8305 "Happy Eyeballs v2" correctly implemented to allow fast switching between the 2 protocols?* (The calling function used and the default language configuration should be looked at in detail, it is very easy to not implement it correctly in java for example);
+* Finally, if the application is not IPv6 compatible, *will the logs retain the port in addition to the IP?* (To ensure NAT64 tracking) cf RFC 7768 of 2016, itself inspired by RFC 6302 of 2011 which initially recommended this for front-end servers on the Internet.
 
 Various audit tools exist, some are integrated into development environments, others standalone such as Microsoft checkv4, PortToIPv6, IPv6 code checker, IPv6 care, etc. 
 These tools can either audit the code or detect socket calls when the code is running and identify the used method.
@@ -482,10 +493,9 @@ Mobile applications published on the Google Play Store and the Apple App Store a
 Without delay, incorporate IPv6 into your specifications and architecture requirements for new applications. 
 Also schedule a date when upgrades of an existing application should include IPv6 implementation.
 
-.Example of analysis of a Web App
-image::images/image03_07_webapp.png[Web App,width=68]
+image::images/image03_07_webapp.png[Web App,title="Example of analysis of a Web App"]
 
-===== How to deal with a service provided through web browsers?
+==== How to deal with a service provided through web browsers?
 
 In n-tier architectures, priority is given to the front end, which is accessed by clients. 
 The application back-end can remain in v4 much longer.
@@ -495,7 +505,7 @@ Ideally, you should take advantage of application obsolescence and renewal to im
 Just to know, the famous Curl utility have now been supporting IPv6 for more than 20 years.
 
 //[#_Toc108476647 .anchor]####Case of apps handling IP
-===== Case of apps handling IP
+==== Case of apps handling IP
 
 IP address is a key element found in inventories; it may include the following tools:
 

@@ -1,0 +1,60 @@
+Dieses Dokument wurde im Rahmen der ARCEP IPv6-Arbeitsgruppe verfasst, deren Hauptautor Jean-Charles BISECCO allen Mitgliedern für ihre Beiträge und Korrekturen danken möchte.
+Die ASCIIDOC-Version wird von Axel Schemberg bei https://github.com/optimismus/HowToDeployIPv6/[Github] bereitgestellt.
+
+[big]#*IHRE HILFE IST WILLKOMMEN*#
+
+Diese Anleitung soll im Laufe der Zeit aktualisiert werden, Ihr Feedback ist uns wichtig.
+
+Sie können uns Ihre Ideen zur Verbesserung sowie Ihr Feedback übermitteln:
+
+* Stellen Sie Fragen oder diskutieren Sie auf Github: https://github.com/optimismus/HowToDeployIPv6/discussions
+* Erstellen Sie ein Issue auf Github https://github.com/optimismus/HowToDeployIPv6/issues
+* Treten Sie https://www.arcep.fr/la-regulation/grands-dossiers-internet-et-numerique/lipv6/suivi-de-lepuisement-des-adresses-ipv4/appel-a-candidatures-pour-former-une-task-force-ipv6-en-france.html[IPv6 task-force] bei
+* Kontaktieren Sie den Autor unter IPv6@arcep.fr/ mailto:IPv6@jclb.net?subject=IPv6%20Guide%20V1.2[IPv6@jclb.net]
+
+_Die neueste Version ist unter folgender Adresse zu finden:_
+
+https://en.arcep.fr/publications/task-force-ipv6.html
+
+[big]#*LIZENZ*#
+
+Dieses Dokument wird unter der folgenden Lizenz veröffentlicht:
+
+[cols="80%,20%",grid="none",frame="none"]
+|===
+|IPv6 Transition Guide © 2022 von Jean-Charles BISECCO ist lizenziert unter | image:images/image_CC-license.svg[Creative Commens Logo,width=104,height=24,align="left"]
+|===
+
+[cols="30%,70%",grid="none",frame="none"]
+|===
+|image:images/image_cc.svg[cc,width=25,height=25]image:images/image_by.svg[by,width=25,height=25]image:images/image_sa.svg[extracted-media/media/image85,width=25,height=25]
+|https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1[CC BY-SA 4.0] Attribution-ShareAlike 4.0 International +
+
+| 
+|https://creativecommons.org/licenses/by-sa/4.0/
+|===
+
+Symbole stammen von https://github.com/ecceman/affinity
+
+Die Kapitelbilder stammen von https://unsplash.com/[unplash.com]
+
+____
+Valentin Betancur / Alex Padurariu / Andre Taissin / Erol Ahmed / Possessed Photography / Austris Augusts
+____
+
+[big]#*ÜBERSETZUNGEN*#
+
+Dieses Dokument wurde zunächst auf Französisch und Englisch veröffentlicht. Wir sind offen für Übersetzungen in andere Sprachen, um die Einführung von IPv6 an so vielen Orten wie möglich zu erleichtern.
+
+Die Übersetzungen können dem offiziellen Verzeichnis hinzugefügt werden.
+
+Die Übersetzer erhalten Zugang zu den Deltas zwischen dieser Version und zukünftigen Versionen.
+
+<<<
+
+image::images/image_arcep.png[ARCEP Heart,width=320,height=316,algin="center"]
+
+[.text-right]
+https://en.arcep.fr/publications/task-force-ipv6.html[IPv6 Task -force]
+
+//#### Ende des Kapitels ####

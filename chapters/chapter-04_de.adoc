@@ -1,0 +1,505 @@
+image::images/image04_01_doors.jpeg[Haustüren,width=606,height=910]
+
+<<<
+
+[big]#*Adressplan*#
+
+Der Aufbau dieses zentralen Punktes, des Adressplans, ist ein langer Prozess, der iterativ durchgeführt werden muss.
+
+Der Adressplan muss entsprechend den Besonderheiten Ihrer Organisation erstellt werden.
+Über die in diesem Abschnitt genannten Punkte hinaus ist es notwendig, sich mit vielen Gesprächspartnern auszutauschen, indem Sie das Ergebnis Ihrer verschiedenen Entwürfe prüfen.
+Denken Sie in jedem Fall langfristig und lassen Sie am oberen Ende des Blocks etwas Freiraum.
+
+Bevor wir uns mit den Varianten für die Planerstellung befassen, sollten wir uns zunächst mit der Wahl des Präfixes für die Nutzung innerhalb Ihrer Organisation befassen.
+
+//Zeichen speichern ◗
+=== • ÖFFENTLICH ODER PRIVAT?
+
+Öffentliche IPv4-Adressen sind rar und ihr Einsatz beschränkt sich daher natürlich auf das Internet.
+Innerhalb des internen Netzes herrschen die RFC 1918-Bereiche, meist 10.0.0.0/8, vor.
+
+Bei IPv6 stellt sich die Frage nach der Wahl zwischen diesen beiden Optionen.
+
+Je nach Größe und Tätigkeit ist es ideal, wenn Sie einen eigenen Präfix durch Ihre Regional Internet Registry (RIR) zugewiesen bekommen.
+Ebenso wäre eine große Tochtergesellschaft oder eine Tochtergesellschaft mit einer sehr unabhängignen IT gut beraten, einen eigenen Block beim RIR zu beantragen.
+
+Sie können auch einen Provider Independent Präfix (PI) von einer Sponsor-LIR bekommen, das ist meist nicht teuer.
+
+Die minimale zugewiesene Präfixlänge ist /32.
+Es ist möglich, größere Blöcke zu erhalten, wenn die Größe der Organisation dies rechtfertigt.
+
+=== • KLEINE ORGANISATION
+
+Für ein kleines Netz ist es denkbar, das vom ISP bereitgestellte Präfix durch Prefix-Delegation (DHCPv6-PD) zu verwenden.
+Allerdings ist die Abhängigkeit vom Internetprovider für die Adressierung der eigenen Ressourcen nicht ideal und Sie werden schnell an die Grenzen dieser Variante stoßen, zum Beispiel bei der dauerhaften Adressierung interner Server.
+Es gibt die Möglichkeit, Präfixe mit DHCPv6-PD zu delegieren, für diejenigen, die mit einer plötzlichen Änderung tolerieren können.
+In einer idealen Welt könnten sich alle Tools an die Neunummerierung von Präfixen durch den Internetprovider anpassen, aber in der Praxis wird es wohl noch lange dauern, bis alle Konfigurationen so dynamisch sind.
+
+//[#_Toc88922671 .anchor]####ULA
+==== ULA
+Die private IPv6-Adressierung erscheint als eine Lösung, dieses "Äquivalent" zum RFC 1918 IPv4 wird ULA für Unique Local Address genannt und entspricht dem Präfix FC00::/7.
+
+Um das Risiko eines Konflikts mit dem selben Präfix einer anderen Organisation zu begrenzen, mit der Sie hypothetisch eines Tages privat Daten austauschen wollen z. B. über einen IPSEC-Tunnel, wird empfohlen, den Präfix in diesem /7 zufällig zu wählen, anstatt von unten zu beginnen (RFC4193 schreibt diese Zufallsauswahl sogar vor).
+
+Nehmen Sie zum Beispiel ein beliebiges /48 in FC00::/7 und bauen Sie Ihre Adressierung darauf auf.
+Für eine sehr kleine Organisation ist ein /56 ausreichend.
+Seien Sie vorsichtig, die Größe darf aus einem Grund, den wir weiter unten sehen werden, nicht zu groß sein.
+RFC4193 schlägt einen Pseudozufallsgenerierungsalgorithmus vor, um eine 40-Bit-ID zu erhalten, die einen 48-Bit-Präfix ergibt.
+
+[IMPORTANT]
+====
+*In den aktuellen Vorrangregeln hat ULA jedoch eine niedrigere Priorität als IPv4.*
+*IPv4 wird daher in einer Dual-Stack-Umgebung bevorzugt (außer beim Verkehr zwischen zwei ULAs).*
+====
+Es gibt zwei Lösungsmöglichkeiten
+
+* Ändern Sie das Verhalten aller Hosts, um ULA Vorrang vor IPv4 zu geben durch Anpassung der IP-Precedence;
+* Beantragen Sie ein unabhängiges PI-Präfix und verwenden Sie es nur intern. Letzteres wird empfohlen.
+
+//[#_Toc88922672 .anchor]####Anbieterunabhängige (PI) Vorsilbe
+==== Provider Independent (PI) Präfix
+
+Unsere empfohlene Lösung: Beantragen Sie ein PI-Präfix der Größe /48 bei einem LIR/Internetprovider.
+Sie müssen es nicht zwingend im Internet bekannt geben usw.
+Es wird Ihnen aber ermöglichen, ein LAN mit einem eindeutigen Adressierungsraum zu versehen gleichzeitig und die Probleme mit der ULA- und IPv4-Präferenz zu vermeiden.
+
+In diesem Fall müssen IPv6-Pakete, die diesen PI-Präfix im LAN verwenden, der nicht im Internet announced wird, ein NAT durchlaufen, um im Internet transportiert zu werden.
+Analog zu IPv4 NAT44 + PAT mit zustandsabhängiger Sitzungstabelle, verwenden Sie Network Prefix Translation IPv6 (NPTv6 | RFC 6296).
+
+Bei der Präfixübersetzung werden die ersten Bits der Adresse ausgetauscht, um ein IPv6-Präfix mit einem anderen Präfix der selben Größe abzugleichen.
+Es finden keine weiteren Änderungen statt, alles ist zustandslos.
+
+Sie müssen lediglich Ihr privates Präfix /56 (oder eine andere Größe) auf das öffentliche Präfix, das vom Internetprovider bereitgestellt wird, abbilden und gleichzeitig die interne Adressierung kontrollieren.
+Es ist möglich, ein internes /56 auf ein öffentliches, geroutetes /48 Präfix abzubilden, aber natürlich nicht umgekehrt (daher ist es wichtig, keinen zu großen Bereich in Ihrem internen LAN auszuwählen).
+
+Dank NPTv6 kann Ihr Unternehmen von einem ISP zu einem anderen wechseln, ohne im internen LAN IPv6-Adressen ändern zu müssen, und unterstützt die PMTU-D, die Ermittlung der maximal übertragbaren Paketgröße.
+
+//[#_Toc88922673 .anchor]####NPTv6 Nachteile
+==== Nachteile von NPTv6
+
+Protokolle, die die Adresse in der Payload einkapseln, wie SIP, H323 usw., erfordern immer die Verwendung eines entsprechenden Application Layer Gateway (ALG) auf dem Gerät, das die Übersetzung durchführt.
+Wie bei NAT44 können ALGs ein Angriffsvektor sein, siehe insbesondere die jüngsten Slipstreaming-Methoden, die Browser gezwungen haben, bestimmte Zielports zu blockieren.
+
+Sie müssen Ihre DNS-Einträge zwischen der internen DNS-Zone (nicht announced PI oder ULA, je nach Entscheidung) und der externen DNS-Zonen für Internetdienste synchronisieren.
+So vermeiden Sie einerseits, dass Sie fälschlicherweise einen AAAA-Eintrag mit einer unerreichbaren PI-IP im Internet veröffentlichen, und andererseits, dass Sie intern die Global Routable IP verwenden, da dies die NPTv6-Plattform durchlaufen würde.
+Zum Beispiel sollte ein LAN-Client, der einen DMZ-Server anfragt, diesen direkt über seine interne Adresse (ULA oder PI) erreichen.
+
+Oh, und vergessen Sie nicht, PTR für beide Adresstypen zu erstellen. 
+Dies ist für einige Dienste wie SMTP MX wichtig, da dies Teil der Anti-Spam-Prüfungen ist. 
+Hoffentlich gibt es Mechanismen, die Ihnen eine automatische PTR-Generierung ermöglichen.
+
+=== • GROSSE ORGANISATION
+
+Beginnen Sie mit der Beschaffung eines öffentlichen PI-Prefix (Provider Independent) oder mehrerer Prefixes im Falle von Tochtergesellschaften oder Niederlassungen auf mehreren Kontinenten.
+
+Vor der Erstellung Ihres Plans müssen einige Besonderheiten berücksichtigt werden.
+
+Ihre öffentlichen BGP-Announcements können gemäß Konvention nicht kleiner als /48 sein.
+(Ähnliche Situation wie bei /24 IPv4).
+Es besteht jedoch keine Notwendigkeit, ein Präfix zuzuweisen, das nur den exponierten Servern entspricht; wir werden sehen, warum.
+
+IPv4 und die Allgegenwart von NAT44+PAT haben Praktiken hervorgebracht, die in IPv6 nicht mehr notwendig sind, insbesondere das falscher Gefühl von Sicherheit, das NAT44 im eingehenden Verkehr böte.
+Der Aspekt der Kommunikationsrichtung ist aufgrund der Anforderung zur Sitzungsverfolgung inhärent vorhanden, d. h. er ist zustandsabhängig.
+Und obwohl es normal ist, dass es keine automatische Portweiterleitung wie bei Endanwenderroutern gibt, ist es schwieriger, sich gegen die jüngsten Slipstreaming-Angriffe gegen ALGs zu schützen, wie oben erwähnt.
+
+Ein zustandsbehaftetes NAT + PAT-Äquivalent gab es in IPv6, aber seine Verwendung wird nicht empfohlen.
+In der Tat ist NAT-PT (NAT Protocol Translator RFC 2766, nicht zu verwechseln mit NPTv6) einfach unbrauchbar und wurde archiviert, vgl. RFC 4966, in dem die Gründe für die Einstellung dieses Mechanismus aufgeführt sind.
+
+Sie finden manchmal Sicherheitsempfehlungen, ein internes Netz mit ULA zu betreiben und NAT am Internerübergang zu verwenden, um Ihren Adressplan nach außen hin unsichtbar zu machen.
+
+Diese Empfehlungen erinnern an IPv4-Gewohnheiten sowie an die Tatsache, dass die Verwendung einer privaten internen Adressierung mit NPTv6-Präfixübersetzung zum Internetübergang für ein großes Unternehmen nicht sicherheitsrelevant ist und die Details des internen Plans überhaupt nicht verbirgt, da lediglich die ersten paar Bits der Adresse ausgetauscht werden.
+Erinnern Sie sich daran, dass NAT keinen Schutz bietet, nur eine Firewall mit den richtigen ACLs und möglicherweise weiteren Prüfungen sind wirksam.
+
+Ihr gesamtes Informationssystem sollte mit Ihrem Präfix adressiert werden.
+
+//[#_Toc88922675 .anchor]####Verwaltung des direkten Internetzugangs
+==== Verwaltung des direkten Internetzugangs
+
+Die NPTv6-Präfixübersetzung kann auch für andere Situationen verwendet werden.
+Nehmen wir ein Unternehmen, das auf seinem Campus einen lokalen Breakout (LBO) nutzen möchte, um Internet-Ressourcen (z. B. eine SaaS-Anwendung) ohne den Umweg über sein Rechenzentrum zu erreichen.
+Der Datenverkehr muss dann von einer Adresse, die dem Unternehmen gehört, zu einer Adresse übersetzt werden, die vom lokalen Internetanbieter des Campus bereitgestellt wird.
+
+Das ein ist ein Grund dafür, Standortpräfixe auf der Grundlage einer geografischen Zuordnung zu verwenden.
+Dies ermöglicht es Ihnen, nur eine NPTv6-Regel zu haben.
+Wenn Ihre Standortadressierung fragmentiert ist, müssen Sie jedes lokale /64 auf ein /64 abbilden, das zu dem vom lokalen Betreiber bereitgestellten Präfix gehört (normalerweise ein /48).
+Das bedeutet mehr Regeln und mehr Arbeit.
+
+Wenn der Campus sehr groß ist und der lokale Netzbetreiber dies zulässt, ist es möglich, dass der Standort seine eigenen /48 (oder mehr) über BGP direkt im Internet announced.
+
+In diesem Fall verwenden die Geräte des Standorts die Adressen eines Präfixes, das wir "Site" /48 nennen. Dieses Präfix wird nicht announced, sondern ein größeres Präfix "Global" /32, das es einschließt, wird vom Rechenzentrum announced.
+Schließlich announced der Standort lokal und direkt im Internet ein Präfix "LBO" /48 an, das ebenfalls zum globalen /32 gehört.
+Diese Konfiguration würde zu einem enormen Anstieg der BGP-Fullview im Internet führen, wäre aber nutzbar, wenn Ihr Adresspllan eine Routenaggregation am Carrier-Edge vorsieht.
+
+Die lokale Regel von NPTv6 übersetzt das Präfix Site/48 in LBO/48 am lokalen Internetausgang.
+Der Betrieb der Routing-Entscheidungen von BGP, die more-specific Routen zu bevorzugen, wird es ermöglichen, ohne Konflikt mit IPs zu funktionieren, die alle Ihrem Unternehmen gehören.
+Wenn wir mehrere Standorte in dieser Situation mit demselben Provider haben, wäre es klug, eine Route-Summary zu verlangen.
+
+Schließlich verlässt ein Teil des Datenverkehrs den Standort direkt über das LBO-Präfix, während ein anderer Teil des Datenverkehrs, der im Rechenzentrum einer weitergehenden Verarbeitung unterzogen werden muss, den Standort über das Site-Präfix verlässt (abhängig von der Konfiguration der Proxyeinstellungen der Endgeräte).
+
+Mit dem Aufkommen so genannter "SASE"-Lösungen (Secure Access Service Edge) kann auf die Verarbeitung im Rechenzentrum gänzlich verzichtet werden, so dass die Verwendung von zwei Präfixen bei NPTv6 nicht mehr erforderlich ist.
+
+Der Latenzgewinn durch LBO kann erheblich sein, da der Umweg über das Rechenzentrum und seine Abhängigkeiten nicht mehr erforderlich ist.
+Allerdings muss das gleiche Sicherheitsniveau in Bezug auf Filterung, Antivirus-Analyse usw. gewährleistet sein.
+Die Strategien variieren zwischen der Autorisierung eines Teils der Datenströme (Empfänger mit ausreichendem Vertrauensniveau) und dem gesamten Internetverkehr, je nachdem, welches Schutzniveau erreicht werden kann.
+Dieser wird entweder lokal über VNFs, SASE oder über eine Cloud-Lösung bereitgestellt.
+
+image::images/image04_02_nptv6.svg[Schema von NPTv6,width=566,height=318,title="Schema von NPTv6 PI+FAI"]
+
+Für Segmente, die vollständig vom Internet und allen Partnern isoliert werden müssen (z. B. ein SCADA-Netz), ist es möglich, ULA-Adressen zu verwenden.
+Dies verhindert jedoch keine Rebound-Angriffe von einem anderen internen System aus, da Firewalls ohnehin ausreichen, um den Verkehr am Rande dieser Netze zu blockieren.
+Der Sicherheitsbeitrag von ULA ist daher fast gleich Null und es bleibt eine subjektive Entscheidung, sie trotzdem zu nutzen.
+
+[NOTE]
+====
+Es sei noch einmal daran erinnert, dass ULA in den derzeitigen Vorrangregeln eine niedrigere Priorität hat als IPv4.
+IPv4 wird daher in einer Dual-Stack-Umgebung bevorzugt.
+====
+
+=== • LOGISCHE GRUPPEN
+
+Bei IPv4 war es üblich, IP-Bereiche nach Standort zuzuweisen, um die Anzahl der Routen durch Summaries zu minimieren. 
+In letzter Zeit haben einige Projekte einen anderen Ansatz gewählt, d. h. die Zuweisung aus einem IP-Block, der einem bestimmten Zweck gewidmet ist, wie z. B. bei einem WiFi-Einführungsprojekt in Behörden oder bei IoT.
+
+Dieser letzte Fall ist für die Filterung von Vorteil, da er sich auf die Nutzung und nicht auf den Standort konzentriert.
+
+Die Auswahl ist besonders wichtig, weil Sie im Gegensatz zu IPv4 keine Maske, sondern nur das Präfix zum Filtern verwenden können.
+
+In IPv4 ist es möglich, wenn auch selten genutzt, z. B. den Platzhalter 0.0.240.0 zu verwenden, um n identische Hosts aus verschiedenen Subnetzen auszuwählen.
+In IPv6 entfällt dies.
+
+Wenn Geräte eine große Anzahl von Routen unterstützen, würden manuelle Regeln, die auf Routen angewandt werden, komplex werden, um sie mit einem nutzungsorientierten Plan zu implementieren und wir wissen bereits, dass trotz der Automatisierung und SDN auf verschiedenen Perimetern, BGP der Weg bleibt, um "Black Boxes" miteinander zu verbinden. 
+Nichtsdestotrotz wäre es möglich, Skripte und einen Routenserver wie https://bird.network.cz/[bird] oder https://frrouting.org/[FFRouting] zu verwenden, um automatisch Klassifizierungen vorzunehmen und Policies anzuwenden oder einfach die Communities auf Announcements intensiv zu nutzen.
+
+Die beiden geo- oder typzentrierten Optionen haben Vor- und Nachteile, die durch Automatisierung ausgeglichen werden können (Konsolidierung von Filterregeln und Konsolidierung von Routen und Standorten).
+Wie bereits bei der NPTv6-Erklärung erwähnt, ist es einfacher, die Adressierung auf den Standort zu stützen.
+
+=== • ADRESSBASTANDTEILE
+
+Das Slicing kann die Vielfachen von 4 Bits (hexadezimale Zeichen), /32, /48, /52 usw. bevorzugen, um das Lesen zu erleichtern, eine Tendenz, die unserer Gewohnheit entspricht, das IPv4 oktettweise aufzuteilen, und die im konkreten Fall von IPv4 zu Abfall führt.
+
+Jedes Hexazeichen wird als Nibbl, die Gruppierung von 4 Zeichen als Hextet bezeichnet, zum Beispiel: A9B4:
+
+Auch wenn IPv6 eine große Anzahl von Adressen anbietet, dies keine Einladung zur Verschwendung, wir werden z.B. Leetspeak wie "c01d:c01a:c0fe" / "cold cola cofe" innerhalb des Präfixes/der Netz-ID vermeiden.
+
+Man kann sofort daran denken, diese Nibble zu assoziieren mit:
+
+* Rechtsträger / Wirtschaftszweig;
+* Geografische Standort-ID;
+* Netzwerktyp;
+* VLAN- oder VNI-Nummer;
+* Betreiber;
+* Gerätemodell.
+
+Numerische Elemente können so belassen werden, wie sie sind, was mehr Platz beansprucht, oder in hexadezimaler Form kodiert werden, wodurch die Lesbarkeit für den Menschen entfällt.
+
+Um beispielsweise die VLAN-Nummer zu speichern, haben wir die Wahl zwischen 0 und 4094 (12 Bits):
+
+* 4 0 9 6, das sind 4 Zeichen, also 16 Bits;
+* F F E oder 3 Zeichen, um 4094 in Hexadezimal zu bilden, wobei ein freies Nibble im Hextet x F F E bleibt.
+
+Wenn wir einen neuen Adressrahmenplan erstellen, wäre es besser, alles direkt in Hexadezimal zu schreiben, wenn die Aufteilung dies zulässt.
+
+Wenn wir auf die Liste der Bausteine zurückkommen, haben einige von ihnen einen Lebenszyklus, der sich nicht für die Integration in einen Adressplan eignet.
+So kann sich beispielsweise ein Carrier in der Zwischenzeit ändern, ebenso wie der Hersteller oder das Modell eines Layer-3-Geräts.
+(Aus Erfahrung wissen wir, dass die Wartung nicht fortgeführt wird, weil "es gut funktioniert, wie es ist").
+Wir werden später eine Ausnahme für Point-to-Point-Netze sehen.
+
+Im Rechenzentrum wird dasselbe mit VLANs passieren, die Verwendung von E-VPN + VxLAN-Technologien mit einer 24-Bit-VNI-Nummer wird das VLAN in den Hintergrund drängen, dasselbe gilt für proprietäre Segmentierungstechnologien, die Begriffe wie Client Tenant, Ressourcenpool usw. integrieren.
+
+Daraus lässt sich ableiten, dass in den Plan nur zeitlich unabhängige und statische Elemente integriert werden sollten, woraus sich ergibt:
+
+* Die Abteilung/Einheit auf einer hohen Ebene, um die Aufschlüsselung der Struktur zu ermöglichen (wie in einem Active Directory).
+* Die Lage entweder durch eine Struktur Kontinent / Land / Niederlassung, oder durch die nummerierten Standort-Code.
+* Die Art des Netzes mit Unterkategorien, um die Filterung zu erleichtern und einen Teil des Adressplans delegieren zu können.
+
+=== • PRÄFIXGRÖSSE
+
+//[#_Toc88922679 .anchor]####Standard
+==== Standard
+Von Anfang an scheint /64 der unveränderliche Standard für ein Netz zu sein (RFC 4291), insbesondere damit der Autokonfigurationsmechanismus SLAAC funktioniert.
+
+image::images/image04_03_slash64warfront.png[Die /64 RFC warfront,width=546,height=279,title="Ist ein Standard tatsächlich ein Standard?"]
+
+Die Vorgabe ist eine maximale Präfixlänge von /64, alles andere kann zu unerwartetem Verhalten oder Inkompatibilitäten führen.
+
+Auch bei den Site-Präfixen haben sich die Empfehlungen weiterentwickelt: RFC 6177 passt das Präfix an den tatsächlichen Bedarf an, während früher /48 vorgeschrieben war.
+
+Die Interprovider weisen in der Regel /56 oder /60 für Privatkunden und /48 für Geschäftskunden zu.
+Die Endnetze sind immer in /64, mit Ausnahme der Point-to-Point-Netze.
+
+//[#_Toc88922680 .anchor]####Zwischenschaltung
+==== Interconnection
+
+Die Netzbetreiber scheinen /125-Verbindungen zu empfehlen.
+Um zwischen zwei hexadezimalen Zeichen zu unterscheiden, wäre es eine gute Idee, /124 im Plan vorzusehen und die 125 für die Ausfallsicherung bei einem Geräte- oder Anbieterwechsel zu verwenden.
+
+Diese Reservierung hindert Sie nicht daran, die Punkt-zu-Punkt-Schnittstellen auf /127 zu setzen.
+
+Diese Reservierungen für Interconnections und Loopbacks können von der Standortadressierung übernommen werden, oder im Gegenteil von einem /64-Präfix, das für Interconnections in viele /124 aufgeteilt wird.
+
+Im letzteren Fall müssen Sie viele feine Routen in Ihrem Netz bekannt machen.
+
+Der Aufbau von Interconnections mit Link-Locals funktioniert zwar, hat aber viele Nachteile, die in RFC 7404 detailliert beschrieben werden (keine ICMP-Rückmeldung der Schnittstelle, da nicht routingfähig, sondern eine Loopback-Adresse, eine Adresse, die sich bei einem Hardwaretausch ändert, da sie automatisch auf EUI-64 MAC basiert, usw.).
+Auf der anderen Seite ist einer der großen Vorteile die Entlastung der Routing-Tabellen sowie die Reduzierung der Angriffsfläche.
+Der Aspekt der Pfadverfolgung mit link-local kann mit RFC 5837 abgerufen werden.
+Die Wahl wird daher im Allgemeinen zwischen einem Unternehmensnetz versus einem großen ISP oder einem CIX-Austauschpunkt unterschiedlich ausfallen.
+
+Sie können Ihr /124-Präfix mit der BGP AS-Nummer des Drittanbieters, der Router-ID usw. erstellen.
+Kurz gesagt, alles, was Ihnen bei Ihren täglichen Aufgaben helfen wird.
+
+Seien Sie vorsichtig mit IPAMs, die sich oft weigern, etwas anderes als /64 einzutragen, auch wenn es ist nicht ungewöhnlich ist, lange Präfixe zu haben.
+
+Abgesehen von den  ist /64 der derzeitige Standard, und es wäre schade, etwas anderes zu verwenden.
+
+[NOTE]
+====
+Einige RFC-Entwürfe zielen darauf ab, dass SLAAC etwas anderes als /64 bereitstellen kann, siehe draft-mishra-v6ops-variable-slaac-problem-stmt und draft-mishra-6man-variable-slaac. 
+Diese Entwürfe versuchen, das Problem der Unterteilung eines einzelnen /64 zu lösen, das z.B. von einem Mobilfunkbetreiber über eine 3GPP-Verbindung bereitgestellt wird. 
+Das Ziel ist es, verschiedene Netze auf mobilen Mikroinfrastrukturen zu schaffen, typischerweise ein Router mit mehreren Client-Netzen oder ein angeschlossenes Fahrzeug, dessen verschiedene interne Netze manchmal Ethernet, manchmal BUS verwenden und nicht überbrückt werden können. 
+Es ist sogar notwendig, direkte Austauschnetze mit benachbarten Fahrzeugen (V2V) zu haben. 
+Die Zukunft wird zeigen, ob diese Entwürfe zu einem Internet-Standard werden oder ob sie aufgegeben werden, wenn alle Netzbetreiber anfangen, DHCP-PD auf Mobiltelefonen mit /56 über 3GPP zu unterstützen, wie es bei Hausanschlüssen oft heute schon der Fall ist.
+====
+
+=== • GEMEINSAME DIENSTADRESSEN
+
+Zur Vereinfachung ist es interessant, den Diensten, bei denen die IP oft manuell eingegeben werden muss, kurze Adressen zuzuweisen, vor allem natürlich den DNS-Servern, aber auch den Schnittstellen der Router.
+
+Daher sollte die Adresse, die ganz am Anfang einer Organisation steht, pre:fix:0000:0000:..., für diese Zuweisungen verwendet werden, um den Betreibern/Administratoren ihre Arbeit zu erleichtern.
+
+Auf jeder Ebene, jedem Regional-Präfix, jedem Standort... wäre es gut, die 0 und die 1 für Dienste mit verkürzten Adressen zur Erleichterung alltäglicher Aufgaben zu reservieren.
+
+Bitte nicht alle Instanzen desselben Dienstes in dasselbe Präfix aufzunehmen.
+Es ist keine gute Praxis, z. B. alle DNS- oder SMTP-Relais im selben Präfix zu haben und somit von derselben Route abhängig zu machen.
+Im Falle eines Routingvorfalls, der dieses Präfix betrifft, können Sie trotz vieler physische und/oder logischer Instanzen des Dienstes einen Blackout bekommen.
+
+=== • ZEITLICHE ENTWICKLUNG
+
+Um Migrationen auf verschiedenen Ebenen zu ermöglichen, können Migrationsbits implementiert werden.
+
+Ein Netzmigrationsbit kann Änderungen der Hardware, der WAN-Verbindungen usw. erleichtern.
+Dieses Bit sollte das 64. sein, damit es in /63-Filterregeln berücksichtigt werden kann.
+Es würde einen schrittweisen Übergang von Subnetzen, VLANs und Geräten ohne weitere Änderungen ermöglichen, da die ACLs in /63 die zwei nutzbaren /64 umfassen würden.
+
+Beispiel: Ein Campus wechselt seinen Core und migriert gleichzeitig zu einem MAN.
+Die neuen Netze werden mit dem Übergangsbit versehen und parallel zu den alten Netzen geroutet.
+Dank der breiten Filterung mit diesem Bit können vor der Migration Tests in der neuen Infrastruktur durchgeführt werden.
+Dadurch werden Big-Bang-Migrationen vermieden und Störungen nach der Migration vermieden.
+
+Bei der nächsten Umschaltung wird das Bit getoggelt.
+Kein Unterschied zwischen 0 und 1 wird bevorzugt.
+
+Jeder Vorgang, der einen Wechsel der Ausrüstung, des Bedieners, einen Umzug usw. erfordert, wird dadurch erheblich erleichtert.
+
+Es muss jedoch verhindert werden, dass ein Zwillingsnetz angekündigt wird, das ungewollt die globalen Filterregeln ausnutzt.
+Die Überwachung des Ursprungs von Routen, die zum selben Migrationspaar gehören, ist daher notwendig.
+
+Allgemeiner ausgedrückt: Platz für künftige Dinge schaffen.
+Dies ermöglicht die Anpassung an neue Architekturen, ohne dass neue Blöcke auf höchster Ebene erforderlich sind.
+
+image::images/image04_04_plan.png[Rahmenhierarchie,width=568,height=232,title="Beispiel für eine Adresshierarchie"]
+
+=== • VERWENDUNG DER INTERFACE-ID 0
+
+In IPv6 gibt es weder eine reservierte Adresse für das Netzwerk noch eine für Broadcast, alle mathematisch möglichen Adressen können den Hosts zugewiesen werden.
+
+Allerdings sind manchmal falsche Regex in Konfigurationsfeldern von Anwendungen vorhanden.
+Man kann Systeme finden, die eine Adresse, die auf ::0 endet, zum Beispiel 2001:db8:abcd:1234::/64 nicht unterstützen. 
+Manchmal auf ihrer Schnittstelle oder IP-Konfiguration eines Kommunikationspartners wie der DNS- oder NTP-Serveradresse.
+
+Außerdem empfehlen wir, Adressen mit Interface-ID 0 mindestens für die Server zu vermeiden, deren IP-Adresse in Geräten wie Druckern, Kameras und anderen IoT-Geräten konfiguriert werden.
+
+Die Verwendung von DNS begrenzt das Risiko, außer für DNS selbst.
+Die Beibehaltung einer 1 am Ende der Adressen Ihrer DNS-Server kann diese Art von Problem verhindern, auch wenn es langsam verschwindet.
+
+Die Verwendung dieser ersten verfügbaren Adresse wirft auch die Frage nach der Verwechslungsgefahr zwischen Adresse und Präfix auf.
+In IPv4 kann die Netzwerkadresse niemals für einen Host verwendet werden (außer im besonderen Fall von /31 RFC 3021 intercos), während in IPv6 dieselbe Adresse für ein Präfix und einen Host verwendet werden kann, wobei die Größe des Präfixes dann der einzige begrenzende Faktor ist.
+Zum Beispiel gehört ein Host 2001:db8:abcd:1234::/128 zum Netz 2001:db8:abcd:1234::/64.
+
+Aus dem Grund der menschlichen Lesbarkeit ist es besser, die Host-Adresse 0 gar nicht zu verwenden.
+
+=== • PRO SCHNITTSTELLENISOLIERUNG
+
+Einige technische oder sicherheitsrelevante Gründe können dazu führen, dass mehrere Netzschnittstellen auf Servern eingerichtet werden.
+So erfordern beispielsweise bestimmte Sicherheitsstrategien spezielle Management-Schnittstellen.
+Manchmal werden auch die von Backup-Agenten verwendeten Schnittstellen aus Leistungs- und Separierungsgründen aufgeteilt.
+
+Dies wirft die Frage nach der Wahl der Ausgangsschnittstelle auf.
+Der IPv4-Stack eines Systems wird eine Metrik verwenden, um die Schnittstelle auszuwählen, die die Route 0.0.0.0/0 trägt, wobei die andere(n) Schnittstelle(n) darauf beschränkt sind, nur das Subnetz zu routen, an das sie jeweils gebunden sind.
+Es ist dann Sache des Serveradministrators, statische Routen einzurichten, oder des Netzes, NAT durchzuführen, so dass ein Management-Paket über eine NAT-Adresse ankommt, die zum selben Subnetz gehört wie die Management-Schnittstelle.
+
+Was ist mit IPv6? 
+Der kurze RFC 7608 besagt, dass die Routing-Entscheidung auf einem bitweisen Vergleich der Schnittstellen des Rechners mit der Zieladresse beruhen sollte.
+Die Schnittstelle mit den meisten gemeinsamen Bits gewinnt.
+
+Ein Rechner mit zwei Karten mit den Adressen 2001:db8:abba:CAFE::5 und 2001:db8:abba:1001::5, der ein Paket an 2001:db8:abba:C9D6::6 sendet, verwendet also die erste der beiden Karten.
+
+Dieser Punkt sollte in Ihrem Adressplan berücksichtigt werden, um ein hochrangiges Präfix für Management oder Backup zu reservieren, da dies die Verwendung dedizierter Schnittstellen erleichtert.
+
+Gibt es eine andere Methode, um die Verwendung einer bestimmten Schnittstelle zu einem Off-Link-Präfix zu erzwingen, ohne die Host-Konfiguration zu ändern und ohne einen Plan auf der Grundlage des RF 7608 erstellt zu haben?
+
+Bei IPv4 ermöglicht die Verwendung der DHCPv4-Option 121 (klassenlose statische Routen) die Weiterleitung von Routen an eine Schnittstelle (Anmerkung: diese Option überschreibt die Standardroute, die bekannt gegeben wurde und in eine Option 121 kopiert werden muss, wenn sie bekannt gegeben werden soll).
+
+In IPv6 gibt es nichts Vergleichbares, die Ankündigung eines Präfixes über die Router-Advertisment mit dem L-Bit (on-link) auf 0 führt nicht zum Erlernen einer indirekten Route.
+Bei DHCPv6 gibt es keine Entsprechung zur DHCPv4 Option 121.
+
+Der RFC 4191 schlägt eine Erweiterung (Typ 24) der RA vor, die es erlaubt, Routen zu propagieren. Er wurde von Microsoft geschrieben und funktioniert seit Windows Vista, der Linux-Kernel implementiert sie ebenfalls seit den Commits 930d6ff und ebacaaa von 2006.
+Allerdings ist die Option nicht unbedingt aktiviert.
+
+Seien Sie vorsichtig, dieser RFC besteht aus zwei Teilen, einer betrifft den korrekten Umgang mit der RA-Priorität, der andere befasst sich mit zusätzlichen Routen.
+
+Wenn Sie diese Option nicht verwenden können, können Sie versuchen, Präfixe mit der Option "on-link" auf 1 gesetzt zu senden.
+Die Hosts fügen dann dem Router eine Route für dieses Präfix hinzu.
+Dies ist jedoch eine Abweichung von der Vorgabe.
+
+//=== image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75]◗ Mariginalspalte ??
+=== • IP IPv4 / IPv6 MAPPING
+
+Wie im Abschnitt über Dual-Stack erörtert, führt die parallele Nutzung von IPv4 und IPv6 zu einem zusätzlichen Konfigurations- und Betriebsaufwand und damit zu zusätzlichen Kosten.
+
+Best Practises können Automatisierungen begünstigen, die diesen Aufwand verringern.
+
+//[#_Toc88922686 .anchor]####Netzpräfix-Nummer
+==== Netz-Präfix-Nummer
+
+Es ist wichtig, eine Datenbank für die Zuordnung zwischen einem IPv4-Netz und dem entsprechenden IPv6-Netz zu haben.
+Ideal ist es, diese Funktion innerhalb des IPAM zu haben, oder alternativ ein Feld im IPv6-Abschnitt des IPAM zu verwenden, um das zugehörige IPv4-Netz mit seiner Maske anzugeben.
+
+Wenn das IPAM diese Informationen nicht speichern kann, auch nicht durch Tricks, muss ein separates Inventarisierungstool verwendet werden.
+Dies kann ein anderes IT-Repository, eine spezielle Datenbank usw. sein.
+Wichtig ist, dass das Repository API-fähig ist, damit es von anderen Systemen angefragt werden kann.
+
+Nehmen wir das Beispiel der Firewall-Filterregeln: Es wäre viel zu umständlich, bei der Einrichtung alle bestehenden Regeln in IPv6 neu zu erstellen und dann den Prozess der Flow Opening Request zu verdoppeln.
+
+Stattdessen ist es möglich, Automatisierungen zu implementieren, die jede Nacht prüfen, ob jedes IPv4-Netz-Objekt eine IPv6 Entsprechung hat, und wenn dies nicht der Fall ist, das Objekt ändern, um das zugehörige IPv6-Präfix hinzuzufügen.
+Auf diese Weise werden Fehler vermieden, unabhängig davon, ob sie vom Firewall-Administrator oder von Antragstellern stammen, die sich bei der Beantragung bezüglich des IPv6-Präfixes irren könnten.
+
+Mit einer fortschrittlicheren Lösung ist es möglich, Änderungen synchron zu verwalten, ohne sich um den Dualstack zu kümmern.
+
+//[#_Toc88922687 .anchor]####Host-Nummer / Schnittstellen-ID
+==== Hostnummer/Schnittstellen-ID
+
+In der zweiten Hälfte der Adresse befinden sich die 64 Bits für die Host-Identifizierung.
+Auch hier gibt es Best Practises, um die Zuordnung der IPv4- und IPv6-Adresse eines Dual-Stack-Hosts zu erleichtern.
+
+Diese Praktiken funktionieren natürlich nur bei stateful DHCPv6 oder manueller Adressierung, nicht bei SLAAC oder stateless DHCPv6.
+
+Am einfachsten ist es, die IPv4-Nummer beizubehalten und sie auf IPv6 zu übertragen.
+Nehmen wir das Netzwerk 10.2.3.128/25 und einen Server 10.2.3.239.
+Nach der IPv6-Einführung verwendet dieses Netzwerk willkürlich das folgende Präfix 2001:db8:abba:CAFE::/64.
+
+Die Nummerierung des Servers 2001:db8:abba:CAFE::239 erleichtert die Administration und die menschliche Lesbarkeit.
+Man kann auch das hexadezimale 2001:db8:abba:CAFE::EF verwenden, wenn man will, dass die Werte die gleiche strenge Nummerierung aus binärer Sicht behalten, allerdings geht dabei die Lesbarkeit verloren.
+
+Eine andere Möglichkeit ist die Beibehaltung der Ordnungszahl anstelle der Nummer.
+Beim Netzwerk sehen wir, dass der Server die 89. nutzbare IPv4 des Netzwerks 10.2.3.128/25 (239-129=110) verwendet. 128 ist die Netzwerknummer und ist hier in IPv4 nicht zuweisbar.
+
+Dieses Ordnungsmuster ergibt 2001:db8:abba:CAFE::110 oder 2001:db8:abba:CAFE::6E in reinem Hexadezimalformat.
+
+Den Akribischsten unter Ihnen wird aufgefallen sein, dass die Hostnummer ::0 in IPv6 verwendbar ist, da es keine Netzwerknummer und keine Broadcast-Adresse gibt, basierend auf diesem Postulat könnte man auch im Ordinalmodus eine IPv4 .1 Adresse in IPv6 ::0 umwandeln.
+Dies ist jedoch wegen der Verwechslungsgefahr mit einem Präfix nicht praktikabel und kann auch zu Problemen auf den Systemen führen, z. B. wegen schlecht implementierter Feldprüfungen, wie bereits erwähnt.
+
+Die Wahl zwischen diesen beiden Methoden und den beiden Gegenstücken (dezimal oder hexadezimal) ist von Ihnen zu diskutieren.
+Die erste Methode in ihrer dezimalen Version ist eindeutig die praktischste, aber andere Kriterien können ins Spiel kommen, wenn wir uns einer orchestrierten Welt nähern.
+
+Hier sind einige Beispiele:
+
+[width="100%",cols="21%,15%,31%,33%",options="header",]
+|===
+|IPv4 Netzwerk  |IPv4 Host  |IPv6 Hostnummer - Zuordnung    |IPv6 Hostnummer - Ordinal
+|10.2.3.128\|25 |10.2.3.239 |::239 dec \|::EF hex           |::110 dec \|::6E hex \| 239-129
+|10.2.4.0\|24   |10.2.4.239 |::239 dez \|::EF hex           |::239 dez \|::EF hex \| 239
+|10.5.0.0\|23   |10.5.0.239 |::239 dez \|::EF hex           |::239 dez \|::EF hex \| 239
+|10.5.2.0\|23   |10.5.3.239 a|Relativ ::1239 dez \|::4D7 hex +
+                                Absolut ::3239 dez \|::CA7 hex
+                                                            |::495 dec \|::1EF hex\|(256+239)
+|10.6.0.0\|16   |10.6.28.239 a|::28239 dez \|::6E4F hex +
+                                28 * Byte+239
+                                                            a|::7407 dez \|::1CEF hex +
+                                                                (28x256) + 239
+
+|               |10.6.28.3  a|::28003 dez \|::6D63 hex +
+                                            28 * Byte+003
+                                                            a|::7171 dez \|::1C03 hex +
+                                                                (28x256) + 3
+|10.8.64.0\|18  |10.8.72.50 a|Relativ ::8050 dc \|::1F72 hex +
+                                (72-64)=8 Blöcke + 050 +
+                                Absolut ::72050 d\|::11972 hx
+                                                            a|::2098 dez \|::832 hex +
+                                                                (8x256) + 50
+|===
+
+Anhand der Beispieltabelle sehen wir, dass bei einem IPv4-Netz, das auf der Ebene des letzten Bytes (/24) aufgeteilt wird, die Ordnungszahl den gleichen Wert hat wie die Abbildung, da die Zählung in beiden Fällen bei 0 beginnt.
+
+Komplexer wird es bei einem IPv4-Netz, das größer als ein Byte ist, im Beispiel ein /23.
+Wie können wir hier zwischen 10.5.0.239 und 10.5.1.239 unterscheiden?
+Das Hinzufügen einer 1, um anzuzeigen, dass wir uns über das letzte Byte hinaus bewegen, scheint eine gute Methode zu sein. Wir zählen dann alle Adressen der /24, die das Netz bilden, einschließlich der nicht zuweisbaren Adressen, also 256.
+
+Aber das Streben nach Lesbarkeit hätte uns auch dazu bringen können, das vorherige Byte zu kopieren und ::3239 statt ::1239 zu definieren und so von einem relativen zu einem absoluten Verweis überzugehen.
+Außerdem können wir sogar die IPv4-Nummer des gesamten Hosts in seine IPv6-Hostnummer kopieren, was allerdings nicht die eleganteste Lösung ist.
+
+Die folgenden Beispiele veranschaulichen auch die Notwendigkeit, die 0 der Bytes im "Mapped"-Modus beizubehalten, um keine Duplikate zu erzeugen. 003, 050, usw.
+
+Wie Sie sehen, kommt es darauf an, die technischen Regeln klar zu definieren und sie einzuhalten.
+
+Zusammengefasst:
+
+* Die dezimale Übertragung, d. h. das Kopieren des vollen Bytes oder sogar von 2 Bytes für Netze größer als /24 (usw.), ist eindeutig besser für die Lesbarkeit. 
+Es führt jedoch zu langen Hostadressen.
+* Die Verwendung von Hexadezimalzahlen ist wahrscheinlich nur in einer automatisierten Umgebung von Vorteil.
+* 2 BE or not 2 BE, die Verwendung von Hexa und 2er-Potenzen macht strengt das Hirn an.
+* Auch diese Lösungen ermöglichen die Erstellung von ACLs usw., ohne dass die Arbeit doppelt gemacht werden muss.
+
+Die Zuordnung kann auch über die DNS-Einträge A und AAAA der einzelnen Server erfolgen, was dann eine andere Form der Genauigkeit erfordert.
+
+Was die Hosts betrifft, so scheint es derzeit kein Produkt zu geben, das es ohne vorherige Konfiguration ermöglicht, dieselbe Hostnummer in IPv4 und IPv6 auf der Grundlage einer integrierten IPAM-Zuordnung zuzuweisen.
+
+=== • NATIVE IPv6-NETZE
+
+Wenn Sie ein natives IPv6-Netz einrichten, gelten die vorherigen Regeln für Hosts nicht.
+Sie können dann einen Teil der 64 Bits zur Angabe von Hostdetails verwenden.
+
+Zum Beispiel ein Buchstabe zur Bezeichnung eines Desktop-Servers, ein anderes Zeichen zur Angabe eines Druckers.
+Dies sollte Sie an die bestehenden technischen Regeln / Namenskonventionen für Hostnamen erinnern.
+
+In einem Rechenzentrum kann man sich vorstellen, das mit einer VM verbundene Unternehmen zu markieren, usw.
+
+Mit einer CMDB bleibt dies jedoch komplex und redundant, zumal die Adresse bei Bedarf nicht einfach geändert werden kann.
+
+Die andere Lösung, zumindest auf der Serverseite, besteht darin, die Schnittstellen-ID so festzulegen, dass sie statisch ist und nicht von der MAC-Adresse abhängt (und sich daher nicht ändert, wenn die Karte - physisch oder virtuell - ausgetauscht wird, und den Hersteller in der Adresse nicht preisgibt).
+In Verbindung mit SLAAC für die Erzeugung der Interface-ID.
+Diese Lösung ist immer einfacher als eine manuelle Konfiguration.
+
+Im Allgemeinen ist es nur in kleinen Mehrzwecknetzen an kleinen Standorten notwendig, eine Bereichssegmentierung zu definieren.
+
+=== • Internet BGP-Announcement
+
+Was soll im Internet announced werden?
+
+Auf diese Frage werden einige antworten: "So wenige Ressourcen wie möglich".
+Stellt die direkte Ankündigung einer /32-DMZ anstelle einer /44-DMZ wirklich eine Verringerung der Angriffsfläche dar?
+Wird es bei der Implementierung von Stateful- und IPS-Firewalls eine Rolle spielen?
+Das Ende-zu-Ende-Ziel von IPv6 wird wahrscheinlich sowieso dazu führen, dass breite Advertisements geschaltet werden.
+
+Betrachtet man den Inhalt der BGP-IPv6-Tabelle, so stellt man fest, dass die meisten Advertisments /32, /40, /44 und /48 sind.
+
+[cols="30%,70%", grid="none", frame="none"]
+|===
+|image:images/image04_05_prefixes.png[Präfixverteilung,width=222,height=364,title="Verteilung der Präfixe"] +
+Wöchentliches IPv6 Delta https://cidr-report.org/v6/as2.0/
+|Die /48-Einträge machen mit 54.000 Routen die Hälfte aller Einträge aus, nicht aber das Volumen der eindeutigen Adressen, da jedes /32 65.536 (2e16) mal mehr Adressen enthält als eine /48. +
+http://bgp.potaroo.net/v6/as6447/ +
+https://bgp.potaroo.net/index-v6.html +
+https://www.cidr-report.org/v6/as2.0/ +
+Die letzte URL zeigt den Wochenbericht mit den beobachteten Eintragungen und Löschungen von Präfixen an.
+|===
+
+[IMPORTANT]
+====
+*Einige Anti-DDoS-Lösungen funktionieren, indem sie das angegriffene Präfix über ein "reinigendes" Netzwerk erneut ankündigen.* 
+*Da /48 das kleinste ist, müssen Sie bei dieser Art von Lösung nominal mehr ankündigen.*
+
+*Idealerweise advertisen Sie in großem Umfang entsprechend der geografischen Lage Ihrer Internetknoten.*
+*IPv6-Peering kann auch eine Gelegenheit sein, mit RPKI-Routensignierung zu experimentieren, falls Sie dies noch nicht tun, oder mit RTBH und Flowspec zu experimentieren.*
+====
+
+//#### Ende des Kapitels ####

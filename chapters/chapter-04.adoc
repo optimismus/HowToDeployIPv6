@@ -1,5 +1,9 @@
 image::images/image04_01_doors.jpeg[Two doors,width=606,height=910]
 
+<<<
+    
+[big]#*Addressing plan*#
+
 The constitution of this important referential that is the addressing plan is a long process to be carried out iteratively.
 
 The addressing plan is to be built according to the organization's specificities. 
@@ -9,7 +13,7 @@ In any case, think in the long term and keep some free space at the top of the b
 Before getting down to the plan building options, let's start by discussing the prefix choice to operate within the organization.
 
 //save character ◗
-=== PUBLIC OR PRIVATE?
+=== • PUBLIC OR PRIVATE?
 
 Public IPv4 addressing is scarce and is therefore naturally limited to Internet exposure. 
 Within the internal network the RFC 1918 ranges including 10.0.0.0/8 prevail.
@@ -24,7 +28,7 @@ You can also get a PI from a sponsor LIR, that’s not expensive at all.
 The minimum assignment policy is /32. 
 It is possible to obtain larger blocks if the structure's size justifies it.
 
-=== SMALL ORGANIZATION
+=== • SMALL ORGANIZATION
 
 For a small network, it is possible to use the prefix supplied by the ISP through prefix delegation. 
 However, depending on a third-party structure for the addressing of its resources is not ideal and one quickly reaches the limits of this mode, for example for fixed addressing of internal servers. 
@@ -77,9 +81,10 @@ Secondly you will need to synchronize your DNS records between the internal DNS 
 So, you don’t mistakenly publish an AAAA record with an unreachable IP on the internet in one hand, and you don’t use the Global Routable IP internally on the other hand as it would imply tromboning through the NPTv6 platform. 
 For example, a LAN client requesting a DMZ server should reach it using directly towards its internal address (ULA or non-announced PI).
 
-Oh, and don’t forget to create PTR for both types of address, it’s important for some services like SMTP MX as this is part of anti-spam checks. Hopefully there are mechanisms enabling to auto generate PTR.
+Oh, and don’t forget to create PTR for both types of address, it’s important for some services like SMTP MX as this is part of anti-spam checks. 
+Hopefully there are mechanisms enabling to auto generate PTR.
 
-=== LARGE ORGANIZATION
+=== • LARGE ORGANIZATION
 
 Start by obtaining a public PI (Provider Independent) prefix, or several in the case of subsidiaries or a multi-continental geographical presence.
 
@@ -134,8 +139,8 @@ However, the same level of security must be ensured in terms of filtering, antiv
 The strategy will therefore vary between authorizing some of the flows (recipients with a sufficient level of trust) and all Internet traffic, depending on the level of protection that can be achieved. 
 Whether it is provided locally via VNFs, SASE or via a Cloud solution.
 
-.Schema of NPTv6 PI+FAI
-image::images/image04_02_nptv6.svg[Schema of NPTv6,width=566,height=318]
+
+image::images/image04_02_nptv6.svg[Schema of NPTv6,width=566,height=318,title="Schema of NPTv6 PI+FAI"]
 
 For infrastructures that need to be completely isolated from the Internet and any partner (such as a SCADA network), it is possible to use ULA addresses. 
 This does not prevent rebound attacks from another internal system, firewalls are sufficient to block traffic at the edge of these networks anyway. 
@@ -143,7 +148,7 @@ The contribution of ULA is therefore almost null and remains a subjective choice
 Again, we recall that ULA has a lower priority than IPv4 in the current precedence rules. 
 IPv4 will therefore be preferred in a dual-stack environment.
 
-=== LOGICAL GROUPS
+=== • LOGICAL GROUPS
 
 Historically, IPv4 accustomed us to assign ranges by location in order to minimize the number of routes by summarizing, more recently some projects might have made the opposite assessment, i.e. assigning the geographical location from a block dedicated to a specific use as in a WiFi deployment project in agencies or IoT.
 
@@ -154,12 +159,13 @@ The choice is especially important because, unlike IPv4, you cannot use a mask, 
 In IPv4, it is possible, even if rarely used, to use for example the wildcard 0.0.240.0 to select n identical hosts from different subnets. 
 In v6 this disappears.
 
-If devices support a large number of routes, manual rules applied to routes would become complex to implement with a usage-centric plan, and we already know that despite automation and the arrival of SDN on different perimeters, BGP will remain the way to interconnect "black boxes" between them. Nevertheless, it would still be possible to use scripts and a route server like https://bird.network.cz/[bird] or https://frrouting.org/[FFRouting] to automatically perform classifications and apply policies or simply to make the best use of communities on announcements.
+If devices support a large number of routes, manual rules applied to routes would become complex to implement with a usage-centric plan, and we already know that despite automation and the arrival of SDN on different perimeters, BGP will remain the way to interconnect "black boxes" between them. 
+Nevertheless, it would still be possible to use scripts and a route server like https://bird.network.cz/[bird] or https://frrouting.org/[FFRouting] to automatically perform classifications and apply policies or simply to make the best use of communities on announcements.
 
 The 2 geo or type centric options have advantages and disadvantages, which can be compensated by automation (Consolidation of filtering rules VS Consolidation of routes and sites). 
 As stated before with NPTv6 explanation, it’s easier to base addressing on location.
 
-=== BUILDING BLOCKS
+=== • BUILDING BLOCKS
 
 The slicing can privilege the multiples of 4 bits (hexadecimal characters), /32, /48, /52 etc in order to facilitate reading, tendency which corresponds to our habit of slicing the IPv4 by octet and which leads to waste in the exact case of v4.
 
@@ -200,14 +206,13 @@ From this we can deduce that the plan must only integrate elements that are rele
 * The location either by continental tree / plate / site, or by the numbered site code;
 * The type of network, with subcategories to facilitate the management of filtering and to delegate part of the addressing plan.
 
-=== PREFIX SIZE
+=== • PREFIX SIZE
 
 //[#_Toc88922679 .anchor]####Standard
 ==== Standard
 From the outset, /64 appears to be the unalterable standard for a network (RFC 4291), particularly for the auto-configuration mechanism SLAAC to work.
 
-.Is a standard actually a standard?
-image::images/image04_03_slash64warfront.png[The /64 RFC warfront,width=546,height=279]
+image::images/image04_03_slash64warfront.png[The /64 RFC warfront,width=546,height=279,title="Is a standard actually a standard?"]
 
 //==== image:extracted-media/media/image40.svg[extracted-media/media/image40,width=68,height=49] 
 
@@ -242,12 +247,12 @@ Be careful with IPAMs, they often refuse to let you register anything else than 
 
 Apart from interconnections, /64 is the current standard and it would be a shame to venture to use something else.
 
-[CAUTION]
+[IMPORTANT]
 ====
-Some RFC drafts aim at allowing SLAAC to provide something else than /64, see draft-mishra-v6ops-variable-slaac-problem-stmt and draft-mishra-6man-variable-slaac. These drafts try to solve the problem of subdivision of a single /64 provided for example by a mobile carrier via 3GPP link. The objective is to be able to create different networks on mobile micro-infrastructures, typically a router with multiple client networks or a connected vehicle whose different internal networks sometimes use Ethernet, sometimes BUS and cannot be bridged. It is even necessary to have direct exchange networks with neighboring vehicles (V2V). Future will tell if theses drafts become a standard or if they are abandoned in the event all carriers start supporting DHCP-PD on cell phones with /56 via 3GPP as it is often the case for home connections.
+*Some RFC drafts aim at allowing SLAAC to provide something else than /64, see draft-mishra-v6ops-variable-slaac-problem-stmt and draft-mishra-6man-variable-slaac. These drafts try to solve the problem of subdivision of a single /64 provided for example by a mobile carrier via 3GPP link. The objective is to be able to create different networks on mobile micro-infrastructures, typically a router with multiple client networks or a connected vehicle whose different internal networks sometimes use Ethernet, sometimes BUS and cannot be bridged. It is even necessary to have direct exchange networks with neighboring vehicles (V2V). Future will tell if theses drafts become a standard or if they are abandoned in the event all carriers start supporting DHCP-PD on cell phones with /56 via 3GPP as it is often the case for home connections.*
 ====
 
-=== COMMON SERCVICES ADDRESSES
+=== • COMMON SERCVICES ADDRESSES
 
 For convenience, it is interesting to assign short addresses to services for which the IP must often be entered manually, of course first of all the DNS servers, but also the routers' interfaces.
 
@@ -260,7 +265,7 @@ However, do not forget to not put all instances of the same service within the s
 Having for example all the DNS or SMTP relays in the same prefix and therefore depending on the same route is not a good practice. 
 In case of a routing incident affecting this prefix you can have as many physical and/or logical instances of the service as possible, it will still result in a blackout.
 
-=== TIME-SCALE EVOLUTION
+=== • TIME-SCALE EVOLUTION
 
 In order to accommodate migrations at different levels, migration bits can be implemented.
 
@@ -284,17 +289,17 @@ Monitoring the origin of routes belonging to the same migration pair is a necess
 In a more general manner, keep place for future frames of reference. 
 This to allow to cope with new architectures without requiring top level new blocks.
 
-.Example of reference frame hierarchy
-image::images/image04_04_plan.svg[Frame hierarchy,width=568,height=232]
+image::images/image04_04_plan.png[Frame hierarchy,width=568,height=232,title="Example of reference frame hierarchy"]
 
 //==== image:extracted-media/media/image40.svg[extracted-media/media/image40,width=68,height=49] 
 
-=== USE OF HOST NUMBER 0
+=== • USE OF HOST NUMBER 0
 
 In IPv6 there is no more network number address nor broadcast address, all possible addresses can be assigned to the hosts.
 
 However, bad regex are sometimes present in configuration fields of applications. 
-One can find bugs in systems that do not support being configured with an address ending in ::0, for example ABCD:1234::/64. Sometimes on their interface or on the interface of a third party element like the DNS or NTP server address.
+One can find bugs in systems that do not support being configured with an address ending in ::0, for example 2001:db8:abcd:1234::/64. 
+Sometimes on their interface or on the interface of a third party element like the DNS or NTP server address.
 
 Also, we recommend avoiding addresses with host numbers in 0 at a minimum for servers that may be configured literally in devices such as printers, cameras, and any embedded equipment.
 
@@ -303,11 +308,11 @@ Keeping a final 1 to the addresses of your DNS servers can prevent this type of 
 
 The use of this first available address also raises the question of the confusion risk between address and prefix. 
 In IPv4 the network address can never be used for a host (except in the particular case of /31 RFC 3021 intercos) whereas in IPv6 it is possible to have the same address indicating a prefix and a host, the size of the prefix being then the only delimiting factor. 
-For example a host ABCD:1234::/128 belonging to the network ABCD:1234::/64.
+For example a host 2001:db8:abcd:1234::/128 belonging to the network 2001:db8:abcd:1234::/64.
 
 For this 2nd reason of human readability, it is better not to use the host address 0 at all.
 
-=== PER INTERFACE ISOLATION
+=== • PER INTERFACE ISOLATION
 
 Some technical or security constraints may result in instantiating several network interfaces on servers. 
 For example, specific security strategies require dedicated management interfaces. 
@@ -320,7 +325,7 @@ It is then up to the server administrator to set static routes, or the network t
 What about IPv6? The short RFC 7608 states that the routing decision should be based on a bitwise comparison of the machine's interfaces with the destination address. 
 The interface with the most common bits wins the race.
 
-Thus, a machine with 2 cards of address ABBA:CAFE::5 and ABBA:1001::5 and sending a packet to ABBA:C9D6::6 will use the first of the 2 cards.
+Thus, a machine with 2 cards of address 2001:db8:abba:CAFE::5 and 2001:db8:abba:1001::5 and sending a packet to 2001:db8:abba:C9D6::6 will use the first of the 2 cards.
 
 This point should be taken into account in your addressing plan in order to reserve a high level prefix for administration or backup. 
 This will facilitate the use of dedicated interfaces if necessary.
@@ -342,7 +347,7 @@ The hosts will then add a route to the router for this prefix.
 However, this is a divergence from the standard.
 
 //=== image:extracted-media/media/image26.svg[Empreintes contour,width=75,height=75]◗ Mariginalspalte ??
-=== IP V4 / V6 MAPPING
+=== • IP V4 / V6 MAPPING
 
 As discussed in the dual-stack section, the parallel use of IPv4 and IPv6 leads to extra configuration and operation, and therefore to extra costs.
 
@@ -375,16 +380,16 @@ These practices are obviously only valid with stateful DHCPv6 or manual addressi
 
 The easiest way is to keep the IPv4 number and carry it over to IPv6. 
 Let's take the network 10.2.3.128/25 and a server 10.2.3.239. 
-After IPv6 deployment, this network arbitrarily uses in the following prefix ABBA:CAFE::/64.
+After IPv6 deployment, this network arbitrarily uses in the following prefix 2001:db8:abba:CAFE::/64.
 
-Numbering the server ABBA:CAFE::239 facilitates operation up to the human readability level. 
-One can also use the hexadecimal ABBA:CAFE::EF if one wants the values to keep the same strict numbering from a binary point of view. 
+Numbering the server 2001:db8:abba:CAFE::239 facilitates operation up to the human readability level. 
+One can also use the hexadecimal 2001:db8:abba:CAFE::EF if one wants the values to keep the same strict numbering from a binary point of view. 
 However, readability is lost.
 
 Another option is to keep the ordinal nature instead of the number. 
 With this same network, we see that the server uses the 89th usable IPv4 of the network 10.2.3.128/25 (239-129=110) .128 is the network number and is not assignable here in IPv4.
 
-This ordinal pattern results in ABBA:CAFE::110 or ABBA:CAFE::6E in pure hexadecimal.
+This ordinal pattern results in 2001:db8:abba:CAFE::110 or 2001:db8:abba:CAFE::6E in pure hexadecimal.
 
 The most meticulous among you will have noticed that the host number ::0 is usable in IPv6 since there is no network number and broadcast address, based on this postulate one could also convert in the ordinal mode an IPv4 .1 address into IPv6 ::0. 
 However, this is not practical in terms of reading because of the risk of confusion with a prefix, and can also cause problems on systems, for example because of poorly implemented field checks as previously said.
@@ -464,7 +469,7 @@ The mapping can also be done via the DNS A and AAAA records of each server, whic
 
 Regarding hosts, there does not seem to be any product today that allows without prior configuration to assign the same host number in IPv4 and IPv6 based on an integrated IPAM mapping.
 
-=== FOR NATIVE V6 NETWORKS
+=== • FOR NATIVE V6 NETWORKS
 
 When setting up a native IPv6 network, the previous rules related to hosts do not apply. 
 You can then use part of the 64 bits to indicate host details.
@@ -482,7 +487,7 @@ This solution remains simpler than a manual setup everywhere.
 
 In general, it is only necessary to define a range segmentation in small multi-purpose networks on small sites.
 
-=== PUBLIC ANNOUNCES
+=== • PUBLIC ANNOUNCES
 
 What to advertise on the internet?
 
@@ -493,28 +498,25 @@ The end-to-end IPv6 goal will probably end up pushing wide advertisements anyway
 
 Looking at the BGP IPv6 table contents, we find that the majority of advertisements are /32, /40, /44 and /48.
 
-.Distribution of prefixes
-image::images/image04_05_prefixes.png[Prefix distribution,width=222,height=364]
-
-The /48 advertisements represent half of the advertisements in number, with 54,000 routes, but not in volume of unique addresses, since each /32 contains 65,536 (2e16) times more addresses than a /48.
-
-http://bgp.potaroo.net/v6/as6447/
-
-https://bgp.potaroo.net/index-v6.html
-
-https://www.cidr-report.org/v6/as2.0/
-
+[cols="30%,70%", grid="none", frame="none"]
+|===
+|image:images/image04_05_prefixes.png[Prefix distribution,width=222,height=364,title="Distribution of prefixes"] +
+Weekly IPv6 announces delta https://cidr-report.org/v6/as2.0/ 
+|The /48 advertisements represent half of the advertisements in number, with 54,000 routes, but not in volume of unique addresses, since each /32 contains 65,536 (2e16) times more addresses than a /48. +
+http://bgp.potaroo.net/v6/as6447/ +
+https://bgp.potaroo.net/index-v6.html +
+https://www.cidr-report.org/v6/as2.0/ +
 The last URL notably displays the following weekly report with the observed prefix additions and deletions.
-
+|===
 //==== image:extracted-media/media/image40.svg[extracted-media/media/image40,width=68,height=49]
 
-Weekly IPv6 announces delta https://cidr-report.org/v6/as2.0/ 
 
-[CAUTION]
+
+[IMPORTANT]
 ====
-Some anti-DDoS solutions work by re-announcing the attacked prefix via a "cleaning" network. The /48 being the smallest, you will have to announce more in nominal if you run this type of solution.
+*Some anti-DDoS solutions work by re-announcing the attacked prefix via a "cleaning" network. The /48 being the smallest, you will have to announce more in nominal if you run this type of solution.
 
-Ideally, advertise in a large way according to the geographical locations of your exit nodes. IPv6 peering can also be an opportunity to experiment with RPKI route signing if you don't already do it, or to experiment with RTBH and Flowspec.
+Ideally, advertise in a large way according to the geographical locations of your exit nodes. IPv6 peering can also be an opportunity to experiment with RPKI route signing if you don't already do it, or to experiment with RTBH and Flowspec.*
 ====
 
 //#### End of chapter ####

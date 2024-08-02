@@ -1,0 +1,80 @@
+= ENTERPRISES: How to deploy IPv6? (Deutsche Version)
+:author: Jean-Charles BISECCO, Axel Schemberg (Übersetzung)
+:email: ipv6@arcep.fr
+:revnumber: v0.9
+:revdate: 30.07.2024
+:description: Dieses Dokument hilft Ihnen, Ihre IPv6-Hausaufgaben zu finden, deren Umsetzung zu planen und IPv6 in Ihrem Unternehmen einzusetzen.
+:toc: preamble
+:toclevels: 5
+:source-highlighter: rouge
+:numbered:
+:doctype: book
+//:sectnums:
+:sectnumlevels: 0
+//part numbering off
+:partnums:
+//Kapitelnummern
+:num:
+//icons statt Text für admonitions
+:icons: font
+:docinfodir: styles
+:docinfo1:
+:stylesheet: chapter.css
+
+// Table of content - localized to German
+:toc-title: Inhaltsverzeichnis
+:chapter-label: Kapitel
+:figure-caption: Abbildung
+:part-signifier: Teil
+:lang: de
+
+image:images/test-cover.png[images/image00_01_cover,width=952,height=241,align="center"]
+*VON DER PLANUNG BIS ZUM EINSATZ*
+
+[width="100%",cols="30%,15%,55%",grid="none",frame="none"]
+|===
+|30. Juli 2024 *Version 0.9*    | image:images/image00_02_checkbox.svg[images/image00_02_checkbox,width=152,height=134]    |Dieses Dokument hilft Ihnen, Ihre Aufgaben zu definieren, deren Umsetzung zu planen und IPv6 in Ihrem Unternehmen einzuführen. + 
+Ein umfassender Überblick.
+|===
+
+
+// Include the non-numbered sections (preface, introduction, etc).
+[preface]
+= Vorwort
+include::chapters/foreword_de.adoc[]
+
+[preface]
+= Präambel
+include::chapters/preamble_de.adoc[]
+
+// Enable chapter numbering.
+:sectnums:
+
+// Include the numbered chapters.
+= Einführung
+include::chapters/chapter-01_de.adoc[]
+
+= Transition Techniken
+include::chapters/chapter-02_de.adoc[]
+
+= Einzelteile
+include::chapters/chapter-03_de.adoc[]
+
+= Adressplan
+include::chapters/chapter-04_de.adoc[]
+
+= Sicherheit und Best Practises
+include::chapters/chapter-05_de.adoc[]
+
+[appendix]
+= Anhang
+include::chapters/chapter-06_de.adoc[]
+
+// Disable chapter numbering + Chapters in ToC
+:sectnums!:
+// Include section "about this book"
+[appendix]
+= Über dieses Dokument
+include::chapters/about_de.adoc[]
+
+//#### End of main.adoc ####
