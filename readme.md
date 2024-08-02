@@ -31,10 +31,10 @@ To have an consitant document, which can be maintained in a good way, we all sho
   * Every part has an image, after that there is a pagebreak "<<<" (in an own block)
 * Admonitions
   * Only NOTE and IMPORTANT are used
-  * If you use IMPORTANT, the text MUST be bold.
+  * If you use IMPORTANT, the text MUST be bold by "\*bold\*".
 * Text-Style
-  * Commands MUST be set monospace by "`command`"
-  * File pathes etc SHOULD set italic by "_path_"
+  * Commands MUST be set monospace by "\`command\`"
+  * File pathes etc SHOULD set italic by "\_path\_"
 
 ## What is different to the original?
 There are a lot of style differences to the orignal document of ARCEP. This is based on my humble abilities in ASCIIDOC, you are welcome to help me with that.
