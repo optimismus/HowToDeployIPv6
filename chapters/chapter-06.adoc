@@ -209,7 +209,7 @@ RFC 6269 discusses the problems associated with sharing, including the one menti
 
 An ISP should not share IPs between more than 16 customers.
 
-image::images/image06_04_mapap.png[MAP A+P,width=546,height=90,title="MAP A+P port sharing simulation"]
+image::images/image06_04_map.png[MAP A+P,width=546,height=90,title="MAP A+P port sharing simulation"]
 
 In this example, IPv4 are shared between 4 customers http://map46.cisco.com/MAP.php
 
