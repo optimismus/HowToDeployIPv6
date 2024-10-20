@@ -1,8 +1,8 @@
 = ENTERPRISES: HOW TO DEPLOY IPv6?
 :author: Jean-Charles BISECCO
 :email: ipv6@arcep.fr
-:revnumber: v1.3
-:revdate: 06.07.2022
+:revnumber: v1.4
+:revdate: 20.10.2024
 :description: This document will help you to DEFINE YOUR IPv6 NEEDS, to PLAN its deployment and to ROLL IT OUT inside your organization.
 :toc: preamble
 :toclevels: 5
@@ -12,32 +12,20 @@
 //:sectnums:
 :sectnumlevels: 0
 :partnums:
-//icons statt Text für admonitions
+//icons instead of text for admonitions
 :icons: font
 :docinfodir: styles
 :docinfo1:
-//:title-logo-image: images/image00_01_cover.png
-// Set the cover image
-//:front-cover-image: image:images/image00_01_cover.png[fit=cover]
+
 // Don't display a title page, since we have a cover image.
-//:notitle:
+:notitle:
 
 // Table of content - MUST be localized
 :toc-title: Table of contents
 :chapter-label: Chapter
 
-// Cover
-image::images/image00_01_cover.png[images/image00_01_cover,width=952,height=241,align="center"]
-
-July 6th 2022 // *Version 1.3*
-
-//image::images/image00_02_checkbox.svg[images/image00_02_checkbox,width=152,height=134]
-
-This document will help you to DEFINE YOUR IPv6 NEEDS, to PLAN its deployment and to ROLL IT OUT inside your organization.
-
-It covers any type of Information System.
-
-*FROM PLANNING TO DEPLOYMENT*
+// Cover image - it's too complex to let ASCIIDOCTOR do this job; see sources folder
+image::images/image00_01_cover.png[images/image00_01_cover,width=100%,align="center"]
 
 // Include the non-numbered sections (preface, introduction, etc).
 == Foreword
