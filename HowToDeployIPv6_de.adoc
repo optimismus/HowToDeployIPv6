@@ -1,17 +1,16 @@
 = ENTERPRISES: How to deploy IPv6? (Deutsche Version)
 :author: Jean-Charles BISECCO, Axel Schemberg (Übersetzung)
 :email: ipv6@arcep.fr
-:revnumber: v0.9
-:revdate: 30.07.2024
+:revnumber: v1.4
+:revdate: 20.10.2024
 :description: Dieses Dokument hilft Ihnen, Ihre IPv6-Hausaufgaben zu finden, deren Umsetzung zu planen und IPv6 in Ihrem Unternehmen einzusetzen.
 :toc: preamble
 :toclevels: 5
 :source-highlighter: rouge
 :numbered:
 :doctype: book
-//:sectnums:
+:notitle:
 :sectnumlevels: 0
-//part numbering off
 :partnums:
 //Kapitelnummern
 :num:
@@ -27,18 +26,11 @@
 :figure-caption: Abbildung
 :part-signifier: Teil
 :lang: de
+// Don't display a title page, since we have a cover image. Cover image - it's too complex to let ASCIIDOCTOR do this job; see sources folder
 
-image:images/test-cover.png[images/image00_01_cover,width=952,height=241,align="center"]
-*VON DER PLANUNG BIS ZUM EINSATZ*
+image:images/image00_01_cover_de.png[]
 
-[width="100%",cols="30%,15%,55%",grid="none",frame="none"]
-|===
-|30. Juli 2024 *Version 0.9*    | image:images/image00_02_checkbox.svg[images/image00_02_checkbox,width=152,height=134]    |Dieses Dokument hilft Ihnen, Ihre Aufgaben zu definieren, deren Umsetzung zu planen und IPv6 in Ihrem Unternehmen einzuführen. + 
-Ein umfassender Überblick.
-|===
-
-
-// Include the non-numbered sections (preface, introduction, etc).
+// Nicht nummerierte Kapitel (Vorwort und Präambel).
 [preface]
 = Vorwort
 include::chapters/foreword_de.adoc[]
@@ -47,10 +39,10 @@ include::chapters/foreword_de.adoc[]
 = Präambel
 include::chapters/preamble_de.adoc[]
 
-// Enable chapter numbering.
+// Nummerierung aktivieren.
 :sectnums:
 
-// Include the numbered chapters.
+// Nummerierte Kapitel.
 = Einführung
 include::chapters/chapter-01_de.adoc[]
 
@@ -70,9 +62,9 @@ include::chapters/chapter-05_de.adoc[]
 = Anhang
 include::chapters/chapter-06_de.adoc[]
 
-// Disable chapter numbering + Chapters in ToC
+// Nummerierung deaktivieren
 :sectnums!:
-// Include section "about this book"
+// Kapitel "Über dieses Dokument" einfügen
 [appendix]
 = Über dieses Dokument
 include::chapters/about_de.adoc[]

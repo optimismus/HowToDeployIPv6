@@ -9,25 +9,24 @@
 :source-highlighter: rouge
 :numbered:
 :doctype: book
-//:sectnums:
+:notitle:
 :sectnumlevels: 0
 :partnums:
 //icons instead of text for admonitions
 :icons: font
 :docinfodir: styles
 :docinfo1:
-
-// Don't display a title page, since we have a cover image.
-:notitle:
+//:stylesheet: chapter.css
 
 // Table of content - MUST be localized
 :toc-title: Table of contents
 :chapter-label: Chapter
+// Don't display a title page, since we have a cover image. Cover image - it's too complex to let ASCIIDOCTOR do this job; see sources folder
 
-// Cover image - it's too complex to let ASCIIDOCTOR do this job; see sources folder
-image::images/image00_01_cover.png[images/image00_01_cover,width=100%,align="center"]
+//:title-page-background-image: image:images/image00_01_cover.png[]
+image:images/image00_01_cover.png[]
 
-// Include the non-numbered sections (preface, introduction, etc).
+// Include the non-numbered sections (Forewaord and Preamble).
 == Foreword
 include::chapters/foreword.adoc[]
 

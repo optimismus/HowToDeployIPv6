@@ -57,18 +57,18 @@ For intermediate size networks, it is a choice to be opposed to the combination 
 The later being stateless and easy to configure.
 
 [NOTE]
-=== •=
+====
 A mechanism was designed to allow a client and a server to exchange their different addresses via a header extension and to switch in case of failure without affecting the upper layer and therefore without timeout. 
 This was Shim6. They could even authenticate themselves via addresses generated with cryptographic mechanisms (CGA). 
 In practice, Shim6 has been dropped, so we remain in the realm of timeout + establishment of a new session in case of loss of a path, or taken into account by a upper layer protocol. 
 As far as the OSI model is involved, it should be noted that IP was never supposed to provide this type of mechanism anyway, it is the role of TCP and now QUIC.
-=== •=
+====
 
 === • CONTAINERS
 
 //[#_Toc88922583 .anchor]##image:extracted-media/media/image18.svg[Ordinateur portable contour,width=75,height=75] Marignalspalte ??
 
-=== •= Docker
+==== Docker
 
 Docker operates by default a bridge, a Docker0 interface and attaches ports to NAT44 rules pointing to published container ports. Additional bridges can be created to isolate containers from each other.
 
@@ -94,7 +94,7 @@ Do we really need IPv6 in Docker? As indicated in the document, it is interestin
 Beyond that the backend can stay in IPv4.
 
 //[#_Toc88922584 .anchor]####Kubernetes
-=== •= Kubernetes
+==== Kubernetes
 
 Kubernetes exposes by default one IP per Pod (grouping of containers on a host). 
 The host is named node. 
@@ -134,7 +134,7 @@ This leaves the overlap treatment to be managed only on the interface elements b
 Let's see what is involved when setting up NAT64 between smartphones and the Internet.
 
 //[#_Toc88922587 .anchor]####Service discovery
-=== •= Service discovery
+==== Service discovery
 
 The NAT64 section of the document explains its implementation with workstations. 
 Some methods are used to supply hosts with the NAT64 prefix, mainly on mobile platforms. 
@@ -161,7 +161,7 @@ PC OSes unfortunately do not support any of these methods on their LAN interface
 Leaving DNS64 in the enterprise for a long time to come.
 
 //[#_Toc108476738 .anchor]####Operation on mobile OSes
-=== •= Operation on mobile OSes
+==== Operation on mobile OSes
 
 To ensure compatibility with the literal use of IPv4 addresses as well as support for DNSsec signatures, etc., mobile OSes need to be able to use IPv4.
 
@@ -180,7 +180,7 @@ Thus, no IPv4 packet is ever really created.
 This way is more efficient from an energetical point of view.
 
 //[#_Toc88922589 .anchor]####Connection sharing
-=== •= Connection sharing
+==== Connection sharing
 
 Also known as hotspot or tethering, sharing involves providing dual-stack WiFi to hosts that are unaware that only IPv6 is supplied to the router, in this instance a smartphone.
 
@@ -238,7 +238,7 @@ https://datatracker.ietf.org/doc/html/draft-chen-ati-adaptive-ipv4-address-space
 Here are some examples of implementation bugs encountered when using IPv6.
 
 //[#_Toc85149062 .anchor]####Non-decommissioning of routes
-=== •= Non-decommissioning of routes
+==== Non-decommissioning of routes
 
 With IPv4, you either have connectivity or you don't. 
 As soon as you switch to dual-stack, how can you be sure of the availability of IPv6 connectivity? 
@@ -262,7 +262,7 @@ We can only recommend to carriers to lower the expiration times to a value below
 People who want to play with IPv6 multihoming will quickly encounter similar failover problems.
 
 //[#_Toc85149063 .anchor]####Unexpected use of IPv4 prefix representation
-=== •= Unexpected use of IPv4 prefix representation
+==== Unexpected use of IPv4 prefix representation
 
 In order to simplify your information system, you have decided to use only the IPv6 notation in your CMDB. 
 So you use the prefix ::ffff:0:0/96 to indicate an IPv4 in your configuration scripts, etc.
@@ -279,7 +279,7 @@ Practical, but to be considered in automations.
 image::images/image06_05_ping.png[ping,width=477,height=76,title="We can encounter this automatic conversion in common tools, such as Windows ping"]
 
 //[#_Toc85149064 .anchor]####Incompatible input fields
-=== •= Incompatible input fields
+==== Incompatible input fields
 
 When entering an IPv6, the field checks are sometimes inadequate. 
 One can find the following glitches in graphical environments and, more rarely, in a command line environment.
@@ -372,7 +372,7 @@ In particular, we will see here the exposure of services to the outside world.
 Although these examples can be used in a small structure, we remind you that it is essential to have a real filtering and analysis layer at the entrance of the Internet on a production system, even small.
 
 //[#_Toc85149302 .anchor]####Addressing and DNS publication
-=== •= Addressing and DNS publication
+==== Addressing and DNS publication
 
 Most of the time, consumer carriers only provide a /64 without the possibility of using the other prefixes assigned to the router (often in a /56).
 
@@ -394,7 +394,7 @@ There are several methods to trace the IP/ AAAA DNS record pair directly on a ma
 It is also possible to rely on a router and its NDP information, but then we leave the simple use of the carrier device.
 
 //[#_Toc108476752 .anchor]####Flow opening
-=== •== Flow openinng
+===== Flow openinng
 
 The provisioning of a firewall in IPv6 is unevenly treated by operators. 
 Some have implemented it very late in All or Nothing mode, others offer a granularity similar to what we find in IPv4.
@@ -414,7 +414,7 @@ At Orange ISP the configuration is in the firewall section.
 image::images/image06_08_orangeIPv6.png[Webinterface IPv6width=483,height=230,title="IPv6 Orange ISP LiveBox 4 (France)"]
 
 //[#_Toc85149304 .anchor]####Reachability test
-=== •= Reachability test
+==== Reachability test
 
 The test can be conducted via an online port scanner such as http://www.ipv6scanner.com/
 
